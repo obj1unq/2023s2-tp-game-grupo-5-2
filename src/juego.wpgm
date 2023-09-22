@@ -1,8 +1,28 @@
 import wollok.game.*
-import pepita.*
+import personajes.*
+import movimientos.*
 
 program juego {
-	game.title("Juego Base")
-	game.addVisual(pepita)
+	//Titulo Del Juego
+	game.title("Escape Room")
+	
+	//Configuracion Del Tablero
+	game.width(10)
+	game.height(10)
+	game.cellSize(90)
+	
+	//Objetos Visuales
+	game.addVisual(aguita)
+	game.addVisual(fueguito)
+	
+	//Movimientos
+	keyboard.up().onPressDo({aguita.mover(arriba)})	
+	keyboard.down().onPressDo({aguita.mover(abajo)})
+	keyboard.left().onPressDo({aguita.mover(izquierda)})
+	keyboard.right().onPressDo({aguita.mover(derecha)})
+	
+	
+	//Jugar
 	game.start()
+	
 }
