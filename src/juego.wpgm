@@ -9,7 +9,7 @@ program juego {
 	//Configuracion Del Tablero
 	game.width(10)
 	game.height(10)
-	game.cellSize(90)
+	game.cellSize(70)
 	
 	//Objetos Visuales
 	game.addVisual(aguita)
@@ -21,7 +21,12 @@ program juego {
 	keyboard.left().onPressDo({aguita.mover(izquierda)})
 	keyboard.right().onPressDo({aguita.mover(derecha)})
 	
+	keyboard.w().onPressDo({fueguito.mover(arriba)})
+	keyboard.s().onPressDo({fueguito.mover(abajo)})
+	keyboard.a().onPressDo({fueguito.mover(izquierda)})
+	keyboard.d().onPressDo({fueguito.mover(derecha)})
 	
+	game.onCollideDo(aguita,{objeto => objeto.colision(aguita)})
 	//Jugar
 	game.start()
 	
