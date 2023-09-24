@@ -34,22 +34,38 @@ object fuego {
 	
 }
 
-object piedra {
+object moneda {
 
-	var position = game.at(2,4)
+	var property position = game.at(2,4)
 
-	method position() {
-									//patear piedras?
+	method tomado(personaje) {
+		game.removeVisual(self)
+		personaje.sumarMoneda()
 	}
 	
-	method colision(personaje) {
+	method image() = "unaMoneda.png"
 		
+}
+
+object monedas {
+	
+	var property position = game.at(1,9)
+
+	method tomado(personaje) {
+		game.removeVisual(self)
+		personaje.sumarMonedas()
 	}
 	
-	method image() {
-		
+	method image() = "Monedas.png"
+	
+}
+object bemoo {
+	
+	var property position = game.at(7,8)
+	
+	method image() = "bemoo.png"
+	
+	method tomado(personaje) {
+		if(personaje.altura() == 2) game.say(self,"Hola finn") else game.say(self,"Hola jake")
 	}
-	
-	
-		
 }
