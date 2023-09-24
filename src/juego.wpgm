@@ -1,6 +1,7 @@
 import wollok.game.*
 import personajes.*
 import movimientos.*
+import objetosInteractivos.*
 
 program juego {
 	//Titulo Del Juego
@@ -12,21 +13,27 @@ program juego {
 	game.cellSize(70)
 	
 	//Objetos Visuales
-	game.addVisual(aguita)
-	game.addVisual(fueguito)
+	game.addVisual(finnElHumano)
+	game.addVisual(jake)
+	game.addVisual(bemoo)
+	game.addVisual(moneda)
+	game.addVisual(monedas)
 	
 	//Movimientos
-	keyboard.up().onPressDo({aguita.mover(arriba)})	
-	keyboard.down().onPressDo({aguita.mover(abajo)})
-	keyboard.left().onPressDo({aguita.mover(izquierda)})
-	keyboard.right().onPressDo({aguita.mover(derecha)})
+	keyboard.up().onPressDo({jake.mover(arriba)})	
+	keyboard.down().onPressDo({jake.mover(abajo)})
+	keyboard.left().onPressDo({jake.mover(izquierda)})
+	keyboard.right().onPressDo({jake.mover(derecha)})
 	
-	keyboard.w().onPressDo({fueguito.mover(arriba)})
-	keyboard.s().onPressDo({fueguito.mover(abajo)})
-	keyboard.a().onPressDo({fueguito.mover(izquierda)})
-	keyboard.d().onPressDo({fueguito.mover(derecha)})
+	keyboard.w().onPressDo({finnElHumano.mover(arriba)})
+	keyboard.s().onPressDo({finnElHumano.mover(abajo)})
+	keyboard.a().onPressDo({finnElHumano.mover(izquierda)})
+	keyboard.d().onPressDo({finnElHumano.mover(derecha)})
 	
-	game.onCollideDo(aguita,{objeto => objeto.colision(aguita)})
+	//Colisiones
+	game.onCollideDo(finnElHumano,{algo => algo.tomado(finnElHumano)})
+	game.onCollideDo(jake,{algo => algo.tomado(jake)})
+	
 	//Jugar
 	game.start()
 	
