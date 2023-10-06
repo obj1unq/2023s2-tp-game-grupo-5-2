@@ -1,71 +1,157 @@
 import wollok.game.*
-object pared {
+import randomizerVJuego.*
+
+object monedaFactory{
 	
-	const property position = game.at(1,3)
-	
-	method image() {
-		
+	method nuevo() {
+		return new Moneda(position = randomizerVJuego.emptyPosition())
 	}
-	
 }
 
-object agua {
+object monedasManager {
 	
-	method image() {
+	var generados = #{}
+	const limite = 3
+	
+	const factories = [monedaFactory]
+	
+	
+	method seleccionarFactory() {
+
+//      Para una probabilidad de 10% alpiste 90% manzana		
+//		const x = 0.randomUpTo(1)
+//		return if (x < 0.10) alpisteFactory else manzanaFactory 
 		
+		return factories.anyOne() //igual de probabilidad
 	}
 	
-	method colision(personaje) {
-		
+	method generar() {
+		if(generados.size() < limite ) {
+			
+			const tipoMoneda = self.seleccionarFactory().nuevo() 		
+			game.addVisual(tipoMoneda)	
+			generados.add(tipoMoneda)
+		}
 	}
 	
-	
+	method quitar(tipoMoneda) {
+		generados.remove(tipoMoneda)
+		game.removeVisual(tipoMoneda)
+	}
 }
 
-object fuego {
+
+class Moneda {
+
+	var property position 
 	
-	method image() {
-		
+	const property tipoDeMonedaPosible = [monedaSola,variasMonedas]
+	
+	var property estadoMoneda = self.seleccionarEstadoDeMoneda()
+	
+	method seleccionarEstadoDeMoneda() {
+		return tipoDeMonedaPosible.anyOne()
 	}
 	
-	method colision(personaje) {
-		
-	}
-	
-}
-
-object moneda {
-
-	var property position = game.at(2,4)
-
-	method tomado(personaje) {
+	method agarrado(personaje) {
 		game.removeVisual(self)
-		personaje.sumarMoneda()
+		personaje.sumarMonedas(estadoMoneda.monedasABrindar())
 	}
+
+	method image() = estadoMoneda.image()
+	
+}
+
+object monedaSola {
+	
+	method monedasABrindar() = 1
 	
 	method image() = "unaMoneda.png"
+}
+
+object variasMonedas {
+	
+	method monedasABrindar() = 3
+	
+	method image() = "variasMonedas.png"
+}
+
+object llave {
+	
+	var property position = null
+	
+	var property tipoDeLlave = llaveCofre
+	
+	method image() = "llave.png" 
+	
+	method agarrado(personaje) {
+		personaje.llaveObtenida(tipoDeLlave)
 		
-}
-
-object monedas {
-	
-	var property position = game.at(1,9)
-
-	method tomado(personaje) {
-		game.removeVisual(self)
-		personaje.sumarMonedas()
 	}
 	
-	method image() = "Monedas.png"
-	
 }
-object bemoo {
+object llaveCofre {
 	
-	var property position = game.at(7,8)
+	method abreCofre() {
+		return true
+	}
 	
-	method image() = "bemoo.png"
-	
-	method tomado(personaje) {
-		if(personaje.altura() == 2) game.say(self,"Hola finn") else game.say(self,"Hola jake")
+	method abrePuerta() {
+		return false
 	}
 }
+
+object llavePuerta {
+	
+	method abreCofre() {
+		return false
+	}
+	
+	method abrePuerta() {
+		return true
+	}
+	
+}
+
+
+
+
+
+/* 
+class Enemigo {
+	
+	var property position = game.at(8,8)
+	
+	method image() {}
+
+	method dispara() {
+		game.onTick(2000,"disparar",{
+			const bola = new BolaDeNieve(position = position.left(1))
+			game.addVisual(bola)
+			bola.desplazarse()}) 
+		}
+}
+
+class BolaDeNieve {
+	
+	var property position 
+	
+	method image() {}
+	
+	method desplazarse() {
+		game.onCollideDo(self,{algo => algo.tePegue()})
+		game.onTick(250,"bola",{self.moverseIzquierda()})	
+	}
+	
+	method moverseIzquierda() {
+		position = position.left(1)
+		if(position.x() > game.width()) {
+			game.removeTickEvent("bola")
+			game.removeVisual(self)
+		}
+		
+	}
+	
+}
+
+*/
