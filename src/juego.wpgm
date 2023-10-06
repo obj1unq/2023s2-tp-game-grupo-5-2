@@ -2,38 +2,31 @@ import wollok.game.*
 import personajes.*
 import movimientos.*
 import objetosInteractivos.*
-
+import nivel1.*
+import randomizerVJuego.*
+import extrasJuego.*
 program juego {
 	//Titulo Del Juego
-	game.title("Escape Room")
+	game.title("Hora de Aventura")
 	
 	//Configuracion Del Tablero
-	game.width(10)
-	game.height(10)
+	game.width(12)
+	game.height(8)
 	game.cellSize(70)
 	
-	//Objetos Visuales
-	game.addVisual(finnElHumano)
-	game.addVisual(jake)
-	game.addVisual(bemoo)
-	game.addVisual(moneda)
-	game.addVisual(monedas)
+	nivel1.generar()
 	
 	//Movimientos
-	keyboard.up().onPressDo({jake.mover(arriba)})	
-	keyboard.down().onPressDo({jake.mover(abajo)})
-	keyboard.left().onPressDo({jake.mover(izquierda)})
-	keyboard.right().onPressDo({jake.mover(derecha)})
-	
-	keyboard.w().onPressDo({finnElHumano.mover(arriba)})
-	keyboard.s().onPressDo({finnElHumano.mover(abajo)})
-	keyboard.a().onPressDo({finnElHumano.mover(izquierda)})
-	keyboard.d().onPressDo({finnElHumano.mover(derecha)})
+	keyboard.w().onPressDo({finnElHumano.mover(arriba)    finnElHumano.image("finnDeEspalda.png")})
+	keyboard.s().onPressDo({finnElHumano.mover(abajo)     finnElHumano.image("finnMirandoAlFrente.png")})
+	keyboard.a().onPressDo({finnElHumano.mover(izquierda) finnElHumano.image("finnMirandoAIzquierda.png")})
+	keyboard.d().onPressDo({finnElHumano.mover(derecha)   finnElHumano.image("finnMirandoADerecha.png")})
 	
 	//Colisiones
-	game.onCollideDo(finnElHumano,{algo => algo.tomado(finnElHumano)})
-	game.onCollideDo(jake,{algo => algo.tomado(jake)})
+	keyboard.e().onPressDo({algo => finnElHumano.agarrar(algo)})
+	keyboard.h().onPressDo({finnElHumano.usarLlave()})
 	
+	game.onTick(3000,"Monedas", {monedasManager.generar()})	
 	//Jugar
 	game.start()
 	

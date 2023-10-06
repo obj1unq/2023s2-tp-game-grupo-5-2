@@ -1,24 +1,47 @@
 import wollok.game.*
 import movimientos.*
-
-object jake {
-
+import extrasJuego.*
+object finnElHumano {
+	
 	var property monedas = 0
 	
-	var property position = game.center()
+	const property puertaJuego = puerta
+	
+	const property cofreJuego = cofre
+	
+	var property position = game.at(0,0)
 
-	method image() = "jakeMirandoAlFrente.png"
-
-	method sumarMoneda() {
-		monedas = monedas + 1
+	var property estado = inofensivo
+	
+	var property image = "finnMirandoAlFrente.png"
+	
+	const property llaveObtenida = []
+	
+	method llaveObtenida(tipoLlave) {
+		llaveObtenida.add(tipoLlave)
 	}
 	
-	method sumarMonedas() {
-		monedas = monedas + 3
+	method sumarMonedas(_monedas) {
+		monedas = monedas + _monedas
 	}
-	method altura() = 1
-	
+
 	method text() = monedas.toString()
+	
+	
+	method agarrar(algo) {
+		algo.agarrado(self)
+	}
+	
+	method validarUsarLlave() {
+		if(self.position() != cofre.position() || self.position() != puerta.position()){
+			self.error("Aca no hay ni una puerta ni un cofre capo")
+		}
+	}
+	
+	method usarLlave() {
+		self.validarUsarLlave()
+		
+	}
 	
 	method validarMover(direccion) {
 		if(not self.sePuedeMover(direccion)) {
@@ -26,9 +49,10 @@ object jake {
 		} 
 	}
 	
+	
 	method mover(direccion) {
 		self.validarMover(direccion)
-		const proxima = direccion.siguiente(self.position())		
+		const proxima = direccion.siguiente(self.position())
 		self.position(proxima)		
 	}
 	
@@ -44,56 +68,12 @@ object jake {
 	
 }
 
-object finnElHumano {
+object inofensivo {
 	
-	var property monedas = 0
 	
-	var property position = game.at(0,0)
-	
-	method image() = "finnMirandoAlFrente.png"
-	
-	method sumarMoneda() {
-		monedas = monedas + 1 
-	}
+}
 
-	method sumarMonedas() {
-		monedas = monedas + 3
-	}
-	method text() = monedas.toString()
+object combativo {
 	
-	method altura() = 2
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	method validarMover(direccion) {
-		if(not self.sePuedeMover(direccion)) {
-			self.error("No es posible moverse")
-		} 
-	}
-	
-	method mover(direccion) {
-		self.validarMover(direccion)
-		const proxima = direccion.siguiente(self.position())		
-		self.position(proxima)		
-	}
-	
-	method sePuedeMover(direccion) {
-		const proxima = direccion.siguiente(self.position())
-		return self.puedeOcupar(proxima)
-	}
-	
-	
-	method puedeOcupar(_posicion) {
-		return tablero.pertenece(_posicion)
-	}
-	
-
 }
 
