@@ -30,6 +30,12 @@ object b {
 		game.addVisual(bemoo)
 	}	
 }
+object m {
+	method generar(position) {
+		const monedaAGenerar = new Moneda(position=position)
+		game.addVisual(monedaAGenerar)
+	}
+}
 object l {
 	method generar(position) {
 		llave.position(position)
@@ -44,12 +50,12 @@ object p {
 object nivel1 {
 	
 	var celdas = [
-		[_,_,_,_,_,b,_,_,_,p],
+		[_,_,_,_,_,b,_,m,_,p],
 		[c,_,_,_,_,_,_,_,_,_],
 		[_,_,_,_,_,_,_,_,_,_],
-		[_,_,_,_,_,_,_,_,_,_],
+		[_,_,_,_,_,m,_,_,_,_],
 		[_,_,_,_,_,_,_,_,_,_],		
-		[f,_,_,_,_,l,_,_,_,_],		
+		[f,_,_,_,_,l,_,_,m,_],		
 		[_,_,_,_,_,_,_,_,_,_]		
 	].reverse() //reverse porque el y crece en el orden inverso
 	

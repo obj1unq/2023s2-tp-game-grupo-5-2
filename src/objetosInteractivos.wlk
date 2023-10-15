@@ -1,6 +1,6 @@
 import wollok.game.*
 import randomizerVJuego.*
-
+/* 
 object monedaFactory{
 	
 	method nuevo() {
@@ -39,7 +39,7 @@ object monedasManager {
 		game.removeVisual(tipoMoneda)
 	}
 }
-
+*/
 
 class Moneda {
 
@@ -82,13 +82,18 @@ object llave {
 	
 	var property tipoDeLlave = llaveCofre
 	
-	method image() = "llave.png" 
+	method image() = "llaveInicial.png" 
 	
 	method agarrado(personaje) {
 		personaje.llaveObtenida(tipoDeLlave)
-		
 	}
 	
+	method esLlaveParaCofre() {
+		return tipoDeLlave.abreCofre()
+	}
+	method esLlaveParaPuerta() {
+		return tipoDeLlave.abrePuerta()
+	}
 }
 object llaveCofre {
 	

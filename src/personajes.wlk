@@ -15,10 +15,10 @@ object finnElHumano {
 	
 	var property image = "finnMirandoAlFrente.png"
 	
-	const property llaveObtenida = []
+	var llaveObtenida 
 	
 	method llaveObtenida(tipoLlave) {
-		llaveObtenida.add(tipoLlave)
+		 llaveObtenida = tipoLlave
 	}
 	
 	method sumarMonedas(_monedas) {
@@ -28,19 +28,36 @@ object finnElHumano {
 	method text() = monedas.toString()
 	
 	
+	method validarAgarrar(algo) {
+		if( not (self.position() == algo.position())) {
+			self.error("No hay nada que agarrar")
+		}
+	}
+	
 	method agarrar(algo) {
+		self.validarAgarrar(algo)
 		algo.agarrado(self)
 	}
 	
+	method hayPuertaOHayCofre() {
+		return cofreJuego.position() == self.position() || self.position() == puertaJuego.position()
+	}
+	
+
+	method puedeUsarLlave() {
+		return self.hayPuertaOHayCofre() 
+	}
+	
 	method validarUsarLlave() {
-		if(self.position() != cofre.position() || self.position() != puerta.position()){
+		if(not self.puedeUsarLlave()){
 			self.error("Aca no hay ni una puerta ni un cofre capo")
 		}
 	}
 	
 	method usarLlave() {
 		self.validarUsarLlave()
-		
+		cofreJuego.serAbiertoCon(llaveObtenida)
+		puertaJuego.serAbridaCon(llaveObtenida)
 	}
 	
 	method validarMover(direccion) {
@@ -76,4 +93,3 @@ object inofensivo {
 object combativo {
 	
 }
-
