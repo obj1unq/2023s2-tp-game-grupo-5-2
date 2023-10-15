@@ -23,10 +23,10 @@ program juego {
 	keyboard.d().onPressDo({finnElHumano.mover(derecha)   finnElHumano.image("finnMirandoADerecha.png")})
 	
 	//Colisiones
-	keyboard.e().onPressDo({algo => finnElHumano.agarrar(algo)})
+	keyboard.e().onPressDo({ game.whenCollideDo(finnElHumano,{algo => finnElHumano.agarrar(algo)}) })
 	keyboard.h().onPressDo({finnElHumano.usarLlave()})
 	
-	game.onTick(3000,"Monedas", {monedasManager.generar()})	
+	//game.onTick(3000,"Monedas", {monedasManager.generar()})	
 	//Jugar
 	game.start()
 	
