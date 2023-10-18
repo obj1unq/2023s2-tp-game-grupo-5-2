@@ -1,14 +1,26 @@
+import wollok.game.*
+import personajes.*
+import extrasJuego.*
+import nivel1.*
+import objetosInteractivos.*
+import movimientos.*
+
+describe "Mi describe" {
+
+  method initialize(){
+    game.clear()
+    //
+  }
 
 
+   test "finn obtiene al menos 3 monedas" {			//Hacer
+		game.addVisual(finnElHumano)
+		assert.equals({})
+	}
 
+  test "finn abre cofre  "{						 	//Hacer
+    game.addVisual(finnElHumano)	
+    assert.equals({})
+  }
 
-
-
-
-
-
-		test "finn agarra monedas" {
-
-
-
-		}
+}

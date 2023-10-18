@@ -39,12 +39,9 @@ object tablero {
 	}
 	
 	method puedeOcupar(position) {
-		return self.pertenece(position) && not self.haySolido(position)
+		return self.pertenece(position) 
 	}
 	
-	method haySolido(position) {
-		return game.getObjectsIn(position).any({elemento => elemento.solido()})
-	}
 	
 }
 

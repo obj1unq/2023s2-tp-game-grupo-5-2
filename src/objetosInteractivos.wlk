@@ -86,6 +86,7 @@ object llave {
 	
 	method agarrado(personaje) {
 		personaje.llaveObtenida(tipoDeLlave)
+		game.removeVisual(self)
 	}
 	
 	method esLlaveParaCofre() {
@@ -107,6 +108,10 @@ object llaveCofre {
 }
 
 object llavePuerta {
+	
+	method agarrado(personaje) {
+		personaje.llaveObtenida(self)
+	}
 	
 	method abreCofre() {
 		return false
