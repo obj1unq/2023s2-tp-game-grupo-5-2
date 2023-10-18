@@ -26,7 +26,14 @@ object cofre {
 			self.error("estoy " + self.estado().toString() + ", no hay nada que agarrar")
 		}
 	}
-
+	
+	method vaciar(){
+		contenidoDelCofre.remove(llavePuerta)
+	}
+	
+	method elementoGuardado(){
+		return contenidoDelCofre.uniqueElement()
+	}
 	method agarrado(personaje) {
 		self.validarAgarrado(personaje)
 		estado.serVaciado(self,personaje)
@@ -43,7 +50,7 @@ object cofre {
 		self.abrir()
 	}
 	method validarSerAbiertoCon(tipoLlave) {
-		if(not tipoLlave.esLlaveParaCofre()) {
+		if(not tipoLlave.abreCofre()) {
 			self.error("No se puede abrir")
 		}
 	}
@@ -65,8 +72,8 @@ object cerrado {
 object abierto {
 
 	method serVaciado(cofre,personaje) {
-		personaje.llaveObtenida(cofre.contenidoCofre().uniqueElement())
-		cofre.remove(cofre.contenidoCofre())
+		personaje.agarrar(cofre.elementoGuardado())
+		cofre.vaciar()
 		cofre.image("cofre_vacio.png")
 	}
 	method puedeAgararseLoQueHayDentro() {
@@ -93,7 +100,7 @@ object puerta {
 	method image() = "jakeDeEspalda.png"
 	
 	method validarSerAbridaCon(tipoLlave) {
-		if(not tipoLlave.esLlaveParaPuerta()) {
+		if(not tipoLlave.abrePuerta()) {
 			self.error("No se puede abrir")
 		}
 	}
@@ -111,9 +118,9 @@ object puerta {
 }
 object bemoo {
 	
-	var property position = game.at(7,8)
+	var property position = null
 	
-	const property image = "bemoo.png"
+	method image() = "bemoo.png"
 	
 	method agarrado(personaje) {
 		if(personaje.poseeLlavePuerta()) {

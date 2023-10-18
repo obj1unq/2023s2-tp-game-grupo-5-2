@@ -27,9 +27,14 @@ object finnElHumano {
 
 	method text() = monedas.toString()
 	
+	method hayAlgoParaAgarar() {
+		const objetosMiPosicion = game.getObjectsIn(position)
+		
+		return objetosMiPosicion.size() > 1
+	}
 	
 	method validarAgarrar(algo) {
-		if( not (self.position() == algo.position())) {
+		if( not self.hayAlgoParaAgarar()) {
 			self.error("No hay nada que agarrar")
 		}
 	}
@@ -62,10 +67,9 @@ object finnElHumano {
 	
 	method validarMover(direccion) {
 		if(not self.sePuedeMover(direccion)) {
-			self.error("No es posible moverse")
+			self.error("Estoy en el borde, no puedo moverme")
 		} 
 	}
-	
 	
 	method mover(direccion) {
 		self.validarMover(direccion)

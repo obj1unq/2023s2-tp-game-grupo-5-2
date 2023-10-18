@@ -39,12 +39,13 @@ object m {
 object l {
 	method generar(position) {
 		llave.position(position)
-		
+		game.addVisual(llave)
 	}
 }
 object p {
 	method generar(position) {
 		puerta.position(position)
+		game.addVisual(puerta)
 	}
 }
 object nivel1 {
