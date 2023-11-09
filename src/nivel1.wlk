@@ -1,7 +1,8 @@
 import personajes.*
 import wollok.game.*
-import objetosInteractivos.*
-import extrasJuego.*
+import sonidos.*
+import barraHP.*
+
 
 object _ {
 	
@@ -10,67 +11,46 @@ object _ {
 	}	
 }
 
-object f {
+object b {
 	method generar(position) {
-		finnElHumano.position(position)
-		//game.addVisual(finnElHumano)
+		bill.position(position)
+		
 		//No agrega el visual para hacerlo al final
 	}		
 }
 
-object c {
-	method generar(position) {
-		cofre.position(position)
-		game.addVisual(cofre)
-	}			
-}
-object b {
-	method generar(position) {
-		bemoo.position(position)
-		game.addVisual(bemoo)
-	}	
-}
-object m {
-	method generar(position) {
-		const monedaAGenerar = new Moneda(position=position)
-		game.addVisual(monedaAGenerar)
-	}
-}
-object l {
-	method generar(position) {
-		llave.position(position)
-		game.addVisual(llave)
-	}
-}
-object p {
-	method generar(position) {
-		puerta.position(position)
-		game.addVisual(puerta)
-	}
-}
+
 object nivel1 {
 	
 	var celdas = [
-		[_,_,_,_,_,b,_,m,_,p],
-		[c,_,_,_,_,_,_,_,_,_],
+		[_,_,_,_,_,_,_,_,_,_],   //una opcion es reemplazar los _ de algunas zonas por objetos solidos y agregar una condicion al mover, esto elimina el mensaje de
+		[_,_,_,_,_,_,_,_,_,_],   //error al subir en el mapa pero lo mantiene si intenta salir por los bordes
 		[_,_,_,_,_,_,_,_,_,_],
-		[_,_,_,_,_,m,_,_,_,_],
+		[_,_,_,_,_,_,_,_,_,_],
 		[_,_,_,_,_,_,_,_,_,_],		
-		[f,_,_,_,_,l,_,_,m,_],		
+		[_,b,_,_,_,_,_,_,_,_],		
 		[_,_,_,_,_,_,_,_,_,_]		
 	].reverse() //reverse porque el y crece en el orden inverso
 	
 	
 	
 	method generar() {
+		
 		game.width(celdas.anyOne().size())
 		game.height(celdas.size())
+		game.boardGround("background1.png")
+		//gameSoundManager.playSoundtrackForLevel1()
+	    barraDeHp.inicializar()
+	    contadorDeVidas.inicializar()
+		
+		
 		(0..game.width() -1).forEach({x =>
 			(0..game.height() -1).forEach( {y =>
 				self.generarCelda(x,y)
 			})
 		})
-		game.addVisual(finnElHumano) //agrego al final por un tema del z index
+		game.addVisual(bill) //agrego al final por un tema del z index
+		
 	}
 	
 	method generarCelda(x,y) {

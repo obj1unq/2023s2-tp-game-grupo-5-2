@@ -1,33 +1,43 @@
 import wollok.game.*
 import personajes.*
 import movimientos.*
-import objetosInteractivos.*
 import nivel1.*
-import randomizerVJuego.*
-import extrasJuego.*
+import animacion.*
+//import barraHP.*
+import sonidos.*
+
+
 program juego {
 	//Titulo Del Juego
-	game.title("Hora de Aventura")
+	game.title("dd")
 	
 	//Configuracion Del Tablero
 	game.width(12)
 	game.height(8)
 	game.cellSize(70)
+    nivel1.generar()
+//	barraDeHp.inicializar()
+//	contadorDeVidas.inicializar()
 	
-	nivel1.generar()
+	
+	
 	
 	//Movimientos
-	keyboard.w().onPressDo({finnElHumano.mover(arriba)    finnElHumano.image("finnDeEspalda.png")})
-	keyboard.s().onPressDo({finnElHumano.mover(abajo)     finnElHumano.image("finnMirandoAlFrente.png")})
-	keyboard.a().onPressDo({finnElHumano.mover(izquierda) finnElHumano.image("finnMirandoAIzquierda.png")})
-	keyboard.d().onPressDo({finnElHumano.mover(derecha)   finnElHumano.image("finnMirandoADerecha.png")})
+	keyboard.w().onPressDo({  bill.movimientoConAnimacionHacia(arriba)    })
+	keyboard.s().onPressDo({  bill.movimientoConAnimacionHacia(abajo)     })
+	keyboard.a().onPressDo({  bill.movimientoConAnimacionHacia(izquierda) })
+	keyboard.d().onPressDo({  bill.movimientoConAnimacionHacia(derecha)   })
 	
 	//Colisiones
-	keyboard.e().onPressDo({finnElHumano.agarrar(game.uniqueCollider(finnElHumano))})
-	keyboard.h().onPressDo({finnElHumano.usarLlave()})
-	
-	//game.onTick(3000,"Monedas", {monedasManager.generar()})	
+	keyboard.e().onPressDo({  bill.iniciarGolpe()   })
+ 	keyboard.q().onPressDo({  bill.iniciarPatada()  })
+ 	keyboard.p().onPressDo({  bill.recibirDanio(10) }) //Esto solo esta para probar las animaciones de daño, derrota asi como tambien sus variantes dependiendo del tiempo entre daño y daño
+ 	
+    
+
+
 	//Jugar
+ 
 	game.start()
-	
+
 }

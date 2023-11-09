@@ -1,33 +1,54 @@
 import wollok.game.*
+import personajes.*
 
 object derecha {
-
+	
+	method esIgualA(direccion) {
+		return self == direccion
+	}
+	
 	method siguiente(position) {
 		return position.right(1)
 	}
 	
-}
-
-object izquierda {
-
-	method siguiente(position) {
-		return position.left(1)
-	}
+	method IzqODer() {return "Derecha"}
 	
 }
 
+object izquierda {
+	
+	method esIgualA(direccion) {
+		return self == direccion
+	}
+	
+	method siguiente(position) {
+		return position.left(1)
+	}
+	method IzqODer() {return "Izquierda"}
+}
+
 object arriba {
+	
+	method esIgualA(direccion) {
+		return self == direccion
+	}
 
 	method siguiente(position) {
 		return position.up(1)
 	}
+	method IzqODer() { return if (bill.directionMirando() == "Derecha") "Derecha" else "Izquierda" }
 }
 
 object abajo {
-
+	
+	method esIgualA(direccion) {
+		return self == direccion
+	}
+	
 	method siguiente(position) {
 		return position.down(1)
 	}
+	method IzqODer() {return if (bill.directionMirando() == "Izquierda") "Izquierda" else "Derecha" }
 
 }
 

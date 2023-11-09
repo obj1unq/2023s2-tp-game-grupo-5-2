@@ -1,8 +1,6 @@
 import wollok.game.*
 import personajes.*
-import extrasJuego.*
 import nivel1.*
-import objetosInteractivos.*
 import movimientos.*
 
 describe "Mi describe" {
@@ -14,12 +12,12 @@ describe "Mi describe" {
 
 
    test "finn obtiene al menos 3 monedas" {			//Hacer
-		game.addVisual(finnElHumano)
+		game.addVisual(bill)
 		assert.equals({})
 	}
 
   test "finn abre cofre  "{						 	//Hacer
-    game.addVisual(finnElHumano)	
+    game.addVisual(bill)	
     assert.equals({})
   }
 
