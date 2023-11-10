@@ -66,7 +66,7 @@ object animadorDeMovimiento inherits AnimacionManager {
         spriteQuieto = "quietoIzq.png"
         spritesDelMovimiento =(["subirIzq1.png", "subirIzq2.png", "subirIzq3.png", "subirIzq4.png"])  
         
-      } else if (spritesDelMovimiento.get(0).startsWith("patada") && bill.directionMirando()  == "Izquierda") {   // Sies patada y la ultima dir es izquierda
+      } else if (spritesDelMovimiento.get(0).startsWith("patada") && bill.directionMirando()  == "Izquierda") {   // Si es patada y la ultima dir es izquierda
         spriteQuieto = "quietoIzq.png"
         spritesDelMovimiento =(["patadaIzq1.png", "patadaIzq2.png", "patadaIzq3.png", "patadaIzq4.png", "patadaIzq4.png"])  
 

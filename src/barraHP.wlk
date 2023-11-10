@@ -49,3 +49,4 @@ object contadorDeVidas {
 		return numeroDeVidas.toString() + "vidas.png"
 	}
 }
+

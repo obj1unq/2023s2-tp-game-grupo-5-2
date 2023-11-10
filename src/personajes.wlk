@@ -17,8 +17,8 @@ object bill {
 	var property vidas = 3    // Inicializa bill con 3 vidas
 	var property invulnerable = false
 	
-    const duracionInvulnerabilidad = 3000 // La duración de la invulnerabilidad en milisegundos
-    const intervaloParpadeo = 200 // Intervalo de parpadeo en milisegundos
+    const duracionInvulnerabilidad = 1500 // La duración de la invulnerabilidad en milisegundos
+    const intervaloParpadeo = 25 // Intervalo de parpadeo en milisegundos
     var tiempoParpadeando = 0 // Un contador para saber cuánto tiempo ha estado parpadeando	
     
     var property golpesRecibidos = 0
@@ -48,6 +48,7 @@ object bill {
             	                                                                        ["danio2.png", "danio2.png", "danio2.png"])) } )     //animacion de daño medio
                                                                                      
         } else {
+            golpesRecibidos = 0	                                                                            	       	
             self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio(self.spritesDanio(["danioIzq3.png", "danioIzq3.png", "danioIzq4.png", 
             	                                                                         "danioIzq4.png", "danioIzq5.png", "danioIzq5.png",
             	                                                                         "danioIzq6.png", "danioIzq6.png"],                  //animacion de daño critico
@@ -55,7 +56,6 @@ object bill {
             	                                                                        ["danio3.png", "danio3.png", "danio4.png",
             	                                                                         "danio4.png", "danio5.png", "danio5.png", 
             	                                                                         "danio6.png", "danio6.png"])) } )    
-            golpesRecibidos = 0	                                                                            	       	
         }
             game.schedule(tiempoParaDanioRapido, { golpesRecibidos = 0 })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
        		
