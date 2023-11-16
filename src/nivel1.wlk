@@ -2,7 +2,7 @@ import personajes.*
 import wollok.game.*
 import sonidos.*
 import barraHP.*
-
+import movimientos.*
 
 object _ {
 	
@@ -39,10 +39,7 @@ object nivel1 {
 		game.width(celdas.anyOne().size())
 		game.height(celdas.size())
 		game.boardGround("background1.png")
-		//gameSoundManager.playSoundtrackForLevel1()
-	    game.addVisual(barraDeHP)
-	    contadorDeVidas.inicializar()
-		
+		self.teclasDelNivel()
 		
 		(0..game.width() -1).forEach({x =>
 			(0..game.height() -1).forEach( {y =>
@@ -50,13 +47,37 @@ object nivel1 {
 			})
 		})
 		game.addVisual(bill) //agrego al final por un tema del z index
-		
+		game.addVisual(barraDeHP)
+		contadorDeVidas.inicializar()
 	}
 	
 	method generarCelda(x,y) {
 		const celda = celdas.get(y).get(x)
 		celda.generar(game.at(x,y))
 	}
+	
+	method teclasDelNivel() {
+		const sonido = game.sound("citySlumStage1.wav")
+   	 	sonido.shouldLoop(true)
+    	game.schedule(500, {sonido.play()} )
+	
+		//musica
+   		keyboard.up().onPressDo({sonido.volume(1)})
+		keyboard.down().onPressDo({sonido.volume(0.3)})
+		keyboard.m().onPressDo({sonido.volume(0)})
+		//movimiento
+		keyboard.w().onPressDo({  bill.movimientoConAnimacionHacia(arriba)    })
+		keyboard.s().onPressDo({  bill.movimientoConAnimacionHacia(abajo)     })
+		keyboard.a().onPressDo({  bill.movimientoConAnimacionHacia(izquierda) }) 
+		keyboard.d().onPressDo({  bill.movimientoConAnimacionHacia(derecha)   })
+	
+	    //colisiones
+		keyboard.e().onPressDo({  bill.iniciarGolpe()   })
+ 		keyboard.q().onPressDo({  bill.iniciarPatada()  })
+ 		
+
+	}
+	
 	
 	
 }
