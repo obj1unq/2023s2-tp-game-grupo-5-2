@@ -3,7 +3,7 @@ import personajes.*
 import movimientos.*
 import nivel1.*
 import animacion.*
-//import barraHP.*
+import barraHP.*
 import sonidos.*
 
 
@@ -19,20 +19,20 @@ program juego {
 //	barraDeHp.inicializar()
 //	contadorDeVidas.inicializar()
 	
+
 	
 	
-	
-	//Movimientos
+	//Movimientos // pueden estar implementados en el nivel 1 y no aca por si se quiere hacer un main menu
 	keyboard.w().onPressDo({  bill.movimientoConAnimacionHacia(arriba)    })
 	keyboard.s().onPressDo({  bill.movimientoConAnimacionHacia(abajo)     })
-	keyboard.a().onPressDo({  bill.movimientoConAnimacionHacia(izquierda) })
+	keyboard.a().onPressDo({  bill.movimientoConAnimacionHacia(izquierda) }) 
 	keyboard.d().onPressDo({  bill.movimientoConAnimacionHacia(derecha)   })
 	
 	//Colisiones
 	keyboard.e().onPressDo({  bill.iniciarGolpe()   })
  	keyboard.q().onPressDo({  bill.iniciarPatada()  })
- 	keyboard.p().onPressDo({  bill.recibirDanio(10) }) //Esto solo esta para probar las animaciones de daño, derrota asi como tambien sus variantes dependiendo del tiempo entre daño y daño
- 	
+ 	keyboard.p().onPressDo({  bill.recibirDanio()   }) //Esto solo esta para probar las animaciones de daño, derrota asi como tambien sus variantes dependiendo del tiempo entre daño y daño
+ 	keyboard.y().onPressDo({  barraDeHP.descontar() }) // probar funcionamiento de barra de vida 
     
 
 
@@ -41,3 +41,4 @@ program juego {
 	game.start()
 
 }
+

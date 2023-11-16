@@ -40,7 +40,7 @@ object nivel1 {
 		game.height(celdas.size())
 		game.boardGround("background1.png")
 		//gameSoundManager.playSoundtrackForLevel1()
-	    barraDeHp.inicializar()
+	    game.addVisual(barraDeHP)
 	    contadorDeVidas.inicializar()
 		
 		
@@ -57,5 +57,6 @@ object nivel1 {
 		const celda = celdas.get(y).get(x)
 		celda.generar(game.at(x,y))
 	}
+	
 	
 }

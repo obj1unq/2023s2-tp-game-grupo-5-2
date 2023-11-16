@@ -1,6 +1,6 @@
 import personajes.*
 import wollok.game.*
-
+import sprites.*
 
 class AnimacionManager {
 
@@ -36,6 +36,19 @@ class AnimacionManager {
         }
   }
   
+  method seteaarSpriteBaseALaIzquierda() {
+  	spriteQuieto = "quietoIzq.png"
+  }
+  
+  method reiniciarSpriteBase() {
+  	spriteQuieto = "quieto.png"
+  }
+  
+  method interrumpirAnimacion(nuevaAnim) {       //metodo para interrumpir todas las demas animaciones si estan en progreso
+    bill.permitirAnimacion(false)
+    game.schedule(100,  nuevaAnim )
+  }
+    
   method intervaloDeAnimacion(listaDeSprites) {
   	game.schedule(130, { self.siguienteFrame(listaDeSprites) }) // programar el próximo frame, por ejemplo en 200ms
   }
@@ -51,34 +64,35 @@ object animadorDeMovimiento inherits AnimacionManager {
 	
 	
 	override method iniciarAnimacion(_listaDeSprites) { //se encarga de decidir que sprites usar dependiendo de la ultima direccion donde miro el personaje y la accion a realizar 
-		var spritesDelMovimiento = _listaDeSprites
+		var sprites     = _listaDeSprites
+		const accion    = sprites.get(0) 
+		const direccion = bill.directionMirando()
+		
 		bill.estaEnAnimacion(true)
 		
-	  if (spritesDelMovimiento.get(0).startsWith("golpe") && bill.directionMirando() == "Izquierda") { // Cambia los sprites por los de golpe hacia la izquierda
-        spriteQuieto = "quietoIzq.png" 
-        spritesDelMovimiento =(["golpeIzq1.png", "golpeIzq1.png", "golpeIzq2.png", "golpeIzq3.png"])
+	  if (accion.startsWith("golpe") && direccion == "Izquierda") { // Cambia los sprites por los de golpe hacia la izquierda
+        self.seteaarSpriteBaseALaIzquierda() 
+        sprites = spritesDeGolpe.spritesGolpeIzquierda()
         
-      } else if (_listaDeSprites.get(0).startsWith("atras")) {  // Si los sprites comienzan con "atras", entonces bill se movió a la izquierda
-        //direccionUltimoMovimiento = "Izquierda"
-        spriteQuieto = "quietoIzq.png"
+      } else if (accion.startsWith("atras")) {  // Si los sprites comienzan con "atras", entonces bill se movió a la izquierda
+        self.seteaarSpriteBaseALaIzquierda() 
         
-      } else if (spritesDelMovimiento.get(0).startsWith("subir") && bill.directionMirando()  == "Izquierda") {   // Si quiere subir y la ultima dir es izquierda
-        spriteQuieto = "quietoIzq.png"
-        spritesDelMovimiento =(["subirIzq1.png", "subirIzq2.png", "subirIzq3.png", "subirIzq4.png"])  
+      } else if (accion.startsWith("subir") && direccion  == "Izquierda") {   // Si quiere subir y la ultima dir es izquierda
+        self.seteaarSpriteBaseALaIzquierda() 
+        sprites = spritesDeMovimiento.spritesSubirIzquierda()  
         
-      } else if (spritesDelMovimiento.get(0).startsWith("patada") && bill.directionMirando()  == "Izquierda") {   // Si es patada y la ultima dir es izquierda
-        spriteQuieto = "quietoIzq.png"
-        spritesDelMovimiento =(["patadaIzq1.png", "patadaIzq2.png", "patadaIzq3.png", "patadaIzq4.png", "patadaIzq4.png"])  
+      } else if (accion.startsWith("patada") && direccion  == "Izquierda") {   // Si es patada y la ultima dir es izquierda
+        self.seteaarSpriteBaseALaIzquierda() 
+        sprites = spritesDePatada.spritesPatadaIzquirda()  
 
-      } else if (spritesDelMovimiento.get(0).startsWith("bajar") && bill.directionMirando()  == "Izquierda") {   // Si quiere bajar y la ultima dir es izquierda
-        spriteQuieto = "quietoIzq.png"
-        spritesDelMovimiento =(["atras1.png", "atras2.png", "atras3.png"])  
+      } else if (accion.startsWith("bajar") && direccion  == "Izquierda") {   // Si quiere bajar y la ultima dir es izquierda
+        self.seteaarSpriteBaseALaIzquierda() 
+        sprites = spritesDeMovimiento.spritesAtrasIzquierda()
             
-      } else  { // De lo contrario, la dirección es derecha
-        //direccionUltimoMovimiento = "Derecha"
-        spriteQuieto = "quieto.png"
+      } else  {
+        self.reiniciarSpriteBase()
       }
-      super(spritesDelMovimiento)
+      super(sprites)
     }
 	
 
@@ -88,11 +102,17 @@ object animadorDeDerrota inherits AnimacionManager {
 
 	override method finalizarAnimacion() { // tiene la diferencia de que cuando termina la animacion de derrota decide si se termina el juego o revive
 		bill.resusitarOTerminar()
-	}
+	} 
 	
 }
 
 object animadorDanio inherits AnimacionManager {
+	
+    method iniciarAnimacionDeDanio(tipoDeSprite) { // inicia una animacion con los sprites dados
+    	bill.estaEnAnimacion(true)
+    	bill.permitirAnimacion(true) 
+    	self.iniciarAnimacion( tipoDeSprite ) 
+    }
 	
 	override method finalizarAnimacion() {
 		bill.derrotadoSiSeAgotaSalud(spriteQuieto)

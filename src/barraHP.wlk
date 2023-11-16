@@ -1,52 +1,139 @@
 import wollok.game.*
+import personajes.*
 
-object barraDeHp {
-  var property image = "barraLlena.png" // Inicia con la barra llena
-  var property position = game.at(0,0)
-  
+object barraDeHP {
+	
+	var property position = game.origin()
+	
+	var property estado = completa
+	
+	var property vidas = 4											
+	
+	var property cantidadDeVida = 100 
+	
+	const property vidaADisminuir = 20
+	
+	method reiniciarSaludYEstados() {
+		self.quitarVida()
+		self.cantidadDeVida(100)
+		self.estado(completa)
+	}
+	method esBarraDeHPVacia() {
+		return self.cantidadDeVida() == 0
+	}
+	method quitarVida() {
+		vidas = vidas - 1
+	}
+	
+	method quedanVidasSuficientes() {
+		return vidas > 1
+	}
+	
+	method degradarVida() {
+		cantidadDeVida = cantidadDeVida - self.vidaADisminuir()
+	}
+	
+	method descontarVida() {							
+		self.degradarVida()
+	}
+	
+	method image() {
+		return estado.image()
+	}
+	
+	method degradarEstado() {
+		estado.degradar(self)
+	}
+	
+	method aumentar() {}						//Consume algo que le da 1 vida mas
+	
+	method validarDescontar() {								
+		if(self.vidas() == 0) {		//cambio
+			self.error("No tengo mas salud, no es posible recibir daño")
+		}
+	}
+			
+	method descontar() {									
+		self.validarDescontar()
+		self.degradarEstado()
+		self.descontarVida()
+	}
+}
+	
 
-  
-  method inicializar() {
-    game.addVisual(self)
-  }
-  
-  // Método para actualizar la imagen de la barra de vida
-  method actualizarVida(vida) {
-    image = self.calcularSpriteSegunVida(vida)
-  }
-  
-  // Método para calcular el sprite de la barra de vida según la vida actual
-  method calcularSpriteSegunVida(vida) {
-    return if (vida > 80) {
-       "barraLlena.png"
-    } else if (vida > 60) {
-       "barraUnTick.png"
-    } else if (vida > 40) {
-       "barraDosTick.png"
-    } else if (vida > 20) {
-       "barraTresTick.png"
-    } else if (vida > 0){
-       "barraCuatroTick.png"
-    } else {
-       "barraVacia.png"
-    }
-  }
+
+class EstadoBaseBarraHP {
+
+	method image()
+	
+	method degradar(barraHP)
+	
+	method reiniciar(barraHP) {}		
+	
+}
+
+
+object completa inherits EstadoBaseBarraHP {
+	
+	override method image() = "barraLlena.png"
+	
+	override method degradar(barraHP) {			
+		barraHP.estado(degradada)
+	}
+}
+
+object degradada inherits EstadoBaseBarraHP {
+	
+	const property degradaciones = self.degradacionesIniciales()								
+	
+	override method image() = self.degradamientoActual()
+	
+	method degradamientoActual() {
+		return degradaciones.first()
+	}
+	
+	
+	override method degradar(barraHP) {
+		if(degradaciones.size() == 1) {								
+			degradaciones.remove(self.degradamientoActual())
+			barraHP.estado(vacia)
+			self.reiniciarDegradaciones()
+		}
+		else { degradaciones.remove(self.degradamientoActual()) }
+	}
+	
+	method degradacionesIniciales() {
+		return ["barraUnTick.png","barraDosTick.png","barraTresTick.png","barraCuatroTick.png"]
+	}
+	
+	 method reiniciarDegradaciones() {
+		degradaciones.addAll(self.degradacionesIniciales())										
+	}
+}
+
+object vacia inherits EstadoBaseBarraHP {
+	
+	override method image() = "barraVacia.png"
+	
+	override method degradar(barraHP) {}
+	
+	override method reiniciar(barraHP) {}
 }
 
 object contadorDeVidas {
 	var property image = "3vidas.png"       //En los assets estan los sprites hasta 6 vidas por si se quiere modificar o hacer un main menu interactivo donde se seleccione la cantidad
-	var property position = game.at(0,0)
+	var property position = game.origin()
 	
 	method inicializar() {
 		game.addVisual(self)
 	}
 	
-	method actualizarVidas(vidas) {
-		image = self.calcularSpriteSegunVidas(vidas)
+	method actualizarVidas() {
+		image = self.calcularSpriteSegunVidas(barraDeHP.vidas())
 	}
 	
 	method calcularSpriteSegunVidas(numeroDeVidas) {
-		return numeroDeVidas.toString() + "vidas.png"
+		return (numeroDeVidas - 1).toString() + "vidas.png"
 	}
 }
 

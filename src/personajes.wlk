@@ -3,6 +3,7 @@ import movimientos.*
 import movimientos.*
 import animacion.*
 import barraHP.*
+import sprites.*
 
 object bill {
     
@@ -10,158 +11,137 @@ object bill {
 	var property image = "quieto.png"
 	var property estaEnAnimacion = false
 	var property directionMirando = "Derecha"
-	var property permitirAnimacion = true        // Nueva flag para controlar la animación
-	
-	
-	var property barraVida = 100  // La barra de HP llena sería 100
-	var property vidas = 3    // Inicializa bill con 3 vidas
-	var property invulnerable = false
-	
-    const duracionInvulnerabilidad = 1500 // La duración de la invulnerabilidad en milisegundos
-    const intervaloParpadeo = 25 // Intervalo de parpadeo en milisegundos
-    var tiempoParpadeando = 0 // Un contador para saber cuánto tiempo ha estado parpadeando	
-    
-    var property golpesRecibidos = 0
-    var property tiempoParaDanioRapido = 2000 // Tiempo en milisegundos 
-
+	var property permitirAnimacion = true          // Nueva flag para controlar la animación
+	                                                     
+	const property barraDeVida = barraDeHP         
+                                                   
+	//var property vidas = 3                         // Inicializa bill con 3 vidas
+	var invulnerable = false                          
+	                                               
+    const duracionInvulnerabilidad = 1500          // La duración de la invulnerabilidad en milisegundos
+    const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
+    var tiempoParpadeando = 0                      // Un contador para saber cuánto tiempo ha estado parpadeando	
+                                                   
+    var property golpesRecibidos = 0               
 	
 	method cambiarImage(_image) {
 		self.image(_image)
 	}
-	//---------codigo cuando resive daño o muere o respawnea
-	method recibirDanio(cantidad) {  
+	
+//	method descontarVida() {
+//		vidas = vidas - 1
+//	}
+//	
+	method volverInvulnerable() {
+		invulnerable = true
+	}
+	
+	method quitarInvulnerabilidad() {
+		invulnerable = false
+	}
+	
+//	method quitarSaludSegun(cantidad) {
+//		barraDeVida.descontar(cantidad)
+//	}
+//	
+	method aumentarGolpesRecibidos() {
+		golpesRecibidos++
+	}
+	
+	//---------codigo cuando recibe daño o muere o respawnea
+	method recibirDanio() {  
         if (not invulnerable) {      
-        	barraVida -= cantidad  
-        	invulnerable = true   //        
-            barraDeHp.actualizarVida(barraVida)
+        //	self.quitarSaludSegun()
+        	self.volverInvulnerable()     
+            barraDeVida.descontar()
             self.gestionarAnimacionDeDanio()      //self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio() } )        
         } 
     }
+    
  	method gestionarAnimacionDeDanio() {
- 		golpesRecibidos++	
-        if (golpesRecibidos == 1) {
-            self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio(self.spritesDanio(["danioIzq1.png", "danioIzq1.png", "danioIzq1.png"], 
-            	                                                                        ["danio1.png", "danio1.png", "danio1.png"])) } )     //animacion de daño normal 
+ 		self.aumentarGolpesRecibidos()	
+        if (golpesRecibidos == 1) { 
+            animadorDanio.interrumpirAnimacion( { animadorDanio.iniciarAnimacionDeDanio(spritesDanio.gestionarDirDeSprite(spritesDanio.spritesDanio1(), 
+            	                                                                                                          spritesDanio.spritesDanio1Izquierda() )) } )     //animacion de daño normal 
                                                                                           
         } else if (golpesRecibidos == 2) {
-            self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio(self.spritesDanio(["danioIzq2.png", "danioIzq2.png", "danioIzq2.png"], 
-            	                                                                        ["danio2.png", "danio2.png", "danio2.png"])) } )     //animacion de daño medio
+            animadorDanio.interrumpirAnimacion( { animadorDanio.iniciarAnimacionDeDanio(spritesDanio.gestionarDirDeSprite(spritesDanio.spritesDanio2(), 
+            	                                                                                     				      spritesDanio.spritesDanio2Izquierda() )) } )      //animacion de daño medio
                                                                                      
         } else {
             golpesRecibidos = 0	                                                                            	       	
-            self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio(self.spritesDanio(["danioIzq3.png", "danioIzq3.png", "danioIzq4.png", 
-            	                                                                         "danioIzq4.png", "danioIzq5.png", "danioIzq5.png",
-            	                                                                         "danioIzq6.png", "danioIzq6.png"],                  //animacion de daño critico
-            	                                                                         
-            	                                                                        ["danio3.png", "danio3.png", "danio4.png",
-            	                                                                         "danio4.png", "danio5.png", "danio5.png", 
-            	                                                                         "danio6.png", "danio6.png"])) } )    
+            animadorDanio.interrumpirAnimacion( { animadorDanio.iniciarAnimacionDeDanio(spritesDanio.gestionarDirDeSprite(spritesDanio.spritesDanio3(), 
+            	                                                                                                          spritesDanio.spritesDanio3Izquierda() )) } )    
         }
-            game.schedule(tiempoParaDanioRapido, { golpesRecibidos = 0 })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
+            game.schedule(2000, { golpesRecibidos = 0 })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
        		
- 	}     
-     
-// 	method gestionarAnimacionDeDanio() {
-//      if (enAnimacionDanioRapido) {
-//        // Si Bill recibe daño nuevamente dentro de un corto período de tiempo, muestra una animación de daño diferente
-//          self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio(self.spritesDanio(["danioIzq2.png", "danioIzq2.png", "danioIzq2.png"],
-//          	                                                                          ["danio2.png", "danio2.png", "danio2.png"])) } ) //agregar sprites de daño alterno
-//      } else {
-//          self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio(self.spritesDanio(["danioIzq1.png", "danioIzq1.png", "danioIzq1.png"], 
-//          	                                                                          ["danio1.png", "danio1.png", "danio1.png"])) } ) //animacion de daño normal 
-//          enAnimacionDanioRapido = true
-//        // Resetea la flag después de un tiempo definido
-//          game.schedule(tiempoParaDanioRapido, { enAnimacionDanioRapido = false })  //reinicia la flag para la animacion 
-//      } 		
-// 	} 
-//	 
-    
-    method iniciarAnimacionDeDanio(tipoDeSprite) {
-    	estaEnAnimacion = true
-    	permitirAnimacion = true // Restablece la flag para permitir la animación 
-    	animadorDanio.iniciarAnimacion( tipoDeSprite ) 
-    }
+ 	} 
+ 	
     
     method derrotadoSiSeAgotaSalud(spriteDeAnimacion) {
-    	if (barraVida <= 0) {
+    	if (barraDeVida.cantidadDeVida() <= 0 ) {
     		self.iniciarAnimacionDeDerrota()
     	} else {
-    		invulnerable = false
-    		estaEnAnimacion = false
+    		self.quitarInvulnerabilidad()
+    		self.estaEnAnimacion(false)
     		self.cambiarImage(self.spriteBaseSegurDir())
     	}
     }
-    method spritesDanio(primerCadena, segundaCadena) {
-    	return if (directionMirando == "Izquierda") {primerCadena}
-    	       else                                 {segundaCadena}
-    }
-    method spritesDerrota() {
 
+    method spritesDerrota() { //decide que sprites mostrar segun la direccion donde mire el personaje
     	return
-    	if (directionMirando =="Izquierda") {
-    		 (["derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png",
-    	       "derrotadoIzq2.png", "derrotadoIzq2.png", "derrotadoIzq2.png", "derrotadoIzq2.png",
-    	       "derrotadoIzq3.png", "derrotadoIzq3.png", "derrotadoIzq3.png", "derrotadoIzq3.png"])
+    	if (self.directionMirando() =="Izquierda") {
+          spritesDeDerrota.spritesIzquierda() //hay que crear una variable donde haga regerencia a todos los sprites y hacer polimorfismo para que sea personaje y no bill
     	} else {
-    		(["derrotado1.png", "derrotado1.png", "derrotado1.png", "derrotado1.png",
-    	      "derrotado2.png", "derrotado2.png", "derrotado2.png", "derrotado2.png",
-    	      "derrotado3.png", "derrotado3.png", "derrotado3.png", "derrotado3.png"])
+    	  spritesDeDerrota.spritesDerecha()
     	}    	
     }
     
-
-    method interrumpirAnimacion(nuevaAnim) {
-    	permitirAnimacion = false
-    	game.schedule(100,  nuevaAnim )
-    }
-    
     method iniciarAnimacionDeDerrota() {
-    	estaEnAnimacion = true
-    	permitirAnimacion = true // Restablece la flag para permitir la animación de derrota
+    	self.estaEnAnimacion(true)
+    	self.permitirAnimacion(true)// Restablece la flag para permitir la animación de derrota
     	animadorDeDerrota.iniciarAnimacion(self.spritesDerrota())
     }
     
     method resusitarOTerminar() {
-    	if (vidas > 0) self.resusitar() else game.schedule(4000, {game.stop()}) //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
+    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else game.schedule(4000, {game.stop()}) //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
     }
     
     method resusitar() {
-    	barraVida = 100
-    	vidas = vidas - 1  
-    	contadorDeVidas.actualizarVidas(vidas)
-        barraDeHp.actualizarVida(barraVida)
-        self.respawn()
+//    	barraDeVida.llenarBarraDeVida() 
+//    	barraDeVida.actualizarVida()
+//    	self.descontarVida()  
+        barraDeVida.reiniciarSaludYEstados()
+    	contadorDeVidas.actualizarVidas()   //cambiar esto esta solo para probar
+        self.respawn()  
     }
     
     method respawn() {
-    	self.position(game.at(1,1)) 
-    	invulnerable = true
-    	estaEnAnimacion = false
     	tiempoParpadeando = 0 // Reinicia el contador de tiempo parpadeando
-    	self.cambiarImage("quieto.png")
-        self.toggleInvulnerability()
-//    	game.schedule(200, { self.toggleInvulnerability() }) // Alternar la invulnerabilidad cada 200 ms
-//    	game.schedule(3000, { self.finalizarInvulnerabilidad() }) // Terminar invulnerabilidad después de 3 segundos
+    	self.position(game.at(1,1)) 
+    	self.volverInvulnerable()
+    	self.estaEnAnimacion(false)
+    	self.cambiarImage("quieto.png") //tendria que ser un mensaje a los sprites con posicionBaseDePJ(self)
+        self.parpadearImagen()
     }
     
-    method toggleInvulnerability() {
+    method parpadearImagen() {
     // Alternar la visibilidad de bill para simular el parpadeo
         if (invulnerable) {
          self.sacarYAgregarVisualSiTiene()
          tiempoParpadeando += intervaloParpadeo
          self.realizarParpadeo()
-         
-//         game.removeVisual(self)
-//         game.schedule(200, { game.addVisual(self) })
        }
     }
+    
     method realizarParpadeo() {
     	if (tiempoParpadeando < duracionInvulnerabilidad) {
-            game.schedule(intervaloParpadeo, { self.toggleInvulnerability() })
+            game.schedule(intervaloParpadeo, { self.parpadearImagen() })
       } else {
-            self.finalizarInvulnerabilidad()
+            self.finalizarInvulnerabilidadYDejarVisual()
       }
     }
+    
     method sacarYAgregarVisualSiTiene() {
     	if (game.hasVisual(self)) {
             game.removeVisual(self)
@@ -170,13 +150,11 @@ object bill {
       }
     }
     
-    method finalizarInvulnerabilidad() {
-        invulnerable = false
+    method finalizarInvulnerabilidadYDejarVisual() {
         if (not game.hasVisual(self)) {
-             game.addVisual(self) // Asegurarse de que bill sea visible
+             game.addVisual(self)       // Asegurarse de que bill sea visible
         }
-//        game.addVisual(self) // Asegurarse de que bill sea visible si el último estado era invisible
-    
+        self.quitarInvulnerabilidad() 
     }
 
 //movimiento y error personalizado 
@@ -209,27 +187,21 @@ object bill {
 
     method iniciarGolpe() {
         if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion
-          estaEnAnimacion = true
-          animadorDeMovimiento.iniciarAnimacion(["golpefr1.png", "golpefr1.png", "golpefr2.png", "golpefr3.png"])
+          self.estaEnAnimacion(true)
+          animadorDeMovimiento.iniciarAnimacion(spritesDeGolpe.spritesGolpe())
         }
     }
     
     method iniciarPatada() {
         if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion
-          estaEnAnimacion = true
-          animadorDeMovimiento.iniciarAnimacion(["patada1.png", "patada1.png", "patada2.png", "patada2.png"])
+          self.estaEnAnimacion(true)
+          animadorDeMovimiento.iniciarAnimacion(spritesDePatada.spritesPatada())
         }
     }
-//    method iniciarCodazo() {
-//        if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion (viejo)
-//          estaEnAnimacion = true
-//          animadorDeMovimiento.iniciarAnimacion(["codazo1.png", "codazo1.png", "codazo2.png"])
-//        }
-//    }
     	
     method finalizarAnimacion(sprite) {
         self.cambiarImage(sprite)
-        estaEnAnimacion = false     
+        self.estaEnAnimacion(false) 
     }    
     
     method spriteBaseSegurDir() {
@@ -245,13 +217,13 @@ object bill {
     
     method decidirSpriteMovimientoAl(direccion) {
     	if (direccion.esIgualA(arriba)) {
-    		animadorDeMovimiento.iniciarAnimacion(["subir1.png", "subir2.png", "subir3.png", "subir4.png"])
+    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesSubir() )
     	} else if (direccion.esIgualA(abajo)) {
-    		animadorDeMovimiento.iniciarAnimacion(["bajar1.png", "bajar2.png", "bajar3.png"])
+    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesBajar() )
     	} else if (direccion.esIgualA(izquierda)) {
-    		animadorDeMovimiento.iniciarAnimacion(["atras1.png", "atras2.png", "atras3.png"])
+    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesAtras() )
     	} else {
-    		animadorDeMovimiento.iniciarAnimacion(["paso1.png", "paso2.png", "paso3.png"])
+    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesPaso() ) 
     	}
     }
 }
