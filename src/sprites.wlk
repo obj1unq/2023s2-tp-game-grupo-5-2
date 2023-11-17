@@ -10,11 +10,18 @@ class Sprites inherits AnimacionManager {
 		return ["paso1.png", "paso2.png", "paso3.png"]
 	}	
 }
+class SpritesDanio inherits AnimacionManager {
+	
+	override method iniciarAnimacion() {
+		bill.estaEnAnimacion(true)
+     	bill.permitirAnimacion(true) 
+     	super() 
+	}
+}
 
-object spritesDanioNormal inherits Sprites {
+object spritesDanioNormal inherits SpritesDanio {
 
 	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDanioNormal() , self.spritesDanioNormalIzquierda()  )
-	
 	
 	method spritesDanioNormal() {
 		return ["danio1.png", "danio1.png", "danio1.png"] 
@@ -28,7 +35,7 @@ object spritesDanioNormal inherits Sprites {
 		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
 	}	
 }
-object spritesDanioMedio inherits Sprites {
+object spritesDanioMedio inherits SpritesDanio {
 	
 	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDanioMedio() , self.spritesDanioMedioIzquierda()  )
 		
@@ -45,7 +52,7 @@ object spritesDanioMedio inherits Sprites {
 	}	
 }
 
-object spritesDanioCritico inherits Sprites {
+object spritesDanioCritico inherits SpritesDanio {
 
 	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDanioCritico() , self.spritesDanioCriticoIzquierda()  )
 	

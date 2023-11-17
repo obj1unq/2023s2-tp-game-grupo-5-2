@@ -5,31 +5,31 @@ import sprites.*
 class AnimacionManager {
 
   var indiceSpriteActual = 0
-  const animaciones = self.secuenciaDeMovimientos()
   	
   method secuenciaDeMovimientos()
   
   
   method iniciarAnimacion() {
+  	const animaciones = self.secuenciaDeMovimientos()
 
     bill.cambiarImage(animaciones.get(indiceSpriteActual))  //cambia al primer sprite de la lista
-    self.siguienteFrame( )
+    self.siguienteFrame(animaciones)
   }
 
-  method siguienteFrame( ) {
+  method siguienteFrame(animaciones) {
    if (bill.permitirAnimacion()) {   //esto permite que la animacion corte en caso de ser derrotado y asi evita la superposicion del siguiente frame 
-    		self.controlarFrame( )
+    		self.controlarFrame(animaciones)
     	} else {
     		indiceSpriteActual = 0
     		bill.permitirAnimacion(true)
     	} 
   }
   
-  method controlarFrame( ) {    //se encarga de iterar sobre la lista de sprites devolviendo el frame siguiente 
+  method controlarFrame(animaciones) {    //se encarga de iterar sobre la lista de sprites devolviendo el frame siguiente 
 	    if (indiceSpriteActual < animaciones.size() - 1) {
 	      indiceSpriteActual++
 	      bill.cambiarImage(animaciones.get(indiceSpriteActual))
-	      self.intervaloDeAnimacion( )          
+	      self.intervaloDeAnimacion(animaciones)          
 	                  
 	    } else {
 	      // Termina la animación y resetea los valores
@@ -54,8 +54,8 @@ class AnimacionManager {
     game.schedule(100,  nuevaAnim )
   }
     
-  method intervaloDeAnimacion( ) { 
-  	game.schedule(130, { self.siguienteFrame( ) }) // programar el próximo frame, por ejemplo en 200ms
+  method intervaloDeAnimacion(animaciones) { 
+  	game.schedule(130, { self.siguienteFrame(animaciones) }) // programar el próximo frame, por ejemplo en 200ms
   }
   
   method finalizarAnimacion() {
