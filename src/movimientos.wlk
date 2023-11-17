@@ -1,11 +1,16 @@
 import wollok.game.*
 import personajes.*
+import sprites.*
 
-object derecha {
-	
-	method esIgualA(direccion) {
-		return self == direccion
+class Direccion {
+	method animar() {
+		spritesDePaso.iniciarAnimacion()
 	}
+}
+
+object derecha inherits Direccion {
+	
+
 	
 	method siguiente(position) {
 		return position.right(1)
@@ -15,22 +20,19 @@ object derecha {
 	
 }
 
-object izquierda {
+object izquierda inherits Direccion {
 	
-	method esIgualA(direccion) {
-		return self == direccion
-	}
-	
+
 	method siguiente(position) {
 		return position.left(1)
 	}
 	method IzqODer() {return "Izquierda"}
 }
 
-object arriba {
+object arriba inherits Direccion {
 	
-	method esIgualA(direccion) {
-		return self == direccion
+	override method animar() {
+		spritesDeSubir.iniciarAnimacion()
 	}
 
 	method siguiente(position) {
@@ -39,12 +41,9 @@ object arriba {
 	method IzqODer() { return if (bill.directionMirando() == "Derecha") "Derecha" else "Izquierda" }
 }
 
-object abajo {
+object abajo inherits Direccion {
 	
-	method esIgualA(direccion) {
-		return self == direccion
-	}
-	
+
 	method siguiente(position) {
 		return position.down(1)
 	}

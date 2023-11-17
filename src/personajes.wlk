@@ -59,19 +59,18 @@ object bill {
     }
     
  	method gestionarAnimacionDeDanio() {
+ 		
+ 		
  		self.aumentarGolpesRecibidos()	
         if (golpesRecibidos == 1) { 
-            animadorDanio.interrumpirAnimacion( { animadorDanio.iniciarAnimacionDeDanio(spritesDanio.gestionarDirDeSprite(spritesDanio.spritesDanio1(), 
-            	                                                                                                          spritesDanio.spritesDanio1Izquierda() )) } )     //animacion de daño normal 
+            spritesDanioNormal.interrumpirAnimacion( { spritesDanioNormal.iniciarAnimacion() } )     //animacion de daño normal 
                                                                                           
         } else if (golpesRecibidos == 2) {
-            animadorDanio.interrumpirAnimacion( { animadorDanio.iniciarAnimacionDeDanio(spritesDanio.gestionarDirDeSprite(spritesDanio.spritesDanio2(), 
-            	                                                                                     				      spritesDanio.spritesDanio2Izquierda() )) } )      //animacion de daño medio
+            spritesDanioMedio.interrumpirAnimacion( { spritesDanioMedio.iniciarAnimacion() } )       //animacion de daño medio
                                                                                      
         } else {
             golpesRecibidos = 0	                                                                            	       	
-            animadorDanio.interrumpirAnimacion( { animadorDanio.iniciarAnimacionDeDanio(spritesDanio.gestionarDirDeSprite(spritesDanio.spritesDanio3(), 
-            	                                                                                                          spritesDanio.spritesDanio3Izquierda() )) } )    
+            spritesDanioCritico.interrumpirAnimacion( { spritesDanioCritico.iniciarAnimacion() } )   //animacion de daño critico
         }
             game.schedule(2000, { golpesRecibidos = 0 })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
        		
@@ -88,19 +87,19 @@ object bill {
     	}
     }
 
-    method spritesDerrota() { //decide que sprites mostrar segun la direccion donde mire el personaje
-    	return
-    	if (self.directionMirando() =="Izquierda") {
-          spritesDeDerrota.spritesIzquierda() //hay que crear una variable donde haga regerencia a todos los sprites y hacer polimorfismo para que sea personaje y no bill
-    	} else {
-    	  spritesDeDerrota.spritesDerecha()
-    	}    	
-    }
+//    method spritesDerrota() { //decide que sprites mostrar segun la direccion donde mire el personaje
+//    	return
+//    	if (self.directionMirando() =="Izquierda") {
+//          spritesDeDerrota.spritesIzquierda() //hay que crear una variable donde haga regerencia a todos los sprites y hacer polimorfismo para que sea personaje y no bill
+//    	} else {
+//    	  spritesDeDerrota.spritesDerecha()
+//    	}    	
+//    }
     
     method iniciarAnimacionDeDerrota() {
     	self.estaEnAnimacion(true)
     	self.permitirAnimacion(true)// Restablece la flag para permitir la animación de derrota
-    	animadorDeDerrota.iniciarAnimacion(self.spritesDerrota())
+    	spritesDeDerrota.iniciarAnimacion()
     }
     
     method resusitarOTerminar() {
@@ -188,14 +187,14 @@ object bill {
     method iniciarGolpe() {
         if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion
           self.estaEnAnimacion(true)
-          animadorDeMovimiento.iniciarAnimacion(spritesDeGolpe.spritesGolpe())
+          spritesDeGolpe.iniciarAnimacion()
         }
     }
     
     method iniciarPatada() {
         if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion
           self.estaEnAnimacion(true)
-          animadorDeMovimiento.iniciarAnimacion(spritesDePatada.spritesPatada())
+          spritesDePatada.iniciarAnimacion()
         }
     }
     	
@@ -211,21 +210,11 @@ object bill {
     method movimientoConAnimacionHacia(direccion) {
     	if (not self.estaEnAnimacion()) {
     	  self.mover(direccion)
-    	  self.decidirSpriteMovimientoAl(direccion)
+    	  direccion.animar()
         }
     }
     
-    method decidirSpriteMovimientoAl(direccion) {
-    	if (direccion.esIgualA(arriba)) {
-    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesSubir() )
-    	} else if (direccion.esIgualA(abajo)) {
-    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesBajar() )
-    	} else if (direccion.esIgualA(izquierda)) {
-    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesAtras() )
-    	} else {
-    		animadorDeMovimiento.iniciarAnimacion( spritesDeMovimiento.spritesPaso() ) 
-    	}
-    }
+
 }
 
 

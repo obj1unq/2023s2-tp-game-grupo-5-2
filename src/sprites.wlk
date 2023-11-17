@@ -1,45 +1,75 @@
 import personajes.*
-class Sprites {
-    method gestionarDirDeSprite(primerCadena, segundaCadena) {                 // decide que sprites usar dependiendo de donde este mirando el personaje
-    	return if (bill.directionMirando() == "Izquierda") {segundaCadena}
-    	       else                                        {primerCadena}
-    }
+import animacion.*
+
+class Sprites inherits AnimacionManager {
+	
+	method spritesAtras() {
+		return ["atras1.png", "atras2.png", "atras3.png"]
+	}
+	method spritesPaso() {
+		return ["paso1.png", "paso2.png", "paso3.png"]
+	}	
 }
 
-object spritesDanio inherits Sprites{
+object spritesDanioNormal inherits Sprites {
 
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDanioNormal() , self.spritesDanioNormalIzquierda()  )
 	
-	method spritesDanio1() {
+	
+	method spritesDanioNormal() {
 		return ["danio1.png", "danio1.png", "danio1.png"] 
 	}
 	
-	method spritesDanio1Izquierda() {
+	method spritesDanioNormalIzquierda() {
 		return ["danioIzq1.png", "danioIzq1.png", "danioIzq1.png"]
 	}
 	
-	method spritesDanio2() {
+	override method finalizarAnimacion() {
+		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
+	}	
+}
+object spritesDanioMedio inherits Sprites {
+	
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDanioMedio() , self.spritesDanioMedioIzquierda()  )
+		
+	method spritesDanioMedio() {
 		return ["danio2.png", "danio2.png", "danio2.png"] 
 	}
 	
-	method spritesDanio2Izquierda() {
+	method spritesDanioMedioIzquierda() {
 		return ["danioIzq2.png", "danioIzq2.png", "danioIzq2.png"]
 	}
 	
-	method spritesDanio3() {
+	override method finalizarAnimacion() {
+		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
+	}	
+}
+
+object spritesDanioCritico inherits Sprites {
+
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDanioCritico() , self.spritesDanioCriticoIzquierda()  )
+	
+	method spritesDanioCritico() {
 		return ["danio3.png", "danio3.png", "danio4.png",
                 "danio4.png", "danio5.png", "danio5.png", 
                 "danio6.png", "danio6.png"]
 	}
 	
-	method spritesDanio3Izquierda() {
+	method spritesDanioCriticoIzquierda() {
 		return ["danioIzq3.png", "danioIzq3.png", "danioIzq4.png", 
                "danioIzq4.png", "danioIzq5.png", "danioIzq5.png",
                "danioIzq6.png", "danioIzq6.png"]
-	}
+	}	
 	
+	override method finalizarAnimacion() {
+		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
+	}	
+		
 }
 
-object spritesDeDerrota inherits Sprites {
+object spritesDeDerrota inherits Sprites  {
+	
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesDerecha(), self.spritesIzquierda() )
 	
 	method spritesIzquierda() {
 		return ["derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png",
@@ -52,9 +82,16 @@ object spritesDeDerrota inherits Sprites {
     	        "derrotado2.png", "derrotado2.png", "derrotado2.png", "derrotado2.png",
     	        "derrotado3.png", "derrotado3.png", "derrotado3.png", "derrotado3.png"]
     }
+    
+	override method finalizarAnimacion() { // tiene la diferencia de que cuando termina la animacion de derrota decide si se termina el juego o revive
+		bill.resusitarOTerminar()
+	}
+    
 }
 
-object spritesDeGolpe inherits Sprites {
+object spritesDeGolpe inherits Sprites  {
+	
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesGolpe(), self.spritesGolpeIzquierda() )
 	
 	method spritesGolpe() {
 		return ["golpefr1.png", "golpefr1.png", "golpefr2.png", "golpefr3.png"]
@@ -64,18 +101,27 @@ object spritesDeGolpe inherits Sprites {
 	}
 }
 
-object spritesDePatada inherits Sprites {
+object spritesDePatada inherits Sprites  {
+	 
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesPatada(), self.spritesPatadaIzquierda() )
 	
 	method spritesPatada() {
 		return ["patada1.png", "patada1.png", "patada2.png", "patada2.png"]
 	}
     
-	method spritesPatadaIzquirda() {
+	method spritesPatadaIzquierda() {
 		return ["patadaIzq1.png", "patadaIzq2.png", "patadaIzq3.png", "patadaIzq4.png", "patadaIzq4.png"]
 	}
 }
 
-object spritesDeMovimiento inherits Sprites {
+object spritesDePaso inherits Sprites  {
+	
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesPaso(), self.spritesAtras() )
+}
+
+object spritesDeSubir inherits Sprites {
+	
+	override method secuenciaDeMovimientos() = self.gestionarDirDeSprite( self.spritesSubir(), self.spritesSubirIzquierda() )
 	
 	method spritesSubir() {
 		return ["subir1.png", "subir2.png", "subir3.png", "subir4.png"]
@@ -83,23 +129,7 @@ object spritesDeMovimiento inherits Sprites {
 	
 	method spritesSubirIzquierda() {
 		return ["subirIzq1.png", "subirIzq2.png", "subirIzq3.png", "subirIzq4.png"]
-	}
-	
-	method spritesAtras() {
-		return ["atras1.png", "atras2.png", "atras3.png"]
-	}
-	
-	method spritesAtrasIzquierda() {
-		return ["atras1.png", "atras2.png", "atras3.png"]
-	}
-	
-	method spritesBajar() {
-		return ["bajar1.png", "bajar2.png", "bajar3.png"]
-	}
-	
-	method spritesPaso() {
-		return ["paso1.png", "paso2.png", "paso3.png"]
-	}
+	}	
 }
 
 
