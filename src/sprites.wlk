@@ -17,6 +17,10 @@ class SpritesDanio inherits AnimacionManager {
      	bill.permitirAnimacion(true) 
      	super() 
 	}
+	
+	override method finalizarAnimacion() {
+		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
+	}	
 }
 
 object spritesDanioNormal inherits SpritesDanio {
@@ -31,9 +35,6 @@ object spritesDanioNormal inherits SpritesDanio {
 		return ["danioIzq1.png", "danioIzq1.png", "danioIzq1.png"]
 	}
 	
-	override method finalizarAnimacion() {
-		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
-	}	
 }
 object spritesDanioMedio inherits SpritesDanio {
 	
@@ -46,10 +47,7 @@ object spritesDanioMedio inherits SpritesDanio {
 	method spritesDanioMedioIzquierda() {
 		return ["danioIzq2.png", "danioIzq2.png", "danioIzq2.png"]
 	}
-	
-	override method finalizarAnimacion() {
-		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
-	}	
+		
 }
 
 object spritesDanioCritico inherits SpritesDanio {
@@ -66,11 +64,7 @@ object spritesDanioCritico inherits SpritesDanio {
 		return ["danioIzq3.png", "danioIzq3.png", "danioIzq4.png", 
                "danioIzq4.png", "danioIzq5.png", "danioIzq5.png",
                "danioIzq6.png", "danioIzq6.png"]
-	}	
-	
-	override method finalizarAnimacion() {
-		bill.derrotadoSiSeAgotaSalud(bill.spriteBaseSegurDir())
-	}	
+	}		
 		
 }
 
