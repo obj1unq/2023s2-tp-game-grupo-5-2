@@ -5,26 +5,45 @@ import nivel1.*
 import animacion.*
 import barraHP.*
 import sonidos.*
+import inicioDelJuego.*
 
 
 program juego {
 	//Titulo Del Juego
+	
+	game.width(12)
+	game.height(8)
 	game.title("dd")
 	
 	//Configuracion Del Tablero
 
 	game.cellSize(70)
-    nivel1.generar()
+	
+	//game.addVisual(mainMenu)
+   // game.addVisual(start)
+    
+
+//   	 	sonido.shouldLoop(true)
+//    	game.schedule(500, {sonido.play()} )
+    	
+    //start.actualizarStart()
+    
+    //keyboard.enter().onPressDo({sonido.stop() start.iniciarJuego() mainMenu.iniciarJuego() nivel1.generar() })
+	//game.boardGround("background1.png")
+	
+	
+//    nivel1.generar()
 //	barraDeHp.inicializar()
 //	contadorDeVidas.inicializar()
 	
 	
 	
- 	keyboard.p().onPressDo({  bill.recibirDanio()   }) //Esto solo esta para probar las animaciones de daño, derrota asi como tambien sus variantes dependiendo del tiempo entre daño y daño
- 	keyboard.y().onPressDo({  barraDeHP.descontar() }) // probar funcionamiento de barra de vida 
+ 	//keyboard.p().onPressDo({  bill.recibirDanio()   }) //Esto solo esta para probar las animaciones de daño, derrota asi como tambien sus variantes dependiendo del tiempo entre daño y daño
+ 	//keyboard.y().onPressDo({  barraDeHP.descontar() }) // probar funcionamiento de barra de vida 
     
 
-
+    const portada = new Portada(sonido = game.sound("soundtrackMainMenu.wav"))
+	escenario.iniciarNivel(portada)
 	//Jugar
  
 	game.start()

@@ -1,0 +1,280 @@
+import wollok.game.*
+
+
+import movimientos.*
+import personajes.*
+import barraHP.*
+
+object start {
+
+    var property position = game.origin()
+
+    method image() = "startButton.png"
+
+    method actualizarStart() {
+        game.onTick(500, "actualizar Start", { self.visual()})
+    }
+
+    method visual() {
+        if (game.hasVisual(self)) game.removeVisual(self) else game.addVisual(self)
+    }
+	method quitarBoton() {
+		if(game.hasVisual(self)) {
+			game.removeVisual(self)
+		} else {}
+	}
+	
+    method iniciarJuego() {
+        game.removeTickEvent("actualizar Start")
+        self.quitarBoton()
+    }
+}
+
+object mainMenu {
+
+    var property position = game.origin()
+
+    method image() = "mainMenu.png"
+
+    method iniciarJuego() {
+        game.removeVisual(self)
+    }
+
+}
+//-----------------------------------------------------------------------------------
+
+object escenario{
+//	var cont = 1
+	var property nivel
+	
+	method iniciarNivel(nuevoNivel){
+		
+		nuevoNivel.configuracionFondo()
+	    nuevoNivel.configuracionSonido()
+		nuevoNivel.configuracionInicial()
+		nuevoNivel.configuracionTeclado()
+		nuevoNivel.instanciarObjetos()
+		nuevoNivel.bloqueados()
+		nuevoNivel.configuracionVisual()
+		nuevoNivel.configuracionEscenario()
+
+		self.nivel(nuevoNivel)
+	}
+	
+//	method passNivel(){
+//		if(cont == 1){
+//			self.removerNivel()
+//			const nivel2 = new Nivel2()
+//			self.iniciarNivel(nivel2)
+//			cont +=1
+//		}else{
+//			self.ganarTony()
+//		}
+//	}
+
+	method removerNivel(){
+		nivel.removerVisualEscenario()
+	}
+	
+	method perderVida(){
+		self.removerNivel()
+		self.iniciarNivel(nivel)
+	}
+	
+//	method morirTony(){
+//		self.removerNivel()
+//		const gameOver = new GameOver() 
+//		self.iniciarNivel(gameOver)
+//	}
+//	
+//	method ganarTony(){
+//		self.removerNivel()
+//		const endGame = new EndGame() 
+//		self.iniciarNivel(endGame)
+//	}
+		
+}
+
+class Nivel{
+//	var property objetos = []
+//	var property objetosExtra = []	
+//	var property noPasar = []
+	var property sonido 
+			
+	method configuracionInicial(){}
+	
+	method configuracionSonido(){
+   	 	sonido.shouldLoop(true)
+    	game.schedule(500, {sonido.play()} )
+	}
+	
+	method configuracionTeclado(){
+		//musica
+   		keyboard.up().onPressDo({sonido.volume(1)})
+		keyboard.down().onPressDo({sonido.volume(0.3)})
+		keyboard.m().onPressDo({sonido.volume(0)})
+		//movimiento
+		keyboard.w().onPressDo({  bill.movimientoConAnimacionHacia(arriba)    })
+		keyboard.s().onPressDo({  bill.movimientoConAnimacionHacia(abajo)     })
+		keyboard.a().onPressDo({  bill.movimientoConAnimacionHacia(izquierda) }) 
+		keyboard.d().onPressDo({  bill.movimientoConAnimacionHacia(derecha)   })
+	
+	    //colisiones
+		keyboard.e().onPressDo({  bill.iniciarGolpe()   })
+ 		keyboard.q().onPressDo({  bill.iniciarPatada()  })
+	}
+		
+	method bloqueados(){
+	}
+	method removerVisualEscenario(){
+		//remover todos los visuales del escenario
+		game.clear()
+	}	
+	
+	method configuracionFondo(){}
+	
+	method instanciarObjetos(){}
+	
+	method configuracionVisual(){}
+	
+	method moverObjetosVisual(){}	
+
+	method configuracionEscenario(){}	
+	
+	method pressEnter(){}
+}
+
+class Portada inherits Nivel{
+	
+	override method configuracionTeclado(){
+		keyboard.enter().onPressDo {self.pressEnter()}
+	}
+	
+//	override method configuracionSonido() {
+//		game.schedule(100, {sonido.play()} )
+//	}
+	override method configuracionFondo(){
+		game.addVisual(mainMenu) 
+		start.actualizarStart()	
+	}
+	
+	override method pressEnter(){
+		sonido.stop()
+		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+		start.iniciarJuego()
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel1)
+	}
+}
+
+class GameOver inherits Nivel{
+		
+	override method configuracionFondo(){
+		mainMenu.image()
+		game.addVisual(mainMenu)		
+	}
+		
+}
+
+class EndGame inherits Nivel{
+		
+	override method configuracionFondo(){
+		mainMenu.image()
+		game.addVisual(mainMenu)		
+	}
+		
+}
+
+class Nivel1 inherits Nivel{
+	
+	override method configuracionInicial(){
+		//visual algunos			
+		game.addVisual(bill)
+		//game.onCollideDo(tony,{algo => algo.chocasteCon(tony)})
+	}
+	
+	override method configuracionFondo(){
+		game.addVisual(fondoLvl1)	
+	}
+	
+	override method instanciarObjetos(){
+		
+	}
+//	override method configuracionSonido() {
+//		game.schedule(500, {sonido.play()} )
+//	}
+	override method configuracionVisual(){		
+		//objetos.forEach({a => a.visual()})		
+		//game.addVisual(cueva)	
+		//objetosExtra.forEach({a => a.visual()})
+		//game.addVisual(tablon)
+		//game.addVisual(monedasTablon)
+		game.addVisual(barraDeHP)
+		contadorDeVidas.inicializar()
+		
+	}
+
+		
+}
+//
+//class Nivel2 inherits Nivel{
+//	
+//	override method configuracionInicial(){
+//		//visual algunos			
+//		game.addVisual(bill)		
+//
+//		//game.onCollideDo(tony,{algo => algo.chocasteCon(tony)})
+//	}
+//	
+//	override method configuracionFondo(){
+//		game.addVisual(fondoCueva)	
+//	}
+//	
+//	override method instanciarObjetos(){
+//
+//	}
+//	
+//	override method configuracionVisual(){		
+//		objetos.forEach({a => a.visual()})
+//		cueva.position(game.at(8, 1))	
+//		game.addVisual(cueva)
+//		objetosExtra.forEach({a => a.visual()})
+//		game.onTick(200, "actualiza imagen golem", { => golem.numeroImagen(21)})
+//		game.onTick(500, "moverGolem", { => golem.sigueATony()  })
+//		game.addVisual(tablon)
+//		game.addVisual(monedasTablon)
+//		game.addVisual(barraDeVida)
+//		game.addVisual(golem)		
+//		coleccionVidas.image()
+//	}
+//	
+//	
+//	override method configuracionEscenario(){
+//		self.configuracionGolem()
+//		self.configuracionZombis()
+//	}
+//}
+
+
+object fondoLvl1 {
+
+	var property position = game.at(0, 0)
+    var property image = "background1.png"
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

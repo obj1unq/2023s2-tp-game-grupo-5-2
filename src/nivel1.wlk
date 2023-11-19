@@ -38,7 +38,8 @@ object nivel1 {
 		
 		game.width(celdas.anyOne().size())
 		game.height(celdas.size())
-		game.boardGround("background1.png")
+		
+		
 		self.teclasDelNivel()
 		
 		(0..game.width() -1).forEach({x =>

@@ -7,7 +7,7 @@ import sprites.*
 
 object bill {
     
-	var property position 
+	var property position = game.at(1,1)
 	var property image = "quieto.png"
 	var property estaEnAnimacion = false
 	var property directionMirando = "Derecha"
@@ -28,10 +28,7 @@ object bill {
 		self.image(_image)
 	}
 	
-//	method descontarVida() {
-//		vidas = vidas - 1
-//	}
-//	
+
 	method volverInvulnerable() {
 		invulnerable = true
 	}
@@ -40,10 +37,7 @@ object bill {
 		invulnerable = false
 	}
 	
-//	method quitarSaludSegun(cantidad) {
-//		barraDeVida.descontar(cantidad)
-//	}
-//	
+	
 	method aumentarGolpesRecibidos() {
 		golpesRecibidos++
 	}
@@ -51,10 +45,10 @@ object bill {
 	//---------codigo cuando recibe daño o muere o respawnea
 	method recibirDanio() {  
         if (not invulnerable) {      
-        //	self.quitarSaludSegun()
+
         	self.volverInvulnerable()     
             barraDeVida.descontar()
-            self.gestionarAnimacionDeDanio()      //self.interrumpirAnimacion( { self.iniciarAnimacionDeDanio() } )        
+            self.gestionarAnimacionDeDanio()   
         } 
     }
     
@@ -86,15 +80,6 @@ object bill {
     		self.cambiarImage(self.spriteBaseSegurDir())
     	}
     }
-
-//    method spritesDerrota() { //decide que sprites mostrar segun la direccion donde mire el personaje
-//    	return
-//    	if (self.directionMirando() =="Izquierda") {
-//          spritesDeDerrota.spritesIzquierda() //hay que crear una variable donde haga regerencia a todos los sprites y hacer polimorfismo para que sea personaje y no bill
-//    	} else {
-//    	  spritesDeDerrota.spritesDerecha()
-//    	}    	
-//    }
     
     method iniciarAnimacionDeDerrota() {
     	self.estaEnAnimacion(true)
@@ -107,9 +92,6 @@ object bill {
     }
     
     method resusitar() {
-//    	barraDeVida.llenarBarraDeVida() 
-//    	barraDeVida.actualizarVida()
-//    	self.descontarVida()  
         barraDeVida.reiniciarSaludYEstados()
     	contadorDeVidas.actualizarVidas()   //cambiar esto esta solo para probar
         self.respawn()  
