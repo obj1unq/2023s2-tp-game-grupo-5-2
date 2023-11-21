@@ -1,5 +1,6 @@
 import personajes.*
 import wollok.game.*
+
 class Animacion {
 	
 	const property personaje = bill
@@ -308,6 +309,7 @@ object animadorMovimiento inherits Animacion {
 	}	
 }
 
+	
 //import personajes.*
 //import wollok.game.*
 //import sprites.*
