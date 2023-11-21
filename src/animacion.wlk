@@ -1,9 +1,10 @@
 import personajes.*
 import wollok.game.*
+import inicioDelJuego.*
 
 class Animacion {
 	
-	const property personaje = bill
+	var property personaje 
 	
 	const controlDeAnimaciones = controlDeAnimacion
 	
@@ -90,11 +91,15 @@ object controlDeAnimacion {
 	
 	method puedeRealizarAnimacion() {
 		return not self.hayAnimacionEnCurso()
-	}
+	}	
 	
+	method reiniciarControlador() {
+		self.hayAnimacionEnCurso(false)
+		self.permitirAnimacion(true)
+	}
 }
 
-object animacionGolpe inherits Animacion {
+object animacionGolpe inherits Animacion(personaje = bill ) { 
 	const siguienteGolpe = animacionGolpe2
 	
 	 override method spritesDerecha() {
@@ -110,7 +115,7 @@ object animacionGolpe inherits Animacion {
 	}
 }
 
-object animacionGolpe2 inherits Animacion {
+object animacionGolpe2 inherits Animacion(personaje = bill ) {
 	
 	 override method spritesDerecha() {
 		return ["golpe2-1.png", "golpe2-1.png", "golpe2-2.png", "golpe2-3.png"]
@@ -122,7 +127,7 @@ object animacionGolpe2 inherits Animacion {
 	
 }
 
-object animacionPatada inherits Animacion {
+object animacionPatada inherits Animacion(personaje = bill ) {
 	const siguientePatada = animacionPatada2
 	
 	 override method spritesDerecha() {
@@ -139,7 +144,7 @@ object animacionPatada inherits Animacion {
 	}
 }
 
-object animacionPatada2 inherits Animacion {
+object animacionPatada2 inherits Animacion(personaje = bill ) {
 
 	 override method spritesDerecha() {
 		return ["patada2-1.png", "patada2-1.png", "patada2-2.png", "patada2-2.png", "patada2-3.png", "patada2-4.png" ]  
@@ -159,7 +164,7 @@ class AnimadorDeTiposDeDanio inherits Animacion {
  	}
 }
 
-object animacionDanio inherits AnimadorDeTiposDeDanio {					
+object animacionDanio inherits AnimadorDeTiposDeDanio(personaje = bill ) {					
 	
 	const danioMedio = animacionDanioMedio
 	
@@ -192,7 +197,7 @@ object animacionDanio inherits AnimadorDeTiposDeDanio {
  	
 }
 
-object animacionDanioMedio inherits AnimadorDeTiposDeDanio {
+object animacionDanioMedio inherits AnimadorDeTiposDeDanio(personaje = bill ) {
 	
 	override method spritesDerecha() {
 		return ["danio2.png", "danio2.png", "danio2.png"] 
@@ -203,7 +208,7 @@ object animacionDanioMedio inherits AnimadorDeTiposDeDanio {
 	}
 }
 
-object animacionDanioCritico inherits AnimadorDeTiposDeDanio {
+object animacionDanioCritico inherits AnimadorDeTiposDeDanio(personaje = bill ) {
 	
 	override method spritesDerecha() {
 		return ["danio3.png", "danio3.png", "danio4.png",
@@ -218,7 +223,7 @@ object animacionDanioCritico inherits AnimadorDeTiposDeDanio {
 	}
 }
 
-object animacionDerrota inherits Animacion {
+object animacionDerrota inherits Animacion(personaje = bill ) {
 	
 	override method spritesIzquierda() {
 		return ["derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png",
@@ -239,7 +244,7 @@ object animacionDerrota inherits Animacion {
 		personaje.resusitarOTerminar()
 	}
 }
-object animacionRevivir inherits Animacion {
+object animacionRevivir inherits Animacion(personaje = bill ) {
 
     const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
     
@@ -286,12 +291,12 @@ object animacionRevivir inherits Animacion {
         if (not game.hasVisual(personaje)) {
              game.addVisual(personaje)       // Asegurarse de que bill sea visible
         }
-        personaje.quitarInvulnerabilidad() 
+        personaje.quitarInvulnerabilidad()
     }
    
 }
 
-object animadorMovimientoSubir inherits Animacion {
+object animadorMovimientoSubir inherits Animacion(personaje = bill ) {
 	
 	override method spritesIzquierda() = ["subirIzq1.png","subirIzq2.png","subirIzq3.png"]
 
@@ -299,7 +304,7 @@ object animadorMovimientoSubir inherits Animacion {
 	
 }
 
-object animadorMovimiento inherits Animacion {
+object animadorMovimiento inherits Animacion(personaje = bill ) {
 	
 	override method spritesIzquierda() {
 		return ["atras1.png", "atras2.png", "atras3.png"]
@@ -309,6 +314,28 @@ object animadorMovimiento inherits Animacion {
 	}	
 }
 
+object animadorPuerta inherits Animacion(personaje = puerta ) {
+	
+	override method spritesIzquierda() {}
+	
+	override method spritesDerecha() {
+		return [ "puerta1.png", "puerta2.png", "puerta3.png", "puerta4.png", "puerta5.png", 
+		         "puerta6.png", "puerta7.png", "puerta8.png", "puerta9.png", "puerta10.png",
+			     "puerta11.png", "puerta12.png", "puerta13.png", "puerta14.png", "puerta15.png", 
+			     "puerta16.png", "puerta17.png", "puerta18.png", "puerta19.png", "puerta20.png"
+			   ]
+	}
+	
+	override method intervaloEntreAnimacion(animaciones) = game.schedule(150, { self.siguienteFrame(animaciones) }) 
+	
+	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
+	    controlDeAnimacion.reiniciarControlador()
+	    
+		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel1)
+	}	
+}
 	
 //import personajes.*
 //import wollok.game.*

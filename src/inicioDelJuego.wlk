@@ -161,7 +161,7 @@ class Portada inherits Nivel{
 	
 	override method pressEnter(){
 		sonido.stop()
-		const puerta = new Puerta (sonido = game.sound("perciana.wav"))
+		const puerta = new PuertaInicial (sonido = game.sound("perciana.wav"))
 		start.iniciarJuego()
 		escenario.removerNivel()
 		escenario.iniciarNivel(puerta)
@@ -215,11 +215,12 @@ class Nivel1 inherits Nivel{
 	}		
 }
 
-class Puerta inherits Nivel {
+class PuertaInicial inherits Nivel {
+	const animacionDePerciana = animadorPuerta
 	
 	override method configuracionFondo(){	
 		game.addVisual(puerta)
-		puertaMovil.abrirPuerta() 
+		animacionDePerciana.realizarAnimacion() 
 	}	
 	
 	override method configuracionSonido(){
@@ -228,41 +229,36 @@ class Puerta inherits Nivel {
 	}	
 }  
 
-object puerta {
-	var property image = "puerta1.png"
-	var property position = game.origin()
-}
-
-object puertaMovil {
-	var property indice = 0
-	
-	method sprites() {
-		return [ "puerta1.png", "puerta2.png", "puerta3.png", "puerta4.png", "puerta5.png", "puerta6.png", "puerta7.png", "puerta8.png", "puerta9.png", "puerta10.png",
-			     "puerta11.png", "puerta12.png", "puerta13.png", "puerta14.png", "puerta15.png", "puerta16.png", "puerta17.png", "puerta18.png", "puerta19.png", "puerta20.png"]
-	}	
-	
-	method abrirPuerta() {
-		puerta.image(self.sprites().get(indice)) 
-		self.segundoSprite()
-	}
-	
-	method segundoSprite() {
-		if(indice < self.sprites().size() - 1) {
-			indice++
-			puerta.image(self.sprites().get(indice))
-			 game.schedule(150, { self.segundoSprite() })      
-		} 
-		else {
-			self.finalizarAnimacion()
-		}		
-	}
-	
-	method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
-		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
-		escenario.removerNivel()
-		escenario.iniciarNivel(nivel1)
-	}
-}
+//object puertaMovil {
+//	var property indice = 0
+//	
+//	method sprites() {
+//		return [ "puerta1.png", "puerta2.png", "puerta3.png", "puerta4.png", "puerta5.png", "puerta6.png", "puerta7.png", "puerta8.png", "puerta9.png", "puerta10.png",
+//			     "puerta11.png", "puerta12.png", "puerta13.png", "puerta14.png", "puerta15.png", "puerta16.png", "puerta17.png", "puerta18.png", "puerta19.png", "puerta20.png"]
+//	}	
+//	
+//	method abrirPuerta() {
+//		puerta.image(self.sprites().get(indice)) 
+//		self.segundoSprite()
+//	}
+//	
+//	method segundoSprite() {
+//		if(indice < self.sprites().size() - 1) {
+//			indice++
+//			puerta.image(self.sprites().get(indice))
+//			 game.schedule(150, { self.segundoSprite() })      
+//		} 
+//		else {
+//			self.finalizarAnimacion()
+//		}		
+//	}
+//	
+//	method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
+//		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+//		escenario.removerNivel()
+//		escenario.iniciarNivel(nivel1)
+//	}
+//}
 
 
 //
@@ -303,7 +299,6 @@ object puertaMovil {
 //		self.configuracionZombis()
 //	}
 //}
-
 
 object fondoLvl1 {
 

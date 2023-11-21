@@ -140,6 +140,14 @@ object enemigoB {
 	
 }
 
+object puerta {
+	const property direccionMirando = "Derecha"
+	var property image = "puerta1.png"
+	var property position = game.origin()
+	
+	method quitarInvulnerabilidad() {}
+	//method 
+}
 
 
 
