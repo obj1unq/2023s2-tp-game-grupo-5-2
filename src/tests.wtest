@@ -1,6 +1,6 @@
 import wollok.game.*
 import personajes.*
-import nivel1.*
+//import nivel1.*
 import movimientos.*
 
 describe "Mi describe" {

@@ -1,7 +1,7 @@
 import wollok.game.*
 import personajes.*
 import movimientos.*
-import nivel1.*
+//import nivel1.*
 import animacion.*
 import barraHP.*
 import sonidos.*

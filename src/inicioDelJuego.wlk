@@ -114,14 +114,15 @@ class Nivel{
 		keyboard.down().onPressDo({sonido.volume(0.3)})
 		keyboard.m().onPressDo({sonido.volume(0)})
 		//movimiento
-		keyboard.w().onPressDo({  bill.movimientoConAnimacionHacia(arriba)    })
-		keyboard.s().onPressDo({  bill.movimientoConAnimacionHacia(abajo)     })
-		keyboard.a().onPressDo({  bill.movimientoConAnimacionHacia(izquierda) }) 
-		keyboard.d().onPressDo({  bill.movimientoConAnimacionHacia(derecha)   })
+		keyboard.w().onPressDo({  bill.mover(arriba)    })
+		keyboard.s().onPressDo({  bill.mover(abajo)     })
+		keyboard.a().onPressDo({  bill.mover(izquierda) }) 
+		keyboard.d().onPressDo({  bill.mover(derecha)   })
 	
 	    //colisiones
-		keyboard.e().onPressDo({  bill.iniciarGolpe()   })
- 		keyboard.q().onPressDo({  bill.iniciarPatada()  })
+		keyboard.e().onPressDo({  bill.golpear()   })
+ 		keyboard.q().onPressDo({  bill.patear()  })
+ 		keyboard.p().onPressDo({  bill.recibirDanio()   })//prueba
 	}
 		
 	method bloqueados(){
