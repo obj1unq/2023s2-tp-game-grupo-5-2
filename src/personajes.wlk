@@ -4,41 +4,32 @@ import movimientos.*
 import animacion.*
 import barraHP.*
 
-object bill {
 
+class IndividuoBase {
+	
 	var property position = game.at(1,2)
 	
 	var property image = "quieto.png"
 	
-	const property barraDeVida = barraDeHP											
-	
-	const property animacionAlGolpear = animacionGolpe
-	
-	const property animacionAlRecibirDanio = animacionDanio
-	
-	const property animacionDerrotado = animacionDerrota
-	 
-	const property animacionAlRevivir = animacionRevivir
-	
-	const property animacionAlPatear = animacionPatada
-	
-	var property hayAnimacionEnCurso = false
-	
-	var property permitirAnimacion = true
-	
-	//const property controlDeAnimaciones = controlDeAnimacion
-	
 	var property golpesRecibidos = 0
 	
-	var property golpesDados = 0
+	var property invulnerable = false   
 	
-	var property patadasDadas = 0
+    var property direccionMirando = "Derecha"
+    
+	var property hayAnimacionEnCurso = false
+
+	var property permitirAnimacion = true
 	
-	var property direccionMirando = "derecha"
+	///const controlDeAnimaciones = controlDeAnimacion
 	
-	var property invulnerable = false    
+	method duracionInvulnerabilidad() 
 	
-	method duracionInvulnerabilidad() = 1500 
+	method derrotadoSiSeAgotaSalud()
+	
+	method aumentarGolpesRecibidos() {
+		golpesRecibidos = golpesRecibidos + 1
+	}
 	
 	method volverInvulnerable() {
 		invulnerable = true
@@ -48,9 +39,61 @@ object bill {
 		invulnerable = false
 	}
 	
-	method aumentarGolpesRecibidos() {
-		golpesRecibidos = golpesRecibidos + 1
+    method recibirDanio() 
+    
+    method golpear()
+    
+    method sePuedeMover(direccion) {
+		const proxima = direccion.siguiente(self.position())
+		return self.puedeOcupar(proxima)
 	}
+	method puedeOcupar(_posicion) {
+		return _posicion.y().between(0, 1) && // Últimas tres filas después de invertir, lo mejor seria crear objetos invisibles en donde no queremos que se mueva y hacerlos solidos 
+               _posicion.x().between(0, game.width() - 1)                               //return tablero.pertenece(_posicion)
+	}
+}
+
+object bill inherits IndividuoBase {
+
+	const enemigo1 = enemigoA
+	
+//	const enemigo2 = enemigoB
+	
+	const property barraDeVida = barraDeHP											
+	
+	const property animacionAlGolpear = animacionGolpe
+	
+	const property animacionAlRecibirDanio = animacionDanio
+	
+	const property animacionDerrotado = animacionDerrota
+	
+	const property animacionAlRevivir = animacionRevivir
+	
+	const property animacionAlPatear = animacionPatada
+	
+//	const property controlDeAnimaciones = controlDeAnimacion
+//	
+//	var property golpesRecibidos = 0
+	
+	var property golpesDados = 0
+	
+	var property patadasDadas = 0
+	
+//	var property invulnerable = false    
+//	
+	override method duracionInvulnerabilidad() = 1500 
+//	
+//	method volverInvulnerable() {
+//		invulnerable = true
+//	}
+//	
+//	method quitarInvulnerabilidad() {
+//		invulnerable = false
+//	}
+//	
+//	method aumentarGolpesRecibidos() {
+//		golpesRecibidos = golpesRecibidos + 1
+//	}
 	
 	method aumentarGolpesDados() {
 		golpesDados = golpesDados + 1
@@ -60,51 +103,48 @@ object bill {
 		patadasDadas = patadasDadas + 1
 	}
 	
-	method puedeRealizarAnimacion() {
-		return not self.hayAnimacionEnCurso()
-	}
-	
 	method resusitarOTerminar() {
     	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else  game.schedule(4000, {game.stop()}) //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
     }
+	
+	method puedeRealizarAnimacion() {
+		return not self.hayAnimacionEnCurso()
+	}
 	
 	method resusitar() {
 		self.position(game.at(1,1)) 
 		animacionAlRevivir.respawn()
 		barraDeVida.reiniciarSaludYEstados()	
 	}
-	method derrotadoSiSeAgotaSalud() {
+	override method derrotadoSiSeAgotaSalud() {
 		if (barraDeVida.estaVacia()) {
     		animacionDerrotado.realizarAnimacion()
-    		game.sound("perderVida.wav").play() 
     	}
     	else {
     		self.quitarInvulnerabilidad()
-            self.hayAnimacionEnCurso(false)
-    	}										
+        	self.hayAnimacionEnCurso(false)
+ 		}						
 	}
-	method golpear() {
-//	if(controlDeAnimaciones.puedeRealizarAnimacion()) {
-//				controlDeAnimaciones.hayAnimacionEnCurso(true)
-            self.aumentarGolpesDados()
-			animacionAlGolpear.gestionarAnimacionDeGolpe()
-			
-//		 	 }
+	override method golpear(){ //nuevo
+		//if(self.position() == algo.position()) {
+		self.aumentarGolpesDados()
+		animacionAlGolpear.gestionarAnimacionDeGolpe()
+	//		algo.recibirDanio()
+		//}
+	//	else {
+	//		animacionAlGolpear.gestionarAnimacionDeGolpe()
+	//	}
+		
 	}
 	
 	method patear() {
-//			if(controlDeAnimaciones.puedeRealizarAnimacion()) {
-//				controlDeAnimaciones.hayAnimacionEnCurso(true)
-            self.aumentarPatadasDadas()
-      		animacionAlPatear.gestionarAnimacionDePatada()
-      		
-//	      	}
+		self.aumentarPatadasDadas()
+		animacionAlPatear.gestionarAnimacionDePatada()		//agregar que le pegue al enemigo
     }
 	
-	method recibirDanio() {
+	override method recibirDanio() {
 	 if (not invulnerable) {  
-        self.volverInvulnerable()  
-        game.sound("recibirDanio.wav").play() 
+        self.volverInvulnerable()   
 		animacionAlRecibirDanio.gestionarAnimacionDeDanio()
 		barraDeVida.descontar()
 	  }
@@ -124,18 +164,6 @@ object bill {
 			self.position(proxima)
 		}		
 	}
-	
-	method sePuedeMover(direccion) {
-		const proxima = direccion.siguiente(self.position())
-		return self.puedeOcupar(proxima)
-	}
-	
-	
-	method puedeOcupar(_posicion) {
-		return _posicion.y().between(0, 1) && // Últimas tres filas después de invertir, lo mejor seria crear objetos invisibles en donde no queremos que se mueva y hacerlos solidos 
-               _posicion.x().between(0, game.width() - 1)                               //return tablero.pertenece(_posicion)
-	}
-	
 	method moverConAnimacionHacia(direccion) {
 //			if(controlDeAnimaciones.puedeRealizarAnimacion()) {
 			self.mover(direccion)
@@ -145,15 +173,82 @@ object bill {
 }
 
 
-object enemigoA {
+class Enemigo inherits IndividuoBase{			//nuevo
+	
+	const personajePrincipal = bill
+	
+	var property cantidadDeVida = 20
+	
+	const animacionEnemigoRecibeDanio = new AnimacionDanioEnemigo(objeto=self)
+	
+	const animacionEnemigoDerrotado = new AnimacionDerrotaEnemigo(objeto=self)
+	
+	override method image() = "enemigoAQuietoIzq.png"
+	
+	override method position() = game.at(5,1) 
+	
+//	var property golpesRecibidos = 0
+//	
+//	const controlDeAnimaciones = 
+//	
+//	method aumentarGolpesRecibidos() {
+//		golpesRecibidos = golpesRecibidos + 1
+//	}
+//	
+	override method direccionMirando() = "Izquierda"
+	
+	override method duracionInvulnerabilidad() = 1500
+
+	override method derrotadoSiSeAgotaSalud() {
+		if (not self.tieneVida()) {
+    		animacionEnemigoDerrotado.realizarAnimacion()
+    		game.removeTickEvent("acercarse")
+    	}
+    	else {
+    		self.quitarInvulnerabilidad()
+            self.hayAnimacionEnCurso(false)
+    	}										
+	}
+	
+	method tieneVida() {
+		return self.cantidadDeVida() >= 0
+	}
+	
+	override method golpear() {
+		//  algo.recibirDanio() 		  
+	}
+	
+	override method recibirDanio() {
+        if (not invulnerable) {  
+          self.volverInvulnerable()   
+		  animacionEnemigoRecibeDanio.realizarAnimacion()
+		  self.derrotadoSiSeAgotaSalud()
+	  }
+	}
+	
+	method desaparecer() {
+		game.removeVisual(self)
+	}
+	
+	
+	method perseguirPersonaje() {
+		game.onTick(1000,"acercarse",{self.darUnPaso(personajePrincipal.position())})
+	}
+	
+	method darUnPaso(destino) {
+		if(self.sePuedeMover(destino)) {
+		position = game.at(
+			position.x() + (destino.x() - position.x()) / 2,
+			position.y() + (destino.y() - position.y() / 2)
+		)
+		}
+	}
+	
+	
 	
 }
 
-object enemigoB {
-	
-}
-
-
+object enemigoA inherits Enemigo {}
 
 object puerta {
 	const property direccionMirando = "Derecha"
@@ -219,215 +314,6 @@ object mainMenu {
 
 
 
-
-
-
-//import wollok.game.*
-//import movimientos.*
-//import movimientos.*
-//import animacion.*
-//import barraHP.*
-//import sprites.*
-//
-//object bill {
-//    
-//	var property position = game.at(1,1)
-//	var property image = "quieto.png"
-//	var property estaEnAnimacion = false
-//	var property directionMirando = "Derecha"
-//	var property permitirAnimacion = true          // Nueva flag para controlar la animación
-//	                                                     
-//	const property barraDeVida = barraDeHP         
-//                                                   
-//	//var property vidas = 3                         // Inicializa bill con 3 vidas
-//	var invulnerable = false                          
-//	                                               
-//    const duracionInvulnerabilidad = 1500          // La duración de la invulnerabilidad en milisegundos
-//    const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
-//    var tiempoParpadeando = 0                      // Un contador para saber cuánto tiempo ha estado parpadeando	
-//                                                   
-//    var property golpesRecibidos = 0               
-//	
-//	method cambiarImage(_image) {
-//		self.image(_image)
-//	}
-//	
-//
-//	method volverInvulnerable() {
-//		invulnerable = true
-//	}
-//	
-//	method quitarInvulnerabilidad() {
-//		invulnerable = false
-//	}
-//	
-//	
-//	method aumentarGolpesRecibidos() {
-//		golpesRecibidos++
-//	}
-//	
-//	//---------codigo cuando recibe daño o muere o respawnea
-//	method recibirDanio() {  
-//        if (not invulnerable) {      
-//
-//        	self.volverInvulnerable()     
-//            barraDeVida.descontar()
-//            self.gestionarAnimacionDeDanio()   
-//        } 
-//    }
-//    
-// 	method gestionarAnimacionDeDanio() {
-// 		
-// 		
-// 		self.aumentarGolpesRecibidos()	
-//        if (golpesRecibidos == 1) { 
-//            spritesDanioNormal.interrumpirAnimacion( { spritesDanioNormal.iniciarAnimacion() } )     //animacion de daño normal 
-//                                                                                          
-//        } else if (golpesRecibidos == 2) {
-//            spritesDanioMedio.interrumpirAnimacion( { spritesDanioMedio.iniciarAnimacion() } )       //animacion de daño medio
-//                                                                                     
-//        } else {
-//            golpesRecibidos = 0	                                                                            	       	
-//            spritesDanioCritico.interrumpirAnimacion( { spritesDanioCritico.iniciarAnimacion() } )   //animacion de daño critico
-//        }
-//            game.schedule(2000, { golpesRecibidos = 0 })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
-//       		
-// 	} 
-// 	
-//    
-//    method derrotadoSiSeAgotaSalud(spriteDeAnimacion) {
-//    	if (barraDeVida.cantidadDeVida() <= 0 ) {
-//    		self.iniciarAnimacionDeDerrota()
-//    	} else {
-//    		self.quitarInvulnerabilidad()
-//    		self.estaEnAnimacion(false)
-//    		self.cambiarImage(self.spriteBaseSegurDir())
-//    	}
-//    }
-//    
-//    method iniciarAnimacionDeDerrota() {
-//    	self.estaEnAnimacion(true)
-//    	self.permitirAnimacion(true)// Restablece la flag para permitir la animación de derrota
-//    	spritesDeDerrota.iniciarAnimacion()
-//    }
-//    
-//    method resusitarOTerminar() {
-//    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else game.schedule(4000, {game.stop()}) //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
-//    }
-//    
-//    method resusitar() {
-//        barraDeVida.reiniciarSaludYEstados()
-//    	contadorDeVidas.actualizarVidas()   //cambiar esto esta solo para probar
-//        self.respawn()  
-//    }
-//    
-//    method respawn() {
-//    	tiempoParpadeando = 0 // Reinicia el contador de tiempo parpadeando
-//    	self.position(game.at(1,1)) 
-//    	self.volverInvulnerable()
-//    	self.estaEnAnimacion(false)
-//    	self.cambiarImage("quieto.png") //tendria que ser un mensaje a los sprites con posicionBaseDePJ(self)
-//        self.parpadearImagen()
-//    }
-//    
-//    method parpadearImagen() {
-//    // Alternar la visibilidad de bill para simular el parpadeo
-//        if (invulnerable) {
-//         self.sacarYAgregarVisualSiTiene()
-//         tiempoParpadeando += intervaloParpadeo
-//         self.realizarParpadeo()
-//       }
-//    }
-//    
-//    method realizarParpadeo() {
-//    	if (tiempoParpadeando < duracionInvulnerabilidad) {
-//            game.schedule(intervaloParpadeo, { self.parpadearImagen() })
-//      } else {
-//            self.finalizarInvulnerabilidadYDejarVisual()
-//      }
-//    }
-//    
-//    method sacarYAgregarVisualSiTiene() {
-//    	if (game.hasVisual(self)) {
-//            game.removeVisual(self)
-//      } else {
-//        game.addVisual(self)
-//      }
-//    }
-//    
-//    method finalizarInvulnerabilidadYDejarVisual() {
-//        if (not game.hasVisual(self)) {
-//             game.addVisual(self)       // Asegurarse de que bill sea visible
-//        }
-//        self.quitarInvulnerabilidad() 
-//    }
-//
-////movimiento y error personalizado 
-//	method validarMover(direccion) {
-//		if(not self.sePuedeMover(direccion)) {
-//			self.error("No puedo moverme ahi")
-//		} 
-//	}
-//	
-//	method mover(direccion) {
-//		     //para que no se mueva mientras esta en animacion
-//			self.validarMover(direccion)
-//			estaEnAnimacion = true
-//			const proxima = direccion.siguiente(self.position())
-//			self.position(proxima)
-//			directionMirando = direccion.IzqODer()	
-//			
-//	}
-//	
-//	method sePuedeMover(direccion) {
-//		const proxima = direccion.siguiente(self.position())
-//		return self.puedeOcupar(proxima)
-//	}
-//	
-//	
-//	method puedeOcupar(_posicion) {
-//		return _posicion.y().between(0, 1) && // Últimas tres filas después de invertir, lo mejor seria crear objetos invisibles en donde no queremos que se mueva y hacerlos solidos 
-//               _posicion.x().between(0, game.width() - 1)                               //return tablero.pertenece(_posicion)
-//	}
-//
-//    method iniciarGolpe() {
-//        if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion
-//          self.estaEnAnimacion(true)
-//          spritesDeGolpe.iniciarAnimacion()
-//        }
-//    }
-//    
-//    method iniciarPatada() {
-//        if (not estaEnAnimacion) { // Solo inicia el golpe si no está haciendo alguna animacion
-//          self.estaEnAnimacion(true)
-//          spritesDePatada.iniciarAnimacion()
-//        }
-//    }
-//    	
-//    method finalizarAnimacion(sprite) {
-//        self.cambiarImage(sprite)
-//        self.estaEnAnimacion(false) 
-//    }    
-//    
-//    method spriteBaseSegurDir() {
-//    	return if (directionMirando == "Izquierda") "quietoIzq.png" else "quieto.png"
-//    }
-//    
-//    method movimientoConAnimacionHacia(direccion) {
-//    	if (not self.estaEnAnimacion()) {
-//    	  self.mover(direccion)
-//    	  direccion.animar()
-//        }
-//    }
-//    
-//
-//}
-//
-//
-//
-//
-//
-//
 
 
 

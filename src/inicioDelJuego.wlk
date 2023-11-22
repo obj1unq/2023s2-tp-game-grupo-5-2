@@ -184,6 +184,7 @@ class Nivel1 inherits Nivel{
 	override method configuracionInicial(){
 		//visual algunos			
 		game.addVisual(bill)
+		game.addVisual(enemigoA)
 		//game.onCollideDo(tony,{algo => algo.chocasteCon(tony)})
 	}
 	
