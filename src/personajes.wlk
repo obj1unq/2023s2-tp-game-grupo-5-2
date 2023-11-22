@@ -69,6 +69,7 @@ object bill {
 	method derrotadoSiSeAgotaSalud() {
 		if (barraDeVida.estaVacia()) {
     		animacionDerrotado.realizarAnimacion()
+    		game.sound("perderVida.wav").play() 
     	}
     	else {
     		self.quitarInvulnerabilidad()
@@ -91,7 +92,8 @@ object bill {
 	
 	method recibirDanio() {
 	 if (not invulnerable) {  
-        self.volverInvulnerable()   
+        self.volverInvulnerable()  
+        game.sound("recibirDanio.wav").play() 
 		animacionAlRecibirDanio.gestionarAnimacionDeDanio()
 		barraDeVida.descontar()
 	  }
@@ -140,13 +142,25 @@ object enemigoB {
 	
 }
 
+
 object puerta {
 	const property direccionMirando = "Derecha"
 	var property image = "puerta1.png"
 	var property position = game.origin()
 	
 	method quitarInvulnerabilidad() {}
-	//method 
+	method duracionInvulnerabilidad() {} 
+	method invulnerable() {}
+	method volverInvulnerable() {}
+	method resusitarOTerminar() {}
+	method golpesRecibidos() {} 
+	method aumentarGolpesRecibidos() {}
+	method derrotadoSiSeAgotaSalud() {}
+	method patadasDadas() {}
+	method aumentarPatadasDadas() {}
+	method golpesDados() {}
+	method aumentarGolpesDados() {}
+	
 }
 
 

@@ -23,7 +23,7 @@ class Animacion {
 	//method secuenciaDeMovimientos() = self.gestionarDirDeSprite()
 	
 	method spritesIzquierda() 
-	
+	 
 	method spritesDerecha() 
 	
 	method aumentarIndice() {
@@ -330,7 +330,7 @@ object animadorPuerta inherits Animacion(personaje = puerta ) {
 	
 	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
 	    controlDeAnimacion.reiniciarControlador()
-	    
+	    game.sound("motor.wav").play()
 		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
 		escenario.removerNivel()
 		escenario.iniciarNivel(nivel1)
