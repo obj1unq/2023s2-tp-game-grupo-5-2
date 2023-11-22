@@ -22,6 +22,10 @@ W/A/S/D : Mueven a Bill por el mapa
 E: Pegar con puño
 Q: Pegar con patada
 
+M: silenciar sonido de los niveles
+Flecha arriba: Subir volumen
+Flecha abajo: Bajar volumen
+
 ## Otros 
 
 - Programacion con Objetos/Universidad Nacional De Quilmes 
