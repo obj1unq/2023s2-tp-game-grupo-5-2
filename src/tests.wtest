@@ -6,25 +6,24 @@ import barraHP.*
 import animacion.*
 describe "Test Juego" {
 
+    const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+
   method initialize(){
-    game.clear()
-		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
-		escenario.removerNivel()
-		escenario.iniciarNivel(nivel1)
+           game.clear()
+           escenario.iniciarNivel(nivel1)
   }
 
     test "Bill pierde 1 vida cuando la barra de vida esta vacia"{
 
-        assert.equals(3, barraDeHP.vidas())                            //Bill Inicia con 3 vidas
-
+        assert.equals(4, barraDeHP.vidas())                            //Bill Inicia con 4 vidas
 
         bill.recibirDanio()                                            //Recibe 5 hits que le provoca que pierda una vida
         bill.recibirDanio()
         bill.recibirDanio()
         bill.recibirDanio()
-           bill.recibirDanio()
+        bill.recibirDanio()
 
-        assert.equals(2,barraDeHP.vidas())                           //Bill ahora tiene 2 vidas.
+        assert.equals(3,barraDeHP.vidas())                           //Bill ahora tiene 3 vidas.
   }
 
 
