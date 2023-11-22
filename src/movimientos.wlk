@@ -4,7 +4,7 @@ import personajes.*
 
 class DireccionBase {
 	
-	const animador = animadorMovimiento
+	const animador = new AnimadorMovimiento(objeto = bill) 
 	
 	const personaje = bill
 	
@@ -42,7 +42,7 @@ object izquierda inherits DireccionBase{
 
 object arriba inherits DireccionBase{
 	
-	const animadorSubir = animadorMovimientoSubir
+	const animadorSubir = new AnimadorMovimientoSubir(objeto = bill)
 	
 	override method siguiente(position) {
 		return position.up(1)

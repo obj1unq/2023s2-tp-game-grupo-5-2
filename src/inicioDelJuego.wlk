@@ -71,13 +71,13 @@ object escenario{
 		self.iniciarNivel(nivel)
 	}
 	
-//	method morirTony(){
+//	method morir(){
 //		self.removerNivel()
 //		const gameOver = new GameOver() 
 //		self.iniciarNivel(gameOver)
 //	}
 //	
-//	method ganarTony(){
+//	method ganar(){
 //		self.removerNivel()
 //		const endGame = new EndGame() 
 //		self.iniciarNivel(endGame)
@@ -199,11 +199,7 @@ class Nivel1 inherits Nivel{
 //		game.schedule(500, {sonido.play()} )
 //	}
 	override method configuracionVisual(){		
-		//objetos.forEach({a => a.visual()})		
-		//game.addVisual(cueva)	
-		//objetosExtra.forEach({a => a.visual()})
-		//game.addVisual(tablon)
-		//game.addVisual(monedasTablon)
+
 		game.addVisual(barraDeHP)
 		contadorDeVidas.inicializar()		
 	}		
@@ -222,77 +218,6 @@ class PuertaInicial inherits Nivel {
     	game.schedule(100, {sonido.play()} )
 	}	
 }   
-
-//object puertaMovil {
-//	var property indice = 0
-//	
-//	method sprites() {
-//		return [ "puerta1.png", "puerta2.png", "puerta3.png", "puerta4.png", "puerta5.png", "puerta6.png", "puerta7.png", "puerta8.png", "puerta9.png", "puerta10.png",
-//			     "puerta11.png", "puerta12.png", "puerta13.png", "puerta14.png", "puerta15.png", "puerta16.png", "puerta17.png", "puerta18.png", "puerta19.png", "puerta20.png"]
-//	}	
-//	
-//	method abrirPuerta() {
-//		puerta.image(self.sprites().get(indice)) 
-//		self.segundoSprite()
-//	}
-//	
-//	method segundoSprite() {
-//		if(indice < self.sprites().size() - 1) {
-//			indice++
-//			puerta.image(self.sprites().get(indice))
-//			 game.schedule(150, { self.segundoSprite() })      
-//		} 
-//		else {
-//			self.finalizarAnimacion()
-//		}		
-//	}
-//	
-//	method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
-//		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
-//		escenario.removerNivel()
-//		escenario.iniciarNivel(nivel1)
-//	}
-//}
-
-
-//
-//class Nivel2 inherits Nivel{
-//	
-//	override method configuracionInicial(){
-//		//visual algunos			
-//		game.addVisual(bill)		
-//
-//		//game.onCollideDo(tony,{algo => algo.chocasteCon(tony)})
-//	}
-//	
-//	override method configuracionFondo(){
-//		game.addVisual(fondoCueva)	
-//	}
-//	
-//	override method instanciarObjetos(){
-//
-//	}
-//	
-//	override method configuracionVisual(){		
-//		objetos.forEach({a => a.visual()})
-//		cueva.position(game.at(8, 1))	
-//		game.addVisual(cueva)
-//		objetosExtra.forEach({a => a.visual()})
-//		game.onTick(200, "actualiza imagen golem", { => golem.numeroImagen(21)})
-//		game.onTick(500, "moverGolem", { => golem.sigueATony()  })
-//		game.addVisual(tablon)
-//		game.addVisual(monedasTablon)
-//		game.addVisual(barraDeVida)
-//		game.addVisual(golem)		
-//		coleccionVidas.image()
-//	}
-//	
-//	
-//	override method configuracionEscenario(){
-//		self.configuracionGolem()
-//		self.configuracionZombis()
-//	}
-//}
 
 object fondoLvl1 {
 

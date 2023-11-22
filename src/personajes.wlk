@@ -61,15 +61,15 @@ object bill inherits IndividuoBase {
 	
 	const property barraDeVida = barraDeHP											
 	
-	const property animacionAlGolpear = animacionGolpe
+	const property animacionAlGolpear = new AnimacionGolpe(objeto =self)
 	
-	const property animacionAlRecibirDanio = animacionDanio
+	const property animacionAlRecibirDanio = new AnimacionDanio(objeto =self)
 	
-	const property animacionDerrotado = animacionDerrota
+	const property animacionDerrotado = new AnimacionDerrota(objeto =self)
 	
-	const property animacionAlRevivir = animacionRevivir
+	const property animacionAlRevivir = new AnimacionRevivir(objeto =self)
 	
-	const property animacionAlPatear = animacionPatada
+	const property animacionAlPatear = new  AnimacionPatada(objeto =self)
 	
 //	const property controlDeAnimaciones = controlDeAnimacion
 //	
