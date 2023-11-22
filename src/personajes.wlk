@@ -4,7 +4,6 @@ import movimientos.*
 import animacion.*
 import barraHP.*
 
-
 object bill {
 
 	var property position = game.at(1,2)
@@ -18,12 +17,16 @@ object bill {
 	const property animacionAlRecibirDanio = animacionDanio
 	
 	const property animacionDerrotado = animacionDerrota
-	
+	 
 	const property animacionAlRevivir = animacionRevivir
 	
 	const property animacionAlPatear = animacionPatada
 	
-	const property controlDeAnimaciones = controlDeAnimacion
+	var property hayAnimacionEnCurso = false
+	
+	var property permitirAnimacion = true
+	
+	//const property controlDeAnimaciones = controlDeAnimacion
 	
 	var property golpesRecibidos = 0
 	
@@ -57,6 +60,10 @@ object bill {
 		patadasDadas = patadasDadas + 1
 	}
 	
+	method puedeRealizarAnimacion() {
+		return not self.hayAnimacionEnCurso()
+	}
+	
 	method resusitarOTerminar() {
     	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else  game.schedule(4000, {game.stop()}) //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
     }
@@ -73,20 +80,24 @@ object bill {
     	}
     	else {
     		self.quitarInvulnerabilidad()
-            controlDeAnimaciones.hayAnimacionEnCurso(false)
+            self.hayAnimacionEnCurso(false)
     	}										
 	}
 	method golpear() {
 //	if(controlDeAnimaciones.puedeRealizarAnimacion()) {
 //				controlDeAnimaciones.hayAnimacionEnCurso(true)
+            self.aumentarGolpesDados()
 			animacionAlGolpear.gestionarAnimacionDeGolpe()
+			
 //		 	 }
 	}
 	
 	method patear() {
 //			if(controlDeAnimaciones.puedeRealizarAnimacion()) {
 //				controlDeAnimaciones.hayAnimacionEnCurso(true)
+            self.aumentarPatadasDadas()
       		animacionAlPatear.gestionarAnimacionDePatada()
+      		
 //	      	}
     }
 	
@@ -105,7 +116,7 @@ object bill {
 	}
 	
 	method mover(direccion) {
-        if(controlDeAnimaciones.puedeRealizarAnimacion()) {
+        if(self.puedeRealizarAnimacion()) {
 			self.validarMover(direccion)
 			const proxima = direccion.siguiente(self.position())
 			self.direccionMirando(direccion.IzqODer())
@@ -143,27 +154,68 @@ object enemigoB {
 }
 
 
+
 object puerta {
 	const property direccionMirando = "Derecha"
 	var property image = "puerta1.png"
 	var property position = game.origin()
+	var property hayAnimacionEnCurso = false
+	var property permitirAnimacion = true
 	
 	method quitarInvulnerabilidad() {}
 	method duracionInvulnerabilidad() {} 
 	method invulnerable() {}
 	method volverInvulnerable() {}
 	method resusitarOTerminar() {}
-	method golpesRecibidos() {} 
+	method golpesRecibidos(numero) {} 
 	method aumentarGolpesRecibidos() {}
 	method derrotadoSiSeAgotaSalud() {}
-	method patadasDadas() {}
+	method patadasDadas(numero) {}
 	method aumentarPatadasDadas() {}
-	method golpesDados() {}
+	method golpesDados(numero) {}
 	method aumentarGolpesDados() {}
 	
+	method puedeRealizarAnimacion() {
+		return not self.hayAnimacionEnCurso()
+	}
 }
+object mainMenu {
+	var property hayAnimacionEnCurso = false
+	var property permitirAnimacion = true
+    const property animacionInicio = animacionMainMenu
+    const property direccionMirando = "Derecha"
+    var property position = game.origin()
+    var property image = "spriteMainMenu0.png"
 
-
+    method iniciarJuego() {
+        game.removeVisual(self)
+    }
+    
+    method animacion() {
+    	animacionInicio.realizarAnimacion()
+    }
+    
+//    method detener() {
+//    	animacionInicio.detenerAnimacion()
+//    }
+    
+	method quitarInvulnerabilidad() {}
+	method duracionInvulnerabilidad() {} 
+	method invulnerable() {}
+	method volverInvulnerable() {}
+	method resusitarOTerminar() {}
+	method golpesRecibidos(numero) {} 
+	method aumentarGolpesRecibidos() {}
+	method derrotadoSiSeAgotaSalud() {}
+	method patadasDadas(numero) {}
+	method aumentarPatadasDadas() {}
+	method golpesDados(numero) {}
+	method aumentarGolpesDados() {}
+	
+	method puedeRealizarAnimacion() {
+		return not self.hayAnimacionEnCurso()
+	}
+}
 
 
 

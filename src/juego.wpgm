@@ -4,7 +4,7 @@ import movimientos.*
 //import nivel1.*
 import animacion.*
 import barraHP.*
-import sonidos.*
+
 import inicioDelJuego.*
 
 
@@ -13,7 +13,7 @@ program juego {
 	
 	game.width(12)
 	game.height(8)
-	game.title("dd")
+	game.title("Double Dragon")
 	
 	//Configuracion Del Tablero
 

@@ -4,9 +4,8 @@ import inicioDelJuego.*
 
 class Animacion {
 	
-	var property personaje 
+	var property objeto 
 	
-	const controlDeAnimaciones = controlDeAnimacion
 	
 	//const animaciones = self.gestionarDirDeSprite()
 	
@@ -17,10 +16,14 @@ class Animacion {
 	method animacionActual(indice,animaciones) = animaciones.get(indice)
 	
 	method movimientoFinal()  {
-    	return if (personaje.direccionMirando() == "Izquierda") "quietoIzq.png" else "quieto.png"
+    	return if (objeto.direccionMirando() == "Izquierda") "quietoIzq.png" else "quieto.png"
     }
+		
 	
-	//method secuenciaDeMovimientos() = self.gestionarDirDeSprite()
+//	method reiniciarControlador() {
+//		self.hayAnimacionEnCurso(false)
+//		self.permitirAnimacion(true)
+//	}
 	
 	method spritesIzquierda() 
 	 
@@ -30,32 +33,32 @@ class Animacion {
 		indiceSpriteActual = indiceSpriteActual + 1 
 	}
 	method realizarAnimacion() {
-	  if(controlDeAnimaciones.puedeRealizarAnimacion()) {
-		  controlDeAnimaciones.hayAnimacionEnCurso(true)
-		  controlDeAnimaciones.permitirAnimacion(true) 
+	  if(objeto.puedeRealizarAnimacion()) {
+		  objeto.hayAnimacionEnCurso(true)
+		  objeto.permitirAnimacion(true) 
 		  self.animacion()
 		}
 	}
 	method animacion() {
 		const animaciones = self.gestionarDirDeSprite()  //se tiene que crear localmente ya que si no no se actualiza 
 //		if(not animaciones.isEmpty()) { 
-		personaje.image(self.animacionActual(indiceSpriteActual,animaciones))    //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const
+		objeto.image(self.animacionActual(indiceSpriteActual,animaciones))    //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const
 		self.siguienteFrame(animaciones)                                         //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const     
 	}
 		
 	method siguienteFrame(animaciones) {                                         //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const
-		if(controlDeAnimaciones.permitirAnimacion()) {
+		if(objeto.permitirAnimacion()) {
 			self.controlarFrame(animaciones)                                     //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const
 		}
 		else {
 			indiceSpriteActual = 0
-			controlDeAnimaciones.permitirAnimacion(true)
+			objeto.permitirAnimacion(true)
 		}
 	}
 	method controlarFrame(animaciones) {                                          //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const
 		if(indiceSpriteActual < animaciones.size() - 1) {
 			self.aumentarIndice() 
-			personaje.image(self.animacionActual(indiceSpriteActual,animaciones)) 
+			objeto.image(self.animacionActual(indiceSpriteActual,animaciones)) 
 			self.intervaloEntreAnimacion(animaciones)                             //se la tenemos que pasar por parammetro a los sub metodos para no perder el scope de la const
 		} 
 		else {
@@ -65,41 +68,26 @@ class Animacion {
 	}
 	
 	method gestionarDirDeSprite() {                 // decide que sprites usar dependiendo de donde este mirando el personaje
-    	return if ( personaje.direccionMirando() == "Izquierda") {self.spritesIzquierda()}
+    	return if ( objeto.direccionMirando() == "Izquierda") {self.spritesIzquierda()}
     	       else                                              {self.spritesDerecha()}
   }
   
 	method interrumpirAnimacion(nuevaAnim) {       //metodo para interrumpir todas las demas animaciones si estan en progreso
-     controlDeAnimaciones.permitirAnimacion(false)
-     controlDeAnimaciones.hayAnimacionEnCurso(true)
-     game.schedule(1,  {controlDeAnimaciones.hayAnimacionEnCurso(false)} )
+     objeto.permitirAnimacion(false)
+     objeto.hayAnimacionEnCurso(true)
+     game.schedule(1,  {objeto.hayAnimacionEnCurso(false)} )
      game.schedule(100,  nuevaAnim )
   }
     
 	
 	method finalizarAnimacion() {
-		personaje.image(self.movimientoFinal())
-		controlDeAnimaciones.hayAnimacionEnCurso(false)	
+		objeto.image(self.movimientoFinal())
+		objeto.hayAnimacionEnCurso(false)	
 	}													
 }
 
-object controlDeAnimacion {
-	
-	var property hayAnimacionEnCurso = false
-	
-	var property permitirAnimacion = true
-	
-	method puedeRealizarAnimacion() {
-		return not self.hayAnimacionEnCurso()
-	}	
-	
-	method reiniciarControlador() {
-		self.hayAnimacionEnCurso(false)
-		self.permitirAnimacion(true)
-	}
-}
 
-object animacionGolpe inherits Animacion(personaje = bill ) { 
+object animacionGolpe inherits Animacion(objeto = bill ) { 
 	const siguienteGolpe = animacionGolpe2
 	
 	 override method spritesDerecha() {
@@ -110,12 +98,12 @@ object animacionGolpe inherits Animacion(personaje = bill ) {
 	}
 	
 	method gestionarAnimacionDeGolpe() {
-		personaje.aumentarGolpesDados()
-		if (personaje.golpesDados() == 1 ) self.realizarAnimacion() else personaje.golpesDados(0) siguienteGolpe.realizarAnimacion() 
+		
+		if (objeto.golpesDados() == 1 ) self.realizarAnimacion() else objeto.golpesDados(0) siguienteGolpe.realizarAnimacion() 
 	}
 }
 
-object animacionGolpe2 inherits Animacion(personaje = bill ) {
+object animacionGolpe2 inherits Animacion(objeto = bill ) {
 	
 	 override method spritesDerecha() {
 		return ["golpe2-1.png", "golpe2-1.png", "golpe2-2.png", "golpe2-3.png"]
@@ -127,7 +115,7 @@ object animacionGolpe2 inherits Animacion(personaje = bill ) {
 	
 }
 
-object animacionPatada inherits Animacion(personaje = bill ) {
+object animacionPatada inherits Animacion(objeto = bill ) {
 	const siguientePatada = animacionPatada2
 	
 	 override method spritesDerecha() {
@@ -139,12 +127,11 @@ object animacionPatada inherits Animacion(personaje = bill ) {
 	}
 	
 	method gestionarAnimacionDePatada() {
-		personaje.aumentarPatadasDadas()
-		if (personaje.patadasDadas() == 1 ) self.realizarAnimacion() else personaje.patadasDadas(0) siguientePatada.realizarAnimacion() 
+		if (objeto.patadasDadas() == 1 ) self.realizarAnimacion() else objeto.patadasDadas(0) siguientePatada.realizarAnimacion() 
 	}
 }
 
-object animacionPatada2 inherits Animacion(personaje = bill ) {
+object animacionPatada2 inherits Animacion(objeto = bill ) {
 
 	 override method spritesDerecha() {
 		return ["patada2-1.png", "patada2-1.png", "patada2-2.png", "patada2-2.png", "patada2-3.png", "patada2-4.png" ]  
@@ -160,11 +147,11 @@ class AnimadorDeTiposDeDanio inherits Animacion {
 	
 	override method finalizarAnimacion() {
  		super()
- 		personaje.derrotadoSiSeAgotaSalud()
+ 		objeto.derrotadoSiSeAgotaSalud()
  	}
 }
 
-object animacionDanio inherits AnimadorDeTiposDeDanio(personaje = bill ) {					
+object animacionDanio inherits AnimadorDeTiposDeDanio(objeto = bill ) {					
 	
 	const danioMedio = animacionDanioMedio
 	
@@ -180,24 +167,24 @@ object animacionDanio inherits AnimadorDeTiposDeDanio(personaje = bill ) {
 	
 	method gestionarAnimacionDeDanio() {
 		
- 		personaje.aumentarGolpesRecibidos()	
-        if (personaje.golpesRecibidos() == 1) { 
+ 		objeto.aumentarGolpesRecibidos()	
+        if (objeto.golpesRecibidos() == 1) { 
             self.interrumpirAnimacion( { self.realizarAnimacion() } )     //animacion de daño normal 
                                                                                           
-        } else if (personaje.golpesRecibidos() == 2) {
+        } else if (objeto.golpesRecibidos() == 2) {
             danioMedio.interrumpirAnimacion( { danioMedio.realizarAnimacion() } )       //animacion de daño medio
                                                                                      
         } else {
-            personaje.golpesRecibidos(0) 
+            objeto.golpesRecibidos(0) 
             danioCritico.interrumpirAnimacion( { danioCritico.realizarAnimacion() } )   //animacion de daño critico
         }
-            game.schedule(2000, { personaje.golpesRecibidos(0)  })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
+            game.schedule(2000, { objeto.golpesRecibidos(0)  })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
        		
  	}
  	
 }
 
-object animacionDanioMedio inherits AnimadorDeTiposDeDanio(personaje = bill ) {
+object animacionDanioMedio inherits AnimadorDeTiposDeDanio(objeto = bill ) {
 	
 	override method spritesDerecha() {
 		return ["danio2.png", "danio2.png", "danio2.png"] 
@@ -208,7 +195,7 @@ object animacionDanioMedio inherits AnimadorDeTiposDeDanio(personaje = bill ) {
 	}
 }
 
-object animacionDanioCritico inherits AnimadorDeTiposDeDanio(personaje = bill ) {
+object animacionDanioCritico inherits AnimadorDeTiposDeDanio(objeto = bill ) {
 	
 	override method spritesDerecha() {
 		return ["danio3.png", "danio3.png", "danio4.png",
@@ -223,7 +210,7 @@ object animacionDanioCritico inherits AnimadorDeTiposDeDanio(personaje = bill ) 
 	}
 }
 
-object animacionDerrota inherits Animacion(personaje = bill ) {
+object animacionDerrota inherits Animacion(objeto = bill ) {
 	
 	override method spritesIzquierda() {
 		return ["derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png", "derrotadoIzq1.png",
@@ -237,14 +224,14 @@ object animacionDerrota inherits Animacion(personaje = bill ) {
     	        "derrotado3.png", "derrotado3.png", "derrotado3.png", "derrotado3.png"]
     }
 	
-	override method movimientoFinal() = "derrotado3.png"
+	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") "derrotadoIzq3.png" else "derrotado3.png"
 	
 	override method finalizarAnimacion() {
-		personaje.image(self.movimientoFinal())
-		personaje.resusitarOTerminar()
+		objeto.image(self.movimientoFinal())
+		objeto.resusitarOTerminar()
 	}
 }
-object animacionRevivir inherits Animacion(personaje = bill ) {
+object animacionRevivir inherits Animacion(objeto = bill ) {
 
     const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
     
@@ -257,15 +244,15 @@ object animacionRevivir inherits Animacion(personaje = bill ) {
 	
 	method respawn() {
     	tiempoParpadeando = 0 // Reinicia el contador de tiempo parpadeando
-    	personaje.volverInvulnerable()
-    	controlDeAnimaciones.hayAnimacionEnCurso(false)
-    	personaje.image("quieto.png") //tendria que ser un mensaje a los sprites con posicionBaseDePJ(self)
+    	objeto.volverInvulnerable()
+    	objeto.hayAnimacionEnCurso(false)
+    	objeto.image("quieto.png") //tendria que ser un mensaje a los sprites con posicionBaseDePJ(self)
         self.parpadearImagen()
     }
     
     method parpadearImagen() {
     // Alternar la visibilidad de bill para simular el parpadeo
-        if (personaje.invulnerable()) {
+        if (objeto.invulnerable()) {
          self.sacarYAgregarVisualSiTiene()
          tiempoParpadeando += intervaloParpadeo
          self.realizarParpadeo()
@@ -273,7 +260,7 @@ object animacionRevivir inherits Animacion(personaje = bill ) {
     }
     
     method realizarParpadeo() {
-    	if (tiempoParpadeando < personaje.duracionInvulnerabilidad()) {
+    	if (tiempoParpadeando < objeto.duracionInvulnerabilidad()) {
             game.schedule(intervaloParpadeo, { self.parpadearImagen() })
       } else {
             self.finalizarInvulnerabilidadYDejarVisual()
@@ -281,22 +268,22 @@ object animacionRevivir inherits Animacion(personaje = bill ) {
     }
     
     method sacarYAgregarVisualSiTiene() {
-    	if (game.hasVisual(personaje)) {
-            game.removeVisual(personaje)
+    	if (game.hasVisual(objeto)) {
+            game.removeVisual(objeto)
       } else {
-        game.addVisual(personaje)
+        game.addVisual(objeto)
       }
     }
    method finalizarInvulnerabilidadYDejarVisual() {
-        if (not game.hasVisual(personaje)) {
-             game.addVisual(personaje)       // Asegurarse de que bill sea visible
+        if (not game.hasVisual(objeto)) {
+             game.addVisual(objeto)       // Asegurarse de que bill sea visible
         }
-        personaje.quitarInvulnerabilidad()
+        objeto.quitarInvulnerabilidad()
     }
    
 }
 
-object animadorMovimientoSubir inherits Animacion(personaje = bill ) {
+object animadorMovimientoSubir inherits Animacion(objeto = bill ) {
 	
 	override method spritesIzquierda() = ["subirIzq1.png","subirIzq2.png","subirIzq3.png"]
 
@@ -304,7 +291,7 @@ object animadorMovimientoSubir inherits Animacion(personaje = bill ) {
 	
 }
 
-object animadorMovimiento inherits Animacion(personaje = bill ) {
+object animadorMovimiento inherits Animacion(objeto = bill ) {
 	
 	override method spritesIzquierda() {
 		return ["atras1.png", "atras2.png", "atras3.png"]
@@ -313,8 +300,136 @@ object animadorMovimiento inherits Animacion(personaje = bill ) {
 		return ["paso1.png", "paso2.png", "paso3.png"]
 	}	
 }
+//enemigo
+class AnimacionGolpeEnemigo inherits Animacion {  
+	
+	 override method spritesDerecha() {
+		return [objeto.toString()+"golpe1.png", objeto.toString()+"golpe1.png", objeto.toString()+"golpe2.png", objeto.toString()+"golpe3.png"]
+	}
+	override method spritesIzquierda() {
+		return [objeto.toString()+"golpe1Izq.png", objeto.toString()+"golpe1Izq.png", objeto.toString()+"golpe2Izq.png", objeto.toString()+"golpe3Izq.png"]
+	}
+}
+class AnimacionDanioEnemigo inherits Animacion{ 
+	
+	 override method spritesDerecha() {
+		return [objeto.toString()+"danio1.png", objeto.toString()+"danio1.png", objeto.toString()+"danio1.png"]
+	}
+	override method spritesIzquierda() {
+		return [objeto.toString()+"danio1Izq.png", objeto.toString()+"danio1Izq.png", objeto.toString()+"danio1Izq.png"]
+	}
+}
+class AnimacionDerrotaEnemigo inherits Animacion { //refactor
+	
+	override method spritesDerecha() {
+		return [objeto.toString()+"derrota1.png", objeto.toString()+"derrota1.png", objeto.toString()+"derrota2.png",
+                objeto.toString()+"derrota2.png", objeto.toString()+"derrota3.png", objeto.toString()+"derrota3.png"]
+	}
+	
+	override method spritesIzquierda() {
+		return [objeto.toString()+"derrota1Izq.png", objeto.toString()+"derrota1Izq.png", objeto.toString()+"derrota2Izq.png", 
+                objeto.toString()+"derrota2Izq.png", objeto.toString()+"derrota3Izq.png", objeto.toString()+"derrota3Izq.png"]
+	}
+	
+	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") objeto.toString()+"derrota3Izq.png" else objeto.toString()+"derrota3.png"
+	
+	override method finalizarAnimacion() {
+		objeto.image(self.movimientoFinal())
+		objeto.desaparecer()  //el enemigo muere 
+	}
+}
+class AnimadorMovimientoEnemigo inherits Animacion{
+	
+	override method spritesIzquierda() {
+		return [objeto.toString()+"atras1.png", objeto.toString()+"atras2.png", objeto.toString()+"atras3.png"]
+	}
+	override method spritesDerecha() {
+		return [objeto.toString()+"paso1.png", objeto.toString()+"paso2.png", objeto.toString()+"paso3.png"]
+	}	
+}
+//--enemigoB
+//object animacionGolpeEnemigoB inherits Animacion(objeto = enemigoB ) { 
+//	
+//	 override method spritesDerecha() {
+//		return ["enemigoBgolpe1.png", "enemigoBgolpe1.png", "enemigoBgolpe2.png", "enemigoBgolpe3.png"]
+//	}
+//	override method spritesIzquierda() {
+//		return ["enemigoBgolpe1Izq.png", "enemigoBgolpe1Izq.png", "enemigoBgolpe2Izq.png", "enemigoBgolpe3Izq.png"]
+//	}
+//}
+//object animacionDanioEnemigoB inherits Animacion(objeto = enemigoB ) { 
+//	
+//	 override method spritesDerecha() {
+//		return ["enemigoBdanio1.png", "enemigoBdanio1.png", "enemigoBdanio1.png"]
+//	}
+//	override method spritesIzquierda() {
+//		return ["enemigoBdanio1Izq.png", "enemigoBdanio1Izq.png", "enemigoBdanio1Izq.png"]
+//	}
+//}
+//object animacionDerrotaEnemigoB inherits Animacion(objeto = enemigoB ) {
+//	
+//	override method spritesDerecha() {
+//		return ["enemigoBderrota1.png", "enemigoBderrota1.png", "enemigoBderrota2.png",
+//                "enemigoBderrota2.png", "enemigoBderrota3.png", "enemigoBderrota3.png"]
+//	}
+//	
+//	override method spritesIzquierda() {
+//		return ["enemigoBderrota1Izq.png", "enemigoBderrota1Izq.png", "enemigoBderrota2Izq.png", 
+//               "enemigoBderrota2Izq.png", "enemigoBderrota3Izq.png", "enemigoBderrota3Izq.png"]
+//	}
+//	
+//	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") "enemigoBderrota3Izq.png" else "enemigoBderrota3.png"
+//	
+//	override method finalizarAnimacion() {
+//		objeto.image(self.movimientoFinal())
+//		objeto.resusitarOTerminar()  //el enemigo muere 
+//	}
+//}
+//object animadorMovimientoEnemigoB inherits Animacion(objeto = enemigoB ) {
+//	
+//	override method spritesIzquierda() {
+//		return ["enemigoBatras1.png", "enemigoBatras2.png", "enemigoBatras3.png"]
+//	}
+//	override method spritesDerecha() {
+//		return ["enemigoBpaso1.png", "enemigoBpaso2.png", "enemigoBpaso3.png"]
+//	}	
+//}
 
-object animadorPuerta inherits Animacion(personaje = puerta ) {
+object animacionMainMenu inherits Animacion(objeto = mainMenu) {
+
+	override method spritesIzquierda() {}
+	
+	override method spritesDerecha() { 
+		return ["spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
+		       "spriteMainMenu0.png", "spriteMainMenu1.png", "spriteMainMenu2.png",  "spriteMainMenu3.png", "spriteMainMenu4.png", "spriteMainMenu5.png",
+			    "spriteMainMenu6.png", "spriteMainMenu7.png", "spriteMainMenu8.png", "spriteMainMenu10.png", "spriteMainMenu11.png", "spriteMainMenu12.png",
+			    "spriteMainMenu13.png", "spriteMainMenu14.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png",
+			    "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png",
+			    "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu27.png", "spriteMainMenu28.png", "spriteMainMenu29.png", "spriteMainMenu30.png",
+			    "spriteMainMenu31.png", "spriteMainMenu32.png", "spriteMainMenu33.png", "spriteMainMenu34.png", "spriteMainMenu35.png", "spriteMainMenu36.png",
+			    "spriteMainMenu37.png", "spriteMainMenu38.png", "spriteMainMenu39.png", "spriteMainMenu40.png", "spriteMainMenu41.png", "spriteMainMenu42.png",
+			    "spriteMainMenu43.png", "spriteMainMenu44.png", "spriteMainMenu45.png", "spriteMainMenu46.png", "spriteMainMenu47.png", "spriteMainMenu48.png",
+			    "spriteMainMenu49.png", "spriteMainMenu50.png", "spriteMainMenu51.png", "spriteMainMenu52.png", "spriteMainMenu53.png", "spriteMainMenu54.png",
+			    "spriteMainMenu55.png", "spriteMainMenu56.png", "spriteMainMenu57.png", "spriteMainMenu58.png", "spriteMainMenu59.png", "spriteMainMenu60.png",
+			    "spriteMainMenu61.png", "spriteMainMenu62.png", "spriteMainMenu63.png", "spriteMainMenu64.png", "spriteMainMenu65.png", "spriteMainMenu66.png"
+		]
+	}	
+	override method intervaloEntreAnimacion(animaciones) = game.schedule(80, { self.siguienteFrame(animaciones) })
+	
+//	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
+//	    self.reiniciarControlador()
+//	}
+	
+	override method movimientoFinal() ="spriteMainMenu66.png"
+    
+//    method detenerAnimacion() {
+//    	personaje.permitirAnimacion(false)
+//        personaje.hayAnimacionEnCurso(true)
+////    	self.reiniciarControlador()
+//    }
+}
+
+object animadorPuerta inherits Animacion(objeto = puerta ) {
 	
 	override method spritesIzquierda() {}
 	
@@ -329,7 +444,7 @@ object animadorPuerta inherits Animacion(personaje = puerta ) {
 	override method intervaloEntreAnimacion(animaciones) = game.schedule(150, { self.siguienteFrame(animaciones) }) 
 	
 	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
-	    controlDeAnimacion.reiniciarControlador()
+//	    self.reiniciarControlador()
 	    game.sound("motor.wav").play()
 		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
 		escenario.removerNivel()

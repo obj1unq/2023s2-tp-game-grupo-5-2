@@ -30,17 +30,7 @@ object start {
     }
 }
 
-object mainMenu {
 
-    var property position = game.origin()
-
-    method image() = "mainMenu.png"
-
-    method iniciarJuego() {
-        game.removeVisual(self)
-    }
-
-}
 //-----------------------------------------------------------------------------------
 
 object escenario{
@@ -155,16 +145,19 @@ class Portada inherits Nivel{
 //		game.schedule(100, {sonido.play()} )
 //	}
 	override method configuracionFondo(){
-		game.addVisual(mainMenu) 
+		game.addVisual(mainMenu)
+		mainMenu.animacion()
 		start.actualizarStart()	
+		
 	}
 	
 	override method pressEnter(){
 		sonido.stop()
-		const puerta = new PuertaInicial (sonido = game.sound("perciana.wav"))
+		//mainMenu.detener()		
+		const puertaInicial = new PuertaInicial (sonido = game.sound("perciana.wav"))
 		start.iniciarJuego()
-		escenario.removerNivel()
-		escenario.iniciarNivel(puerta)
+		escenario.removerNivel() 
+		escenario.iniciarNivel(puertaInicial)
 	}
 }
 
@@ -227,7 +220,7 @@ class PuertaInicial inherits Nivel {
    	 	sonido.shouldLoop(false)
     	game.schedule(100, {sonido.play()} )
 	}	
-}  
+}   
 
 //object puertaMovil {
 //	var property indice = 0

@@ -1,6 +1,7 @@
 import wollok.game.*
 import animacion.*
 import personajes.*
+
 class DireccionBase {
 	
 	const animador = animadorMovimiento

@@ -1,24 +1,41 @@
 import wollok.game.*
 import personajes.*
-//import nivel1.*
+import inicioDelJuego.*
 import movimientos.*
-
-describe "Mi describe" {
+import barraHP.*
+import animacion.*
+describe "Test Juego" {
 
   method initialize(){
     game.clear()
-    //
+		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel1)
+  }
+
+    test "Bill pierde 1 vida cuando la barra de vida esta vacia"{
+
+        assert.equals(3, barraDeHP.vidas())                            //Bill Inicia con 3 vidas
+
+
+        bill.recibirDanio()                                            //Recibe 5 hits que le provoca que pierda una vida
+        bill.recibirDanio()
+        bill.recibirDanio()
+        bill.recibirDanio()
+           bill.recibirDanio()
+
+        assert.equals(2,barraDeHP.vidas())                           //Bill ahora tiene 2 vidas.
   }
 
 
-   test "finn obtiene al menos 3 monedas" {			//Hacer
-		game.addVisual(bill)
-		assert.equals({})
-	}
+   test "Al recibir danio, Bill pierde 20 de vida" {
 
-  test "finn abre cofre  "{						 	//Hacer
-    game.addVisual(bill)	
-    assert.equals({})
-  }
+        assert.equals(100, barraDeHP.cantidadDeVida())    //La barra de vida inicia llena( el valor es 100).
+
+        bill.recibirDanio()
+        assert.equals(80, barraDeHP.cantidadDeVida())  //Bill recibe daño,pierde 20 de vida y la barra de vida se ve afectada.
+    }
+
+
 
 }
