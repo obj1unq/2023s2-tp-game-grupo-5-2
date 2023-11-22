@@ -104,7 +104,7 @@ object bill inherits IndividuoBase {
 	}
 	
 	method resusitarOTerminar() {
-    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else  game.schedule(4000, {game.stop()}) //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
+    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else  gameOver.mostrarPantalla() //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
     }
 	
 	method puedeRealizarAnimacion() {
@@ -312,7 +312,17 @@ object mainMenu {
 	}
 }
 
-
+object gameOver {
+	var property position = game.origin()
+	const property image = "gameOver.jpg"
+	
+	method mostrarPantalla(){
+		game.schedule(2000, {game.addVisual(self)})
+		game.schedule(4000, {game.stop()})
+	}
+	
+	
+}
 
 
 
