@@ -199,7 +199,7 @@ class Nivel1 inherits Nivel{
 		game.addVisual(enemigoA)
 		
 		enemigoA.perseguirPersonaje()
-		//game.onCollideDo(tony,{algo => algo.chocasteCon(tony)})
+		//game.onCollideDo(bill,{algo => algo.chocasteCon(bill)})
 	}
 	
 	override method configuracionFondo(){

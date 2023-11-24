@@ -105,22 +105,22 @@ class AnimacionGolpeEnemigo inherits AnimacionEnemigo {
 class AnimacionDanioEnemigo inherits AnimacionEnemigo{ 
 	
 	 override method spritesDerecha() {
-		return ["danio1.png", "danio1.png", "danio1.png"]
+		return ["enemigoAdanio1.png", "enemigoAdanio1.png", "enemigoAdanio1.png"]
 	}
 	override method spritesIzquierda() {
-		return ["danio1Izq.png", "danio1Izq.png", "danio1Izq.png"]
+		return ["enemigoAdanio1Izq.png", "enemigoAdanio1Izq.png", "enemigoAdanio1Izq.png"]
 	}
 }
 class AnimacionDerrotaEnemigo inherits AnimacionEnemigo { //refactor
 	
 	override method spritesDerecha() {
-		return ["derrota1.png", "derrota1.png", "derrota2.png",
-                "derrota2.png", "derrota3.png", "derrota3.png"]
+		return ["enemigoAderrota1.png", "enemigoAderrota1.png", "enemigoAderrota2.png",
+                "enemigoAderrota2.png", "enemigoAderrota3.png", "enemigoAderrota3.png"]
 	}
 	
 	override method spritesIzquierda() {
-		return ["derrota1Izq.png", "derrota1Izq.png", "derrota2Izq.png", 
-                "derrota2Izq.png", "derrota3Izq.png", "derrota3Izq.png"]
+		return ["enemigoAderrota1Izq.png", "enemigoAderrota1Izq.png", "enemigoAderrota2Izq.png", 
+                "enemigoAderrota2Izq.png", "enemigoAderrota3Izq.png", "enemigoAderrota3Izq.png"]
 	}
 	
 	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") "enemigoAderrota3Izq.png" else "enemigoAderrota3.png"
@@ -237,7 +237,7 @@ class AnimacionDanio inherits AnimadorDeTiposDeDanio {
             objeto.golpesRecibidos(0) 
             objeto.animacionDanioCritico().interrumpirAnimacion( { objeto.animacionDanioCritico().realizarAnimacion() } )   //animacion de daño critico
         }
-            game.schedule(2000, { objeto.golpesRecibidos(0)  })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
+            game.schedule(4000, { objeto.golpesRecibidos(0)  })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
        		
  	}
  	 

@@ -137,13 +137,23 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 		//if(self.position() == algo.position()) {
 		self.aumentarGolpesDados()
 		animacionAlGolpear.gestionarAnimacionDeGolpe()
-	//		algo.recibirDanio()
+		self.daniarEnemigosSiExisten()
 		//}
 	//	else {
 	//		animacionAlGolpear.gestionarAnimacionDeGolpe()
 	//	}
-		
+	
 	}
+	
+	method daniarEnemigosSiExisten() {
+		if(not self.enemigosEnMiPosicion().isEmpty() ) {
+			self.enemigosEnMiPosicion().forEach({enemigo => enemigo.recibirDanio()})
+		}
+	}
+	
+	method enemigosEnMiPosicion() = game.getObjectsIn(self.position()).filter({objetos => objetos.esEnemigo()})
+	
+	method esEnemigo() = false //ponerlo en la superclase como abstracto 
 	
 	method patear() {
 		self.aumentarPatadasDadas()
@@ -205,6 +215,8 @@ class Enemigo inherits IndividuoBase{			//nuevo
 //		golpesRecibidos = golpesRecibidos + 1
 //	}
 //		
+    method esEnemigo() = true
+
 	override method duracionInvulnerabilidad() = 1500
 
 	override method derrotadoSiSeAgotaSalud() {
@@ -223,8 +235,13 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	}
 	
 	override method golpear() {
-		animacionEnemigoGolear.realizarAnimacion() 		  
+		if (self.estoyJuntoABill()) {
+			animacionEnemigoGolear.realizarAnimacion() 
+			personajePrincipal.recibirDanio()
+		}	  
 	}
+	
+	
 	
 	override method recibirDanio() {
         if (not invulnerable) {  
@@ -240,17 +257,20 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 	
 	method perseguirPersonaje() {
-		game.onTick(1000,"acercarse",{self.darUnPasoSiCorresponde()})
+		game.onTick(1000,"acercarse",{self.darUnPasoOGolpear()})
 	}
 	
+	//de aca hacia abajo es codigo para que siga a bill 
 	method estoyJuntoABill() {
 		return self.position() == personajePrincipal.position()
 	}
 	
-	method darUnPasoSiCorresponde() {
+	method darUnPasoOGolpear() {
 		
 		if (not self.estoyJuntoABill()) {
 			self.acercarseABill()
+		}else {
+			game.schedule(500, {self.golpear()}) // schedule para que no te cague a palazos 
 		}
 	}
 	
