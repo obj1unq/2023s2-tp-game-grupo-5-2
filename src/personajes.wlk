@@ -196,6 +196,58 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	}
 }
 
+class EnemigoFactory {
+	
+	method nuevo()
+}
+
+object enemigoFactoryB inherits EnemigoFactory {
+	override method nuevo() {
+		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(6,1), direccionMirando="Izquierda", tiempoPerseguir = 700)
+	}
+}
+ 
+object enemigoFactory inherits EnemigoFactory{
+	
+	override method nuevo() {
+		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(5,1), direccionMirando="Izquierda", tiempoPerseguir = 500)
+	}
+}
+
+object enemigoManager {
+	
+	var generados = #{}
+	const limite = 4
+	
+	const factories = [enemigoFactory,enemigoFactoryB]
+	
+	
+	method seleccionarFactory() {
+
+//      Para una probabilidad de 10% alpiste 90% manzana		
+//		const x = 0.randomUpTo(1)
+//		return if (x < 0.10) alpisteFactory else manzanaFactory 
+		
+		return factories.anyOne() //igual de probabilidad
+	}
+	
+	method generar() {
+		if(generados.size() < limite ) {
+			
+			const tipoEnemigo = self.seleccionarFactory().nuevo() 		
+			game.addVisual(tipoEnemigo)	
+			generados.add(tipoEnemigo)
+			tipoEnemigo.perseguirPersonaje()
+		}
+	}
+	
+	method quitar(tipoEnemigo) {
+		generados.remove(tipoEnemigo)
+		game.removeVisual(tipoEnemigo)
+	}
+}
+
+
 
 class Enemigo inherits IndividuoBase{			//nuevo
 	

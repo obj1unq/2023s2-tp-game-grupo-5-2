@@ -113,11 +113,7 @@ class Nivel{
 //	var property objetosExtra = []	
 //	var property noPasar = []
 	var property sonido 
-	
-	const enemigoA = new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(5,1), direccionMirando="Izquierda", tiempoPerseguir = 500)
-	const enemigoB = new Enemigo(image = "enemigoAquietoIzq.png", position = game.at(6,1), direccionMirando = "Izquierda", tiempoPerseguir = 600)
-	const enemigoC = new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(7,1), direccionMirando="Izquierda",tiempoPerseguir = 700)
-	const enemigoD = new Enemigo(image = "enemigoAquietoIzq.png", position = game.at(6,0), direccionMirando = "Izquierda",tiempoPerseguir = 900 )		
+			
 	method configuracionInicial(){}
 	
 	method configuracionSonido(){
@@ -220,19 +216,15 @@ class Nivel1 inherits Nivel{
 	
 	override method configuracionInicial(){
 		//visual algunos	
-		game.addVisual(enemigoA)
-		game.addVisual(enemigoB)
-		game.addVisual(enemigoC)
-		game.addVisual(enemigoD)		
+		enemigoManager.generar()
+		enemigoManager.generar()
+		enemigoManager.generar()
+		enemigoManager.generar()	
 		game.addVisual(bill)
 		
 		game.addVisual(contador)
 		game.addVisual(numerico)
 		
-		enemigoD.perseguirPersonaje()
-		enemigoC.perseguirPersonaje()
-		enemigoB.perseguirPersonaje()
-		enemigoA.perseguirPersonaje()
 		
 	}
 	
