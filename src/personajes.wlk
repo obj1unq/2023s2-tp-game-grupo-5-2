@@ -131,6 +131,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	override method derrotadoSiSeAgotaSalud() {
 		if (barraDeVida.estaVacia()) {
 			self.volverInvulnerable()
+			 game.sound("perderVida.wav").play()
     		animacionDerrotado.realizarAnimacion()
     	}
     	else {
@@ -170,6 +171,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	 if (not invulnerable) {  
         //self.volverInvulnerable()   
         self.aumentarGolpesRecibidos()
+        game.sound("recibirDanio.wav").play()
 		animacionAlRecibirDanio.gestionarAnimacionDeDanio()
 		barraDeVida.descontar()
 	  }
@@ -314,6 +316,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	override method recibirDanio() {
         if (not invulnerable) {  
           self.volverInvulnerable()   
+          game.sound("recibirDanio.wav").play()
 		  animacionEnemigoRecibeDanio.realizarAnimacion()
 		  self.reducirSalud()
 		  self.derrotadoSiSeAgotaSalud()
@@ -384,6 +387,53 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 }
 
+
+
+
+
+
+
+
+class Finalizar {
+	var property position = game.origin()
+	var property image = "gameOver.jpg"
+	
+	method mostrarPantalla(){
+		self.temporizadorVisual()
+		self.juegoFinalizado()
+	}
+	
+	method temporizadorVisual() {game.schedule(2000, {game.addVisual(self)}) }
+	method juegoFinalizado() {game.schedule(4000, {game.stop()}) }  
+
+}
+object gameOver inherits Finalizar {
+	
+}
+
+object win inherits Finalizar {
+	
+   	override method image() = "theEnd.png"
+   	
+   	override method temporizadorVisual() {game.schedule(5000, {game.addVisual(self)})  }
+    override method juegoFinalizado() {game.schedule(8000, {game.stop()}) } 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 object puerta {
 	const property direccionMirando = "Derecha"
 	var property image = "puerta1.png"
@@ -444,31 +494,6 @@ object mainMenu {
 	method puedeRealizarAnimacion() {
 		return not self.hayAnimacionEnCurso()
 	}
-}
-
-class Finalizar {
-	var property position = game.origin()
-	var property image = "gameOver.jpg"
-	
-	method mostrarPantalla(){
-		self.temporizadorVisual()
-		self.juegoFinalizado()
-	}
-	
-	method temporizadorVisual() {game.schedule(2000, {game.addVisual(self)}) }
-	method juegoFinalizado() {game.schedule(4000, {game.stop()}) }  
-
-}
-object gameOver inherits Finalizar {
-	
-}
-
-object win inherits Finalizar {
-	
-   	override method image() = "theEnd.png"
-   	
-   	override method temporizadorVisual() {game.schedule(5000, {game.addVisual(self)})  }
-    override method juegoFinalizado() {game.schedule(8000, {game.stop()}) } 
 }
 
 

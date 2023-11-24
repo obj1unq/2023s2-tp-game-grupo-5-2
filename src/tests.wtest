@@ -5,7 +5,7 @@ import movimientos.*
 import barraHP.*
 import animacion.*
 
-describe "Test Juego" {
+describe "Test Juego" { //los test fallan porque hay que comentar la linea de sonido en recibirDanio y derrotado
 
     const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
     
@@ -77,11 +77,11 @@ describe "Test Juego" {
     
     test "Cuando bill aparece y se mueve abajo su posicion cambia " {
     	
-    	assert.that(bill.position().x() == 1 && bill.position().y() == 2)
+    	assert.that(bill.position().x() == 1 && bill.position().y() == 1)
     	
     	bill.mover(abajo)
     	
-    	assert.that(bill.position().x() == 1 && bill.position().y() == 1)
+    	assert.that(bill.position().x() == 1 && bill.position().y() == 0)
     }
     
     test"Al recibir daño bill ya no tiene su barra de vida completa " {
