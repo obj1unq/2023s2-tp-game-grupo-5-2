@@ -16,7 +16,7 @@ class Animacion {
 	method animacionActual(indice,animaciones) = animaciones.get(indice)
 	
 	method movimientoFinal()  {
-    	return if (objeto.direccionMirando() == "Izquierda") "quietoIzq.png" else "quieto.png"
+    	return if (objeto.direccionMirando() == "Izquierda") self.spriteBaseIzq() else self.spriteBaseDer()
     }
 		
 	
@@ -24,7 +24,8 @@ class Animacion {
 //		self.hayAnimacionEnCurso(false)
 //		self.permitirAnimacion(true)
 //	}
-	
+	method spriteBaseIzq() = "quietoIzq.png"
+	method spriteBaseDer() = "quieto.png"
 	method spritesIzquierda() 
 	 
 	method spritesDerecha() 
@@ -87,55 +88,71 @@ class Animacion {
 }
 
 //enemigo
-class AnimacionGolpeEnemigo inherits Animacion {  
+
+class AnimacionEnemigo inherits Animacion {
+	override method spriteBaseIzq() = "enemigoAquietoIzq.png"
+	override method spriteBaseDer() ="enemigoAquieto.png"
+}
+class AnimacionGolpeEnemigo inherits AnimacionEnemigo {  
 	
 	 override method spritesDerecha() {
-		return [objeto.toString()+"golpe1.png", objeto.toString()+"golpe1.png", objeto.toString()+"golpe2.png", objeto.toString()+"golpe3.png"]
+		return ["enemigoAgolpe1.png", "enemigoAgolpe1.png", "enemigoAgolpe2.png", "enemigoAgolpe3.png"]
 	}
 	override method spritesIzquierda() {
-		return [objeto.toString()+"golpe1Izq.png", objeto.toString()+"golpe1Izq.png", objeto.toString()+"golpe2Izq.png", objeto.toString()+"golpe3Izq.png"]
+		return ["enemigoAgolpe1Izq.png", "enemigoAgolpe1Izq.png", "enemigoAgolpe2Izq.png", "enemigoAgolpe3Izq.png"]
 	}
 }
-class AnimacionDanioEnemigo inherits Animacion{ 
+class AnimacionDanioEnemigo inherits AnimacionEnemigo{ 
 	
 	 override method spritesDerecha() {
-		return [objeto.toString()+"danio1.png", objeto.toString()+"danio1.png", objeto.toString()+"danio1.png"]
+		return ["danio1.png", "danio1.png", "danio1.png"]
 	}
 	override method spritesIzquierda() {
-		return [objeto.toString()+"danio1Izq.png", objeto.toString()+"danio1Izq.png", objeto.toString()+"danio1Izq.png"]
+		return ["danio1Izq.png", "danio1Izq.png", "danio1Izq.png"]
 	}
 }
-class AnimacionDerrotaEnemigo inherits Animacion { //refactor
+class AnimacionDerrotaEnemigo inherits AnimacionEnemigo { //refactor
 	
 	override method spritesDerecha() {
-		return [objeto.toString()+"derrota1.png", objeto.toString()+"derrota1.png", objeto.toString()+"derrota2.png",
-                objeto.toString()+"derrota2.png", objeto.toString()+"derrota3.png", objeto.toString()+"derrota3.png"]
+		return ["derrota1.png", "derrota1.png", "derrota2.png",
+                "derrota2.png", "derrota3.png", "derrota3.png"]
 	}
 	
 	override method spritesIzquierda() {
-		return [objeto.toString()+"derrota1Izq.png", objeto.toString()+"derrota1Izq.png", objeto.toString()+"derrota2Izq.png", 
-                objeto.toString()+"derrota2Izq.png", objeto.toString()+"derrota3Izq.png", objeto.toString()+"derrota3Izq.png"]
+		return ["derrota1Izq.png", "derrota1Izq.png", "derrota2Izq.png", 
+                "derrota2Izq.png", "derrota3Izq.png", "derrota3Izq.png"]
 	}
 	
-	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") objeto.toString()+"derrota3Izq.png" else objeto.toString()+"derrota3.png"
+	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") "enemigoAderrota3Izq.png" else "enemigoAderrota3.png"
 	
 	override method finalizarAnimacion() {
 		objeto.image(self.movimientoFinal())
-		objeto.desaparecer()  //el enemigo muere 
+		objeto.desaparecer()  //el enemigo muere  
 	}
 }
-class AnimadorMovimientoEnemigo inherits Animacion{
+class AnimadorMovimientoEnemigo inherits AnimacionEnemigo{ 
 	
 	override method spritesIzquierda() {
-		return [objeto.toString()+"atras1.png", objeto.toString()+"atras2.png", objeto.toString()+"atras3.png"]
+		return ["enemigoAatras1.png", "enemigoAatras2.png", "enemigoAatras3.png"]
 	}
 	override method spritesDerecha() {
-		return [objeto.toString()+"paso1.png", objeto.toString()+"paso2.png", objeto.toString()+"paso3.png"]
-	}	
+		return ["enemigoApaso1.png", "enemigoApaso2.png", "enemigoApaso3.png"]
+	}
+	
+		
+}
+class AnimadorMovimientoSubirEnemigo inherits AnimacionEnemigo {
+	
+	override method spritesIzquierda() = ["enemigoAsubir1Izq.png","enemigoAsubir2Izq.png","enemigoAsubir3Izq.png","enemigoAsubir4Izq.png"]
+
+	override method spritesDerecha() = ["enemigoAsubir1.png","enemigoAsubir2.png","enemigoAsubir3.png", "enemigoAsubir4.png"]	
+	
 }
 
+
+
+
 class AnimacionGolpe inherits Animacion { 
-	const siguienteGolpe = new AnimacionGolpe2(objeto = bill)
 	
 	 override method spritesDerecha() {
 		return ["golpefr1.png", "golpefr1.png", "golpefr2.png", "golpefr3.png"]
@@ -146,7 +163,7 @@ class AnimacionGolpe inherits Animacion {
 	
 	method gestionarAnimacionDeGolpe() {
 		
-		if (objeto.golpesDados() == 1 ) self.realizarAnimacion() else objeto.golpesDados(0) siguienteGolpe.realizarAnimacion() 
+		if (objeto.golpesDados() == 1 ) self.realizarAnimacion() else objeto.golpesDados(0) objeto.animacionAlGolpear2().realizarAnimacion() 
 	}
 }
 
@@ -163,7 +180,6 @@ class AnimacionGolpe2 inherits Animacion {
 }
 
 class AnimacionPatada inherits Animacion {
-	const siguientePatada = new AnimacionPatada2(objeto= bill)
 	
 	 override method spritesDerecha() {
 		return ["patada1.png", "patada1.png", "patada2.png", "patada2.png"]
@@ -174,7 +190,7 @@ class AnimacionPatada inherits Animacion {
 	}
 	
 	method gestionarAnimacionDePatada() {
-		if (objeto.patadasDadas() == 1 ) self.realizarAnimacion() else objeto.patadasDadas(0) siguientePatada.realizarAnimacion() 
+		if (objeto.patadasDadas() == 1 ) self.realizarAnimacion() else objeto.patadasDadas(0) objeto.animacionAlPatear2().realizarAnimacion() 
 	}
 }
 
@@ -200,10 +216,6 @@ class AnimadorDeTiposDeDanio inherits Animacion {
 
 class AnimacionDanio inherits AnimadorDeTiposDeDanio {					
 	
-	const danioMedio = new AnimacionDanioMedio(objeto = bill)
-	
-	const danioCritico = new AnimacionDanioCritico(objeto = bill)
-	
 	override method spritesDerecha() {
 		return ["danio1.png", "danio1.png", "danio1.png"] 
 	}
@@ -219,16 +231,16 @@ class AnimacionDanio inherits AnimadorDeTiposDeDanio {
             self.interrumpirAnimacion( { self.realizarAnimacion() } )     //animacion de daño normal 
                                                                                           
         } else if (objeto.golpesRecibidos() == 2) {
-            danioMedio.interrumpirAnimacion( { danioMedio.realizarAnimacion() } )       //animacion de daño medio
+            objeto.animacionDanioMedio().interrumpirAnimacion( { objeto.animacionDanioMedio().realizarAnimacion() } )       //animacion de daño medio
                                                                                      
         } else {
             objeto.golpesRecibidos(0) 
-            danioCritico.interrumpirAnimacion( { danioCritico.realizarAnimacion() } )   //animacion de daño critico
+            objeto.animacionDanioCritico().interrumpirAnimacion( { objeto.animacionDanioCritico().realizarAnimacion() } )   //animacion de daño critico
         }
             game.schedule(2000, { objeto.golpesRecibidos(0)  })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
        		
  	}
- 	
+ 	 
 }
 
 class AnimacionDanioMedio inherits AnimadorDeTiposDeDanio {
@@ -350,13 +362,24 @@ class AnimadorMovimiento inherits Animacion {
 
 
 
+
+
+
+
+
+
+
+
+
 object animacionMainMenu inherits Animacion(objeto = mainMenu) {
 
 	override method spritesIzquierda() {}
 	
 	override method spritesDerecha() { 
 		return ["spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
-		       "spriteMainMenu0.png", "spriteMainMenu1.png", "spriteMainMenu2.png",  "spriteMainMenu3.png", "spriteMainMenu4.png", "spriteMainMenu5.png",
+			    "spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
+			    "spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
+		        "spriteMainMenu0.png", "spriteMainMenu1.png", "spriteMainMenu2.png",  "spriteMainMenu3.png", "spriteMainMenu4.png", "spriteMainMenu5.png",
 			    "spriteMainMenu6.png", "spriteMainMenu7.png", "spriteMainMenu8.png", "spriteMainMenu10.png", "spriteMainMenu11.png", "spriteMainMenu12.png",
 			    "spriteMainMenu13.png", "spriteMainMenu14.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png",
 			    "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png", "spriteMainMenu0.png",

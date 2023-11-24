@@ -90,15 +90,27 @@ class Nivel{
 //	var property objetosExtra = []	
 //	var property noPasar = []
 	var property sonido 
+	
+	const enemigoA = new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(5,1), direccionMirando="Izquierda")
 			
 	method configuracionInicial(){}
 	
 	method configuracionSonido(){
-   	 	sonido.shouldLoop(true)
+   	 	sonido.shouldLoop(true) 
     	game.schedule(500, {sonido.play()} )
 	}
 	
 	method configuracionTeclado(){
+		const arriba = new Arriba(personaje = bill)
+		const abajo  = new Abajo(personaje = bill)
+		const izquierda = new Izquierda(personaje = bill)
+		const derecha   = new Derecha(personaje = bill)
+		
+//		const jugador2Arriba = new Arriba(personaje = enemigoA)
+//		const jugador2Abajo  = new Abajo(personaje = enemigoA)
+//		const jugador2Izquierda = new Izquierda(personaje = enemigoA)
+//		const jugador2Derecha   = new Derecha(personaje = enemigoA)
+		
 		//musica
    		keyboard.up().onPressDo({sonido.volume(1)})
 		keyboard.down().onPressDo({sonido.volume(0.3)})
@@ -185,6 +197,8 @@ class Nivel1 inherits Nivel{
 		//visual algunos			
 		game.addVisual(bill)
 		game.addVisual(enemigoA)
+		
+		enemigoA.perseguirPersonaje()
 		//game.onCollideDo(tony,{algo => algo.chocasteCon(tony)})
 	}
 	

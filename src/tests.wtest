@@ -8,6 +8,11 @@ import animacion.*
 describe "Test Juego" {
 
     const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+    
+		const arriba = new Arriba(personaje = bill)
+		const abajo  = new Abajo(personaje = bill)
+		const izquierda = new Izquierda(personaje = bill)
+		const derecha   = new Derecha(personaje = bill)
 
   method initialize(){
            game.clear()

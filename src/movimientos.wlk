@@ -4,9 +4,9 @@ import personajes.*
 
 class DireccionBase {
 	
-	const animador = new AnimadorMovimiento(objeto = bill) 
+	var property personaje
 	
-	const personaje = bill
+	const animador = new AnimadorMovimiento(objeto = personaje) 
 	
 	method siguiente(position)
 	
@@ -15,7 +15,7 @@ class DireccionBase {
 }
 
 
-object derecha inherits DireccionBase{
+class Derecha inherits DireccionBase{
 
  	override method siguiente(position) {
 		 return position.right(1)
@@ -27,7 +27,7 @@ object derecha inherits DireccionBase{
 	}
 }
 
-object izquierda inherits DireccionBase{
+class Izquierda inherits DireccionBase{
 	
 	override method siguiente(position) {
 		return position.left(1)
@@ -40,9 +40,9 @@ object izquierda inherits DireccionBase{
 	}
 }
 
-object arriba inherits DireccionBase{
+class Arriba inherits DireccionBase{
 	
-	const animadorSubir = new AnimadorMovimientoSubir(objeto = bill)
+	const animadorSubir = new AnimadorMovimientoSubir( objeto = personaje)
 	
 	override method siguiente(position) {
 		return position.up(1)
@@ -55,7 +55,7 @@ object arriba inherits DireccionBase{
 	method IzqODer() { return if (personaje.direccionMirando() == "Derecha") "Derecha" else "Izquierda" }
 }
 
-object abajo inherits DireccionBase{
+class Abajo inherits DireccionBase{
 	
 	override method siguiente(position) {
 		return position.down(1)

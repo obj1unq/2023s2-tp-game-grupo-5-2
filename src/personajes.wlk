@@ -51,17 +51,22 @@ class IndividuoBase {
 		return _posicion.y().between(0, 1) && // Últimas tres filas después de invertir, lo mejor seria crear objetos invisibles en donde no queremos que se mueva y hacerlos solidos 
                _posicion.x().between(0, game.width() - 1)                               //return tablero.pertenece(_posicion)
 	}
+	
+	method puedeRealizarAnimacion() {
+		return not self.hayAnimacionEnCurso()
+	}
+	
 }
 
-object bill inherits IndividuoBase {
-
-	const enemigo1 = enemigoA
+object bill inherits IndividuoBase { //probar borrar el immage y setearle en la clase madre a ver si aun sin ser abstracto el enemigo hace animaciones
 	
 //	const enemigo2 = enemigoB
 	
 	const property barraDeVida = barraDeHP											
 	
 	const property animacionAlGolpear = new AnimacionGolpe(objeto =self)
+	
+	const property animacionAlGolpear2 = new AnimacionGolpe2(objeto =self)
 	
 	const property animacionAlRecibirDanio = new AnimacionDanio(objeto =self)
 	
@@ -70,6 +75,12 @@ object bill inherits IndividuoBase {
 	const property animacionAlRevivir = new AnimacionRevivir(objeto =self)
 	
 	const property animacionAlPatear = new  AnimacionPatada(objeto =self)
+	
+	const property animacionAlPatear2 = new AnimacionPatada2(objeto =self)
+	
+	const property animacionDanioMedio = new AnimacionDanioMedio(objeto =self)
+	
+	const property animacionDanioCritico = new AnimacionDanioCritico(objeto = self)
 	
 //	const property controlDeAnimaciones = controlDeAnimacion
 //	
@@ -107,9 +118,6 @@ object bill inherits IndividuoBase {
     	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else  gameOver.mostrarPantalla() //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
     }
 	
-	method puedeRealizarAnimacion() {
-		return not self.hayAnimacionEnCurso()
-	}
 	
 	method resusitar() {
 		self.position(game.at(1,1)) 
@@ -183,9 +191,11 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 	const animacionEnemigoDerrotado = new AnimacionDerrotaEnemigo(objeto=self)
 	
-	override method image() = "enemigoAQuietoIzq.png"
+	const animacionEnemigoGolear = new AnimacionGolpeEnemigo(objeto=self)
 	
-	override method position() = game.at(5,1) 
+	const animacionMover = new AnimadorMovimientoEnemigo(objeto= self)
+	
+	const animacionSubir = new AnimadorMovimientoSubirEnemigo(objeto= self)
 	
 //	var property golpesRecibidos = 0
 //	
@@ -194,9 +204,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 //	method aumentarGolpesRecibidos() {
 //		golpesRecibidos = golpesRecibidos + 1
 //	}
-//	
-	override method direccionMirando() = "Izquierda"
-	
+//		
 	override method duracionInvulnerabilidad() = 1500
 
 	override method derrotadoSiSeAgotaSalud() {
@@ -215,7 +223,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	}
 	
 	override method golpear() {
-		//  algo.recibirDanio() 		  
+		animacionEnemigoGolear.realizarAnimacion() 		  
 	}
 	
 	override method recibirDanio() {
@@ -232,23 +240,60 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 	
 	method perseguirPersonaje() {
-		game.onTick(1000,"acercarse",{self.darUnPaso(personajePrincipal.position())})
+		game.onTick(1000,"acercarse",{self.darUnPasoSiCorresponde()})
 	}
 	
-	method darUnPaso(destino) {
-		if(self.sePuedeMover(destino)) {
-		position = game.at(
-			position.x() + (destino.x() - position.x()) / 2,
-			position.y() + (destino.y() - position.y() / 2)
-		)
+	method estoyJuntoABill() {
+		return self.position() == personajePrincipal.position()
+	}
+	
+	method darUnPasoSiCorresponde() {
+		
+		if (not self.estoyJuntoABill()) {
+			self.acercarseABill()
 		}
+	}
+	
+	method acercarseABill() {
+		if (self.laDistanciaDelEjeYEsMayorQueElX(self)) { //si la distancia entre los ejes y de cada uno es mayor a la de los ejes x
+			self.moversePorElEjeY(self)      //se mueve en el eje y
+		}else {
+			self.moversePorElEjeX(self)     // se mueve en el eje x
+		}
+	}
+
+	method laDistanciaDelEjeYEsMayorQueElX(personaje) = (personaje.position().y() - personajePrincipal.position().y()).abs() > (personaje.position().x() -personaje.position().x()).abs()
+	
+	method moversePorElEjeY(personaje) {
+		if(personaje.position().y() - personajePrincipal.position().y() > 0){
+			
+			animacionMover.realizarAnimacion()
+			self.position(self.position().down(1))		
+			
+		}else if (personaje.position().y()  - personajePrincipal.position().y() < 0){
+			
+			animacionSubir.realizarAnimacion()
+		    self.position(self.position().up(1))
+		}
+	}
+	
+	method moversePorElEjeX(personaje) {
+		if(personaje.position().x() - personajePrincipal.position().x() > 0){
+			
+			self.direccionMirando("Izquierda")
+			self.position(self.position().left(1))
+			
+		}else if (personaje.position().x()  - personajePrincipal.position().x() < 0){
+			
+			self.direccionMirando("Derecha")
+		    self.position(self.position().right(1))  
+		}
+		animacionMover.realizarAnimacion()
 	}
 	
 	
 	
 }
-
-object enemigoA inherits Enemigo {}
 
 object puerta {
 	const property direccionMirando = "Derecha"
