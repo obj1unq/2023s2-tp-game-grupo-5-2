@@ -44,6 +44,10 @@ object contador {
 	method actualizarDerrotados() {
 		numeroDelContador.actualizar(cantidad)
 	}
+	
+	method ganarSiAlncanzoObjetivo() {
+		if (cantidad == 4) win.mostrarPantalla()
+	}
 }
 
 object numerico {
@@ -217,13 +221,13 @@ class Nivel1 inherits Nivel{
 	override method configuracionInicial(){
 		//visual algunos	
 		enemigoManager.generar()
-		enemigoManager.generar()
-		enemigoManager.generar()
-		enemigoManager.generar()	
+		game.schedule(8000,  { enemigoManager.generar() } )
+		game.schedule(16000, { enemigoManager.generar() } )
+		game.schedule(24000, { enemigoManager.generar() } )
+			
 		game.addVisual(bill)
 		
-		game.addVisual(contador)
-		game.addVisual(numerico)
+	
 		
 		
 	}
@@ -241,7 +245,9 @@ class Nivel1 inherits Nivel{
 	override method configuracionVisual(){		
 
 		game.addVisual(barraDeHP)
-		contadorDeVidas.inicializar()		
+		contadorDeVidas.inicializar()	
+		game.addVisual(contador)
+		game.addVisual(numerico)	
 	}		
 }
 

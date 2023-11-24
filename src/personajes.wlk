@@ -8,7 +8,7 @@ import inicioDelJuego.*
 
 class IndividuoBase {
 	
-	var property position = game.at(1,2)
+	var property position = game.at(1,1)
 	
 	var property image = "quieto.png"
 	
@@ -130,6 +130,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	}
 	override method derrotadoSiSeAgotaSalud() {
 		if (barraDeVida.estaVacia()) {
+			self.volverInvulnerable()
     		animacionDerrotado.realizarAnimacion()
     	}
     	else {
@@ -168,6 +169,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	override method recibirDanio() {
 	 if (not invulnerable) {  
         //self.volverInvulnerable()   
+        self.aumentarGolpesRecibidos()
 		animacionAlRecibirDanio.gestionarAnimacionDeDanio()
 		barraDeVida.descontar()
 	  }
@@ -203,14 +205,14 @@ class EnemigoFactory {
 
 object enemigoFactoryB inherits EnemigoFactory {
 	override method nuevo() {
-		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(6,1), direccionMirando="Izquierda", tiempoPerseguir = 700)
+		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(8,1), direccionMirando="Izquierda", tiempoPerseguir = 1000)
 	}
 }
  
 object enemigoFactory inherits EnemigoFactory{
 	
 	override method nuevo() {
-		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(5,1), direccionMirando="Izquierda", tiempoPerseguir = 500)
+		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(7,0), direccionMirando="Izquierda", tiempoPerseguir = 500)
 	}
 }
 
@@ -286,6 +288,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 			game.removeTickEvent("acercarse")
     		animacionEnemigoDerrotado.animacion()
     		numeroDeDerrotas.agregarYActualizar()
+    		numeroDeDerrotas.ganarSiAlncanzoObjetivo()
     	}
     	else {
     		self.quitarInvulnerabilidad()
@@ -336,7 +339,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 		if (not self.estoyJuntoABill()) {
 			self.acercarseABill()
 		}else {
-			game.schedule(500, {self.golpear()}) // schedule para que no te cague a palazos 
+			game.schedule(700, {self.golpear()}) // schedule para que no te cague a palazos 
 		}
 	}
 	
@@ -443,16 +446,29 @@ object mainMenu {
 	}
 }
 
-object gameOver {
+class Finalizar {
 	var property position = game.origin()
-	const property image = "gameOver.jpg"
+	var property image = "gameOver.jpg"
 	
 	method mostrarPantalla(){
-		game.schedule(2000, {game.addVisual(self)})
-		game.schedule(4000, {game.stop()})
+		self.temporizadorVisual()
+		self.juegoFinalizado()
 	}
 	
+	method temporizadorVisual() {game.schedule(2000, {game.addVisual(self)}) }
+	method juegoFinalizado() {game.schedule(4000, {game.stop()}) }  
+
+}
+object gameOver inherits Finalizar {
 	
+}
+
+object win inherits Finalizar {
+	
+   	override method image() = "theEnd.png"
+   	
+   	override method temporizadorVisual() {game.schedule(5000, {game.addVisual(self)})  }
+    override method juegoFinalizado() {game.schedule(8000, {game.stop()}) } 
 }
 
 

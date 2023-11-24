@@ -254,7 +254,6 @@ class AnimadorDeTiposDeDanio inherits Animacion {
 	override method finalizarAnimacion() {
  		super()
  		objeto.derrotadoSiSeAgotaSalud()
- 		objeto.quitarInvulnerabilidad()
  	}
 }
 
