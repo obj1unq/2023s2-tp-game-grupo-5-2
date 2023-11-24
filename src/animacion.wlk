@@ -6,6 +6,10 @@ class Animacion {
 	
 	var property objeto 
 	
+    const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
+    
+    var tiempoParpadeando = 0
+	
 	
 	//const animaciones = self.gestionarDirDeSprite()
 	
@@ -84,7 +88,41 @@ class Animacion {
 	method finalizarAnimacion() {
 		objeto.image(self.movimientoFinal())
 		objeto.hayAnimacionEnCurso(false)	
-	}													
+	}
+	
+	
+//metodos que usa la animacion de derrota 	
+   method parpadearImagen() {
+    // Alternar la visibilidad de bill para simular el parpadeo
+        if (objeto.invulnerable()) {
+         self.sacarYAgregarVisualSiTiene()
+         tiempoParpadeando += intervaloParpadeo
+         self.realizarParpadeo()
+       }
+    }
+    
+    method realizarParpadeo() {
+    	if (tiempoParpadeando < objeto.duracionInvulnerabilidad()) {
+            game.schedule(intervaloParpadeo, { self.parpadearImagen() })
+      } else {
+            self.finalizarInvulnerabilidadYDejarVisual()
+      }
+    }
+    
+    method sacarYAgregarVisualSiTiene() {
+    	if (game.hasVisual(objeto)) {
+            game.removeVisual(objeto)
+      } else {
+        game.addVisual(objeto)
+      }
+    }
+   method finalizarInvulnerabilidadYDejarVisual() {
+        if (not game.hasVisual(objeto)) {
+             game.addVisual(objeto)       // Asegurarse de que bill sea visible
+        }
+        objeto.quitarInvulnerabilidad()
+    }
+														
 }
 
 //enemigo
@@ -127,7 +165,12 @@ class AnimacionDerrotaEnemigo inherits AnimacionEnemigo { //refactor
 	
 	override method finalizarAnimacion() {
 		objeto.image(self.movimientoFinal())
-		objeto.desaparecer()  //el enemigo muere  
+		self.parpadearImagen()
+	}
+	override method finalizarInvulnerabilidadYDejarVisual() {
+	 	if (game.hasVisual(objeto)) {
+             game.removeVisual(objeto)        
+        }      //el enemigo es removido una vez nos aseguramos que es visible 
 	}
 }
 class AnimadorMovimientoEnemigo inherits AnimacionEnemigo{ 
@@ -211,6 +254,7 @@ class AnimadorDeTiposDeDanio inherits Animacion {
 	override method finalizarAnimacion() {
  		super()
  		objeto.derrotadoSiSeAgotaSalud()
+ 		objeto.quitarInvulnerabilidad()
  	}
 }
 
@@ -226,7 +270,8 @@ class AnimacionDanio inherits AnimadorDeTiposDeDanio {
 	
 	method gestionarAnimacionDeDanio() {
 		
- 		objeto.aumentarGolpesRecibidos()	
+ 		objeto.aumentarGolpesRecibidos()
+ 		
         if (objeto.golpesRecibidos() == 1) { 
             self.interrumpirAnimacion( { self.realizarAnimacion() } )     //animacion de daño normal 
                                                                                           
@@ -292,9 +337,9 @@ class AnimacionDerrota inherits Animacion {
 }
 class AnimacionRevivir inherits Animacion {
 
-    const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
-    
-    var tiempoParpadeando = 0
+//    const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
+//    
+//    var tiempoParpadeando = 0
 	
 //	override method secuenciaDeMovimientos() = []
 	
@@ -309,36 +354,36 @@ class AnimacionRevivir inherits Animacion {
         self.parpadearImagen()
     }
     
-    method parpadearImagen() {
-    // Alternar la visibilidad de bill para simular el parpadeo
-        if (objeto.invulnerable()) {
-         self.sacarYAgregarVisualSiTiene()
-         tiempoParpadeando += intervaloParpadeo
-         self.realizarParpadeo()
-       }
-    }
-    
-    method realizarParpadeo() {
-    	if (tiempoParpadeando < objeto.duracionInvulnerabilidad()) {
-            game.schedule(intervaloParpadeo, { self.parpadearImagen() })
-      } else {
-            self.finalizarInvulnerabilidadYDejarVisual()
-      }
-    }
-    
-    method sacarYAgregarVisualSiTiene() {
-    	if (game.hasVisual(objeto)) {
-            game.removeVisual(objeto)
-      } else {
-        game.addVisual(objeto)
-      }
-    }
-   method finalizarInvulnerabilidadYDejarVisual() {
-        if (not game.hasVisual(objeto)) {
-             game.addVisual(objeto)       // Asegurarse de que bill sea visible
-        }
-        objeto.quitarInvulnerabilidad()
-    }
+//    method parpadearImagen() {
+//    // Alternar la visibilidad de bill para simular el parpadeo
+//        if (objeto.invulnerable()) {
+//         self.sacarYAgregarVisualSiTiene()
+//         tiempoParpadeando += intervaloParpadeo
+//         self.realizarParpadeo()
+//       }
+//    }
+//    
+//    method realizarParpadeo() {
+//    	if (tiempoParpadeando < objeto.duracionInvulnerabilidad()) {
+//            game.schedule(intervaloParpadeo, { self.parpadearImagen() })
+//      } else {
+//            self.finalizarInvulnerabilidadYDejarVisual()
+//      }
+//    }
+//    
+//    method sacarYAgregarVisualSiTiene() {
+//    	if (game.hasVisual(objeto)) {
+//            game.removeVisual(objeto)
+//      } else {
+//        game.addVisual(objeto)
+//      }
+//    }
+//   method finalizarInvulnerabilidadYDejarVisual() {
+//        if (not game.hasVisual(objeto)) {
+//             game.addVisual(objeto)       // Asegurarse de que bill sea visible
+//        }
+//        objeto.quitarInvulnerabilidad()
+//    }
    
 }
 

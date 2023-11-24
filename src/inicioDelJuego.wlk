@@ -113,7 +113,7 @@ class Nivel{
 		
 		//musica
    		keyboard.up().onPressDo({sonido.volume(1)})
-		keyboard.down().onPressDo({sonido.volume(0.3)})
+		keyboard.down().onPressDo({sonido.volume(0.2)})
 		keyboard.m().onPressDo({sonido.volume(0)})
 		//movimiento
 		keyboard.w().onPressDo({  bill.mover(arriba)    })
@@ -151,11 +151,11 @@ class Portada inherits Nivel{
 	
 	override method configuracionTeclado(){
 		keyboard.enter().onPressDo {self.pressEnter()}
+   		keyboard.up().onPressDo({sonido.volume(1)})
+		keyboard.down().onPressDo({sonido.volume(0.2)})
+		keyboard.m().onPressDo({sonido.volume(0)}) 
 	}
 	
-//	override method configuracionSonido() {
-//		game.schedule(100, {sonido.play()} )
-//	}
 	override method configuracionFondo(){
 		game.addVisual(mainMenu)
 		mainMenu.animacion()
@@ -194,12 +194,12 @@ class EndGame inherits Nivel{
 class Nivel1 inherits Nivel{
 	
 	override method configuracionInicial(){
-		//visual algunos			
+		//visual algunos	
+		game.addVisual(enemigoA)		
 		game.addVisual(bill)
-		game.addVisual(enemigoA)
 		
 		enemigoA.perseguirPersonaje()
-		//game.onCollideDo(bill,{algo => algo.chocasteCon(bill)})
+		
 	}
 	
 	override method configuracionFondo(){

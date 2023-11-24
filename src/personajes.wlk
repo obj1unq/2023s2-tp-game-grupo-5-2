@@ -43,6 +43,8 @@ class IndividuoBase {
     
     method golpear()
     
+    method esEnemigo()
+    
     method sePuedeMover(direccion) {
 		const proxima = direccion.siguiente(self.position())
 		return self.puedeOcupar(proxima)
@@ -55,6 +57,7 @@ class IndividuoBase {
 	method puedeRealizarAnimacion() {
 		return not self.hayAnimacionEnCurso()
 	}
+	
 	
 }
 
@@ -153,20 +156,22 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	
 	method enemigosEnMiPosicion() = game.getObjectsIn(self.position()).filter({objetos => objetos.esEnemigo()})
 	
-	method esEnemigo() = false //ponerlo en la superclase como abstracto 
+	override method esEnemigo() = false //ponerlo en la superclase como abstracto 
 	
 	method patear() {
 		self.aumentarPatadasDadas()
-		animacionAlPatear.gestionarAnimacionDePatada()		//agregar que le pegue al enemigo
+		animacionAlPatear.gestionarAnimacionDePatada()		 
+		self.daniarEnemigosSiExisten()
     }
 	
 	override method recibirDanio() {
 	 if (not invulnerable) {  
-        self.volverInvulnerable()   
+        //self.volverInvulnerable()   
 		animacionAlRecibirDanio.gestionarAnimacionDeDanio()
 		barraDeVida.descontar()
 	  }
 	}
+	
 	method validarMover(direccion) {
 		if(not self.sePuedeMover(direccion)) {
 			self.error("No puedo moverme ahi")
@@ -195,7 +200,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 	const personajePrincipal = bill
 	
-	var property cantidadDeVida = 20
+	var property cantidadDeVida = 80
 	
 	const animacionEnemigoRecibeDanio = new AnimacionDanioEnemigo(objeto=self)
 	
@@ -215,14 +220,14 @@ class Enemigo inherits IndividuoBase{			//nuevo
 //		golpesRecibidos = golpesRecibidos + 1
 //	}
 //		
-    method esEnemigo() = true
+    override method esEnemigo() = true
 
 	override method duracionInvulnerabilidad() = 1500
 
 	override method derrotadoSiSeAgotaSalud() {
-		if (not self.tieneVida()) {
-    		animacionEnemigoDerrotado.realizarAnimacion()
-    		game.removeTickEvent("acercarse")
+		if (self.noTieneMasSalud()) {
+			game.removeTickEvent("acercarse")
+    		animacionEnemigoDerrotado.animacion()
     	}
     	else {
     		self.quitarInvulnerabilidad()
@@ -230,8 +235,8 @@ class Enemigo inherits IndividuoBase{			//nuevo
     	}										
 	}
 	
-	method tieneVida() {
-		return self.cantidadDeVida() >= 0
+	method noTieneMasSalud() {
+		return self.cantidadDeVida() <= 0
 	}
 	
 	override method golpear() {
@@ -241,12 +246,15 @@ class Enemigo inherits IndividuoBase{			//nuevo
 		}	  
 	}
 	
-	
+	method reducirSalud() {  // al sacar 10 de vida y tiene 80 como maximo, aguanta 7 golpes y muere en el 8
+		cantidadDeVida = cantidadDeVida - 10
+	}
 	
 	override method recibirDanio() {
         if (not invulnerable) {  
           self.volverInvulnerable()   
 		  animacionEnemigoRecibeDanio.realizarAnimacion()
+		  self.reducirSalud()
 		  self.derrotadoSiSeAgotaSalud()
 	  }
 	}
