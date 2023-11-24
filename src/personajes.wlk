@@ -199,6 +199,8 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 
 class Enemigo inherits IndividuoBase{			//nuevo
 	
+	var property tiempoPerseguir
+	
 	const personajePrincipal = bill
 	 
 	const numeroDeDerrotas = contador 
@@ -269,7 +271,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 	
 	method perseguirPersonaje() {
-		game.onTick(1000,"acercarse",{self.darUnPasoOGolpear()})
+		game.onTick(tiempoPerseguir,"acercarse",{self.darUnPasoOGolpear()})
 	}
 	
 	//de aca hacia abajo es codigo para que siga a bill 
