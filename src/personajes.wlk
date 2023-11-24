@@ -3,6 +3,7 @@ import movimientos.*
 import movimientos.*
 import animacion.*
 import barraHP.*
+import inicioDelJuego.*
 
 
 class IndividuoBase {
@@ -199,7 +200,9 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 class Enemigo inherits IndividuoBase{			//nuevo
 	
 	const personajePrincipal = bill
-	
+	 
+	const numeroDeDerrotas = contador 
+	 
 	var property cantidadDeVida = 80
 	
 	const animacionEnemigoRecibeDanio = new AnimacionDanioEnemigo(objeto=self)
@@ -228,6 +231,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 		if (self.noTieneMasSalud()) {
 			game.removeTickEvent("acercarse")
     		animacionEnemigoDerrotado.animacion()
+    		numeroDeDerrotas.agregarYActualizar()
     	}
     	else {
     		self.quitarInvulnerabilidad()

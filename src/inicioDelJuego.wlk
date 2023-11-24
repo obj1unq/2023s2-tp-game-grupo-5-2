@@ -30,11 +30,34 @@ object start {
     }
 }
 
+object contador {
+	var property position = game.at(6,7)
+	const property numeroDelContador = numerico
+	var property image = "contador.png"
+	var property cantidad = 0
+	
+	method agregarYActualizar() {
+		cantidad = cantidad + 1
+		self.actualizarDerrotados()
+	}
+	
+	method actualizarDerrotados() {
+		numeroDelContador.actualizar(cantidad)
+	}
+}
 
+object numerico {
+	var property position = game.at(9,7)
+	var property image = "0vidas.png"
+	
+	method actualizar(numero) {
+		image = numero.toString() + "vidas.png" 
+	}
+}
 //-----------------------------------------------------------------------------------
 
 object escenario{
-//	var cont = 1
+  //  var cont = 1
 	var property nivel
 	
 	method iniciarNivel(nuevoNivel){
@@ -52,13 +75,13 @@ object escenario{
 	}
 	
 //	method passNivel(){
-//		if(cont == 1){
+//		if(cont == 4){
 //			self.removerNivel()
 //			const nivel2 = new Nivel2()
 //			self.iniciarNivel(nivel2)
 //			cont +=1
 //		}else{
-//			self.ganarTony()
+//			self.ganarBill()
 //		}
 //	}
 
@@ -197,6 +220,9 @@ class Nivel1 inherits Nivel{
 		//visual algunos	
 		game.addVisual(enemigoA)		
 		game.addVisual(bill)
+		
+		game.addVisual(contador)
+		game.addVisual(numerico)
 		
 		enemigoA.perseguirPersonaje()
 		
