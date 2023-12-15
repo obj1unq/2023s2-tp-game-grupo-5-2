@@ -41,9 +41,13 @@ class Animacion {
 	  if(objeto.puedeRealizarAnimacion()) {
 		  objeto.hayAnimacionEnCurso(true)
 		  objeto.permitirAnimacion(true) 
+		  self.hacerAlgoEntreAnimacion()
 		  self.animacion()
 		}
 	}
+	
+	method hacerAlgoEntreAnimacion() {}
+	
 	method animacion() {
 		const animaciones = self.gestionarDirDeSprite()  //se tiene que crear localmente ya que si no no se actualiza 
 //		if(not animaciones.isEmpty()) { 
@@ -121,6 +125,7 @@ class Animacion {
              game.addVisual(objeto)       // Asegurarse de que bill sea visible
         }
         objeto.quitarInvulnerabilidad()
+
     }
 														
 }
@@ -128,67 +133,80 @@ class Animacion {
 //enemigo
 
 class AnimacionEnemigo inherits Animacion {
-	override method spriteBaseIzq() = "enemigoAquietoIzq.png"
-	override method spriteBaseDer() ="enemigoAquieto.png"
+	var property objetoAnimado
+	
+	override method spriteBaseIzq() = objetoAnimado+"quietoIzq.png"
+	override method spriteBaseDer() = objetoAnimado+"quieto.png"
 }
 class AnimacionGolpeEnemigo inherits AnimacionEnemigo {  
 	
 	 override method spritesDerecha() {
-		return ["enemigoAgolpe1.png", "enemigoAgolpe1.png", "enemigoAgolpe2.png", "enemigoAgolpe3.png"]
+		return [objetoAnimado+"golpe1.png", objetoAnimado+"golpe1.png", objetoAnimado+"golpe2.png", objetoAnimado+"golpe3.png"]
 	}
 	override method spritesIzquierda() {
-		return ["enemigoAgolpe1Izq.png", "enemigoAgolpe1Izq.png", "enemigoAgolpe2Izq.png", "enemigoAgolpe3Izq.png"]
+		return [objetoAnimado+"golpe1Izq.png", objetoAnimado+"golpe1Izq.png", objetoAnimado+"golpe2Izq.png", objetoAnimado+"golpe3Izq.png"]
 	}
+	
+	override method hacerAlgoEntreAnimacion() { bill.recibirDanio()} //lo ideal seria pasarlo por parametro por si se quiere añadir otro jugador, pero habria que modificar el realizarAnimacion
 }
 class AnimacionDanioEnemigo inherits AnimacionEnemigo{ 
 	
 	 override method spritesDerecha() {
-		return ["enemigoAdanio1.png", "enemigoAdanio1.png", "enemigoAdanio1.png"]
+		return [objetoAnimado+"danio1.png", objetoAnimado+"danio1.png", objetoAnimado+"danio1.png"]
 	}
 	override method spritesIzquierda() {
-		return ["enemigoAdanio1Izq.png", "enemigoAdanio1Izq.png", "enemigoAdanio1Izq.png"]
+		return [objetoAnimado+"danio1Izq.png", objetoAnimado+"danio1Izq.png", objetoAnimado+"danio1Izq.png"]
 	}
+	
+	method gestionarAnimacionDanioEnemigo() { self.interrumpirAnimacion( { self.realizarAnimacion() } ) }
+	
+	override method finalizarAnimacion() {
+ 		super()
+ 		objeto.derrotadoSiSeAgotaSalud()
+ 	}
+	
 }
 class AnimacionDerrotaEnemigo inherits AnimacionEnemigo { //refactor
 	
 	override method spritesDerecha() {
-		return ["enemigoAderrota1.png", "enemigoAderrota1.png", "enemigoAderrota2.png",
-                "enemigoAderrota2.png", "enemigoAderrota3.png", "enemigoAderrota3.png"]
+		return [objetoAnimado+"derrota1.png", objetoAnimado+"derrota1.png", objetoAnimado+"derrota2.png",
+                objetoAnimado+"derrota2.png", objetoAnimado+"derrota3.png", objetoAnimado+"derrota3.png"]
 	}
 	
 	override method spritesIzquierda() {
-		return ["enemigoAderrota1Izq.png", "enemigoAderrota1Izq.png", "enemigoAderrota2Izq.png", 
-                "enemigoAderrota2Izq.png", "enemigoAderrota3Izq.png", "enemigoAderrota3Izq.png"]
+		return [objetoAnimado+"derrota1Izq.png", objetoAnimado+"derrota1Izq.png", objetoAnimado+"derrota2Izq.png", 
+                objetoAnimado+"derrota2Izq.png", objetoAnimado+"derrota3Izq.png", objetoAnimado+"derrota3Izq.png"]
 	}
 	
-	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") "enemigoAderrota3Izq.png" else "enemigoAderrota3.png"
+	override method movimientoFinal() = if (objeto.direccionMirando() == "Izquierda") objetoAnimado+"derrota3Izq.png" else objetoAnimado+"derrota3.png"
 	
 	override method finalizarAnimacion() {
 		objeto.image(self.movimientoFinal())
-		self.parpadearImagen()
+		self.parpadearImagen()			
 	}
+	
 	override method finalizarInvulnerabilidadYDejarVisual() {
 	 	if (game.hasVisual(objeto)) {
              game.removeVisual(objeto)        
-        }      //el enemigo es removido una vez nos aseguramos que es visible 
+        }      //nos aseguramos que el enemigo sea removido del tablero
 	}
 }
 class AnimadorMovimientoEnemigo inherits AnimacionEnemigo{ 
 	
 	override method spritesIzquierda() {
-		return ["enemigoAatras1.png", "enemigoAatras2.png", "enemigoAatras3.png"]
+		return [objetoAnimado+"atras1.png", objetoAnimado+"atras2.png", objetoAnimado+"atras3.png"]
 	}
 	override method spritesDerecha() {
-		return ["enemigoApaso1.png", "enemigoApaso2.png", "enemigoApaso3.png"]
+		return [objetoAnimado+"paso1.png", objetoAnimado+"paso2.png", objetoAnimado+"paso3.png"]
 	}
 	
 		
 }
 class AnimadorMovimientoSubirEnemigo inherits AnimacionEnemigo {
 	
-	override method spritesIzquierda() = ["enemigoAsubir1Izq.png","enemigoAsubir2Izq.png","enemigoAsubir3Izq.png","enemigoAsubir4Izq.png"]
+	override method spritesIzquierda() = [objetoAnimado+"subir1Izq.png", objetoAnimado+"subir2Izq.png", objetoAnimado+"subir3Izq.png", objetoAnimado+"subir4Izq.png"]
 
-	override method spritesDerecha() = ["enemigoAsubir1.png","enemigoAsubir2.png","enemigoAsubir3.png", "enemigoAsubir4.png"]	
+	override method spritesDerecha() = [objetoAnimado+"subir1.png", objetoAnimado+"subir2.png", objetoAnimado+"subir3.png", objetoAnimado+"subir4.png"]	
 	
 }
 
@@ -208,6 +226,8 @@ class AnimacionGolpe inherits Animacion {
 		
 		if (objeto.golpesDados() == 1 ) self.realizarAnimacion() else objeto.golpesDados(0) objeto.animacionAlGolpear2().realizarAnimacion() 
 	}
+	
+	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }
 }
 
 class AnimacionGolpe2 inherits Animacion {
@@ -219,7 +239,7 @@ class AnimacionGolpe2 inherits Animacion {
 		return ["golpeIzq2-1.png", "golpeIzq2-1.png", "golpeIzq2-2.png", "golpeIzq2-3.png"]
 	}	
 	
-	
+	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }	
 }
 
 class AnimacionPatada inherits Animacion {
@@ -235,6 +255,7 @@ class AnimacionPatada inherits Animacion {
 	method gestionarAnimacionDePatada() {
 		if (objeto.patadasDadas() == 1 ) self.realizarAnimacion() else objeto.patadasDadas(0) objeto.animacionAlPatear2().realizarAnimacion() 
 	}
+	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }
 }
 
 class AnimacionPatada2 inherits Animacion {
@@ -246,6 +267,8 @@ class AnimacionPatada2 inherits Animacion {
 	override method spritesIzquierda() {
 		return ["patadaIzq2-1.png", "patadaIzq2-1.png", "patadaIzq2-2.png", "patadaIzq2-2.png", "patadaIzq2-3.png", "patadaIzq2-4.png" ]
 	}	
+	
+	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }
 }
 
 class AnimadorDeTiposDeDanio inherits Animacion {
@@ -282,7 +305,7 @@ class AnimacionDanio inherits AnimadorDeTiposDeDanio {
             objeto.animacionDanioCritico().interrumpirAnimacion( { objeto.animacionDanioCritico().realizarAnimacion() } )   //animacion de daño critico
         }
             game.schedule(4000, { objeto.golpesRecibidos(0)  })  //reinicia la flag para la animacion despues de un determinado tiempo sin recibir daño 
-       		
+            
  	}
  	 
 }

@@ -22,6 +22,8 @@ class IndividuoBase {
 
 	var property permitirAnimacion = true
 	
+	var property timerDeGolpe = 0
+	
 	///const controlDeAnimaciones = controlDeAnimacion
 	
 	method duracionInvulnerabilidad() 
@@ -59,12 +61,24 @@ class IndividuoBase {
 		return not self.hayAnimacionEnCurso()
 	}
 	
-	
+	method actualizarTimerDeGolpe() {
+			timerDeGolpe = timerDeGolpe + 100
+			game.schedule(100, {self.controlarTimer()})
+    }
+    
+	method controlarTimer() {
+		if (self.timerDeGolpe() < self.intervaloDeGolpe()) {
+            self.actualizarTimerDeGolpe()		 
+	    } else {
+			timerDeGolpe = 0
+		}
+	}	
+	method intervaloDeGolpe() = 2000
 }
 
 object bill inherits IndividuoBase { //probar borrar el immage y setearle en la clase madre a ver si aun sin ser abstracto el enemigo hace animaciones
 	
-//	const enemigo2 = enemigoB
+//	const enemigo2 = enemigoB	
 	
 	const property barraDeVida = barraDeHP											
 	
@@ -119,7 +133,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	}
 	
 	method resusitarOTerminar() {
-    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar() else  gameOver.mostrarPantalla() //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
+    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar()  else  gameOver.mostrarPantalla() //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
     }
 	
 	
@@ -131,7 +145,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	override method derrotadoSiSeAgotaSalud() {
 		if (barraDeVida.estaVacia()) {
 			self.volverInvulnerable()
-			 game.sound("perderVida.wav").play()
+			game.sound("perderVida.wav").play()
     		animacionDerrotado.realizarAnimacion()
     	}
     	else {
@@ -143,7 +157,6 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 		//if(self.position() == algo.position()) {
 		self.aumentarGolpesDados()
 		animacionAlGolpear.gestionarAnimacionDeGolpe()
-		self.daniarEnemigosSiExisten()
 		//}
 	//	else {
 	//		animacionAlGolpear.gestionarAnimacionDeGolpe()
@@ -153,7 +166,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	
 	method daniarEnemigosSiExisten() {
 		if(not self.enemigosEnMiPosicion().isEmpty() ) {
-			self.enemigosEnMiPosicion().forEach({enemigo => enemigo.recibirDanio()})
+			self.enemigosEnMiPosicion().forEach({enemigo => enemigo.hayAnimacionEnCurso(false) enemigo.permitirAnimacion(true) enemigo.recibirDanio()})
 		}
 	}
 	
@@ -164,12 +177,12 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	method patear() {
 		self.aumentarPatadasDadas()
 		animacionAlPatear.gestionarAnimacionDePatada()		 
-		self.daniarEnemigosSiExisten()
     }
 	
 	override method recibirDanio() {
 	 if (not invulnerable) {  
         //self.volverInvulnerable()   
+        self.actualizarTimerDeGolpe()
         self.aumentarGolpesRecibidos()
         game.sound("recibirDanio.wav").play()
 		animacionAlRecibirDanio.gestionarAnimacionDeDanio()
@@ -205,16 +218,16 @@ class EnemigoFactory {
 	method nuevo()
 }
 
-object enemigoFactoryB inherits EnemigoFactory {
+object enemigoA inherits EnemigoFactory {
 	override method nuevo() {
-		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(8,1), direccionMirando="Izquierda", tiempoPerseguir = 1000)
+		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(8,1), direccionMirando="Izquierda", tiempoPerseguir = 1000, enemigoAAnimar= self.toString() )
 	}
 }
  
-object enemigoFactory inherits EnemigoFactory{
+object enemigoB inherits EnemigoFactory{
 	
 	override method nuevo() {
-		return new Enemigo(image = "enemigoAquietoIzq.png", position= game.at(7,0), direccionMirando="Izquierda", tiempoPerseguir = 500)
+		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(7,0), direccionMirando="Izquierda", tiempoPerseguir = 500, enemigoAAnimar= self.toString() )
 	}
 }
 
@@ -223,7 +236,7 @@ object enemigoManager {
 	var generados = #{}
 	const limite = 4
 	
-	const factories = [enemigoFactory,enemigoFactoryB]
+	const factories = [enemigoA,enemigoB]
 	
 	
 	method seleccionarFactory() {
@@ -257,21 +270,25 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	
 	var property tiempoPerseguir
 	
+	var property enemigoAAnimar
+	
+	var property sigoEnCombate = true
+	
 	const personajePrincipal = bill
 	 
 	const numeroDeDerrotas = contador 
 	 
 	var property cantidadDeVida = 80
 	
-	const animacionEnemigoRecibeDanio = new AnimacionDanioEnemigo(objeto=self)
+	const animacionEnemigoRecibeDanio = new AnimacionDanioEnemigo(objeto=self, objetoAnimado=enemigoAAnimar) 
 	
-	const animacionEnemigoDerrotado = new AnimacionDerrotaEnemigo(objeto=self)
+	const animacionEnemigoDerrotado = new AnimacionDerrotaEnemigo(objeto=self, objetoAnimado=enemigoAAnimar)
 	
-	const animacionEnemigoGolear = new AnimacionGolpeEnemigo(objeto=self)
+	const animacionEnemigoGolear = new AnimacionGolpeEnemigo(objeto=self, objetoAnimado=enemigoAAnimar)
 	
-	const animacionMover = new AnimadorMovimientoEnemigo(objeto= self)
+	const animacionMover = new AnimadorMovimientoEnemigo(objeto= self, objetoAnimado=enemigoAAnimar)
 	
-	const animacionSubir = new AnimadorMovimientoSubirEnemigo(objeto= self)
+	const animacionSubir = new AnimadorMovimientoSubirEnemigo(objeto= self, objetoAnimado=enemigoAAnimar)
 	
 //	var property golpesRecibidos = 0
 //	
@@ -287,10 +304,11 @@ class Enemigo inherits IndividuoBase{			//nuevo
 
 	override method derrotadoSiSeAgotaSalud() {
 		if (self.noTieneMasSalud()) {
+			self.sigoEnCombate(false)
+			self.volverInvulnerable()
 			game.removeTickEvent("acercarse")
     		animacionEnemigoDerrotado.animacion()
     		numeroDeDerrotas.agregarYActualizar()
-    		numeroDeDerrotas.ganarSiAlncanzoObjetivo()
     	}
     	else {
     		self.quitarInvulnerabilidad()
@@ -303,9 +321,8 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	}
 	
 	override method golpear() {
-		if (self.estoyJuntoABill()) {
-			animacionEnemigoGolear.realizarAnimacion() 
-			personajePrincipal.recibirDanio()
+		if (self.estoyJuntoABill() && personajePrincipal.timerDeGolpe() == 0 && self.sigoEnCombate() ) { //personajePrincipal.timerDeGolpe() == 0 podria ser un metodo con un mejor nombre
+			animacionEnemigoGolear.realizarAnimacion()
 		}	  
 	}
 	
@@ -317,9 +334,9 @@ class Enemigo inherits IndividuoBase{			//nuevo
         if (not invulnerable) {  
           self.volverInvulnerable()   
           game.sound("recibirDanio.wav").play()
-		  animacionEnemigoRecibeDanio.realizarAnimacion()
+		  animacionEnemigoRecibeDanio.gestionarAnimacionDanioEnemigo()
 		  self.reducirSalud()
-		  self.derrotadoSiSeAgotaSalud()
+		  game.schedule(100,{ self.quitarInvulnerabilidad()})
 	  }
 	}
 	
@@ -342,7 +359,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 		if (not self.estoyJuntoABill()) {
 			self.acercarseABill()
 		}else {
-			game.schedule(700, {self.golpear()}) // schedule para que no te cague a palazos 
+			game.schedule(700,{self.golpear()}) // schedule para que no te cague a palazos, pensar en un motor de golpe distinto 
 		}
 	}
 	
@@ -392,8 +409,6 @@ class Enemigo inherits IndividuoBase{			//nuevo
 
 
 
-
-
 class Finalizar {
 	var property position = game.origin()
 	var property image = "gameOver.jpg"
@@ -419,52 +434,21 @@ object win inherits Finalizar {
     override method juegoFinalizado() {game.schedule(8000, {game.stop()}) } 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-object puerta {
-	const property direccionMirando = "Derecha"
-	var property image = "puerta1.png"
-	var property position = game.origin()
-	var property hayAnimacionEnCurso = false
-	var property permitirAnimacion = true
+object puerta inherits IndividuoBase{
 	
-	method quitarInvulnerabilidad() {}
-	method duracionInvulnerabilidad() {} 
-	method invulnerable() {}
-	method volverInvulnerable() {}
-	method resusitarOTerminar() {}
-	method golpesRecibidos(numero) {} 
-	method aumentarGolpesRecibidos() {}
-	method derrotadoSiSeAgotaSalud() {}
-	method patadasDadas(numero) {}
-	method aumentarPatadasDadas() {}
-	method golpesDados(numero) {}
-	method aumentarGolpesDados() {}
-	
-	method puedeRealizarAnimacion() {
-		return not self.hayAnimacionEnCurso()
-	}
+    override method position() = game.origin()
+
+	override method duracionInvulnerabilidad() {} 
+	override method golpear()				   {}
+	override method recibirDanio() 			   {}
+	override method esEnemigo() 			   {}
+	override method derrotadoSiSeAgotaSalud()  {}
+
 }
-object mainMenu {
-	var property hayAnimacionEnCurso = false
-	var property permitirAnimacion = true
+object mainMenu inherits IndividuoBase{
+
     const property animacionInicio = animacionMainMenu
-    const property direccionMirando = "Derecha"
-    var property position = game.origin()
-    var property image = "spriteMainMenu0.png"
+
 
     method iniciarJuego() {
         game.removeVisual(self)
@@ -474,26 +458,14 @@ object mainMenu {
     	animacionInicio.realizarAnimacion()
     }
     
-//    method detener() {
-//    	animacionInicio.detenerAnimacion()
-//    }
+
+    override method position() = game.origin()
     
-	method quitarInvulnerabilidad() {}
-	method duracionInvulnerabilidad() {} 
-	method invulnerable() {}
-	method volverInvulnerable() {}
-	method resusitarOTerminar() {}
-	method golpesRecibidos(numero) {} 
-	method aumentarGolpesRecibidos() {}
-	method derrotadoSiSeAgotaSalud() {}
-	method patadasDadas(numero) {}
-	method aumentarPatadasDadas() {}
-	method golpesDados(numero) {}
-	method aumentarGolpesDados() {}
-	
-	method puedeRealizarAnimacion() {
-		return not self.hayAnimacionEnCurso()
-	}
+	override method duracionInvulnerabilidad() {} 
+	override method golpear() 			   	   {}
+	override method recibirDanio()		  	   {}
+	override method esEnemigo()			 	   {}
+	override method derrotadoSiSeAgotaSalud()  {}
 }
 
 

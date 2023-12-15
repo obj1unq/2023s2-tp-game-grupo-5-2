@@ -5,59 +5,7 @@ import movimientos.*
 import personajes.*
 import barraHP.*
 
-object start {
 
-    var property position = game.origin()
-
-    method image() = "startButton.png"
-
-    method actualizarStart() {
-        game.onTick(500, "actualizar Start", { self.visual()})
-    }
-
-    method visual() {
-        if (game.hasVisual(self)) game.removeVisual(self) else game.addVisual(self)
-    }
-	method quitarBoton() {
-		if(game.hasVisual(self)) {
-			game.removeVisual(self)
-		} else {}
-	}
-	
-    method iniciarJuego() {
-        game.removeTickEvent("actualizar Start")
-        self.quitarBoton()
-    }
-}
-
-object contador {
-	var property position = game.at(6,7)
-	const property numeroDelContador = numerico
-	var property image = "contador.png"
-	var property cantidad = 0
-	
-	method agregarYActualizar() {
-		cantidad = cantidad + 1
-		self.actualizarDerrotados()
-	}
-	
-	method actualizarDerrotados() {
-		numeroDelContador.actualizar(cantidad)
-	}
-	
-	method ganarSiAlncanzoObjetivo() {
-		if (cantidad == 4) win.mostrarPantalla()
-	}
-}
-
-object numerico {
-	var property position = game.at(9,7)
-	var property image = "0vidas.png"
-	
-	method actualizar(numero) {
-		image = numero.toString() + "vidas.png" 
-	}
-}
 //-----------------------------------------------------------------------------------
 
 object escenario{
@@ -184,7 +132,7 @@ class Portada inherits Nivel{
 	override method configuracionFondo(){
 		game.addVisual(mainMenu)
 		mainMenu.animacion()
-		start.actualizarStart()	
+		start.actualizar()	
 		
 	}
 	
@@ -265,15 +213,95 @@ class PuertaInicial inherits Nivel {
 	}	
 }   
 
+
+//----extras----------------------------
+
+class ObjetosParpadeantes {
+    method actualizar() {
+        game.onTick(self.tiempoDeActualizacion(), "actualizar Start", { self.visual()})
+    }
+
+    method tiempoDeActualizacion() = 500
+
+    method visual() {
+        if (game.hasVisual(self)) game.removeVisual(self) else game.addVisual(self)
+    }
+	method quitarBoton() {
+		if(game.hasVisual(self)) {
+			game.removeVisual(self)
+		} else {}
+	}		
+}
+
+object start inherits ObjetosParpadeantes {
+
+    var property position = game.origin()
+
+    method image() = "startButton.png"
+	
+    method iniciarJuego() {
+        game.removeTickEvent("actualizar Start")
+        self.quitarBoton()
+    }
+}
+
+object contador {
+	var property position = game.at(6,7)
+	const property numeroDelContador = numerico
+	var property image = "contador.png"
+	var property cantidad = 0
+	
+	method agregarYActualizar() {
+		cantidad = cantidad + 1
+		self.actualizarDerrotados()
+	}
+	
+	method actualizarDerrotados() {
+		numeroDelContador.actualizar(cantidad)
+		self.ganarSiAlncanzoObjetivo()
+	}
+	
+	method ganarSiAlncanzoObjetivo() {
+		if (cantidad == 4) mano.aparecer()  //win.mostrarPantalla() //el win es para ganar el juego, hay que utilizarlo luego en otro lado, esto era de prueba solamente para la entrega 
+	}
+}
+
+object numerico {
+	var property position = game.at(9,7)
+	var property image = "0vidas.png"
+	
+	method actualizar(numero) {
+		image = numero.toString() + "vidas.png" 
+	}
+}
+
 object fondoLvl1 {
 
 	var property position = game.at(0, 0)
     var property image = "background1.png"
 
-
 }
 
-
+object mano inherits ObjetosParpadeantes  {
+	
+	var property position = game.at(0, 0)
+    var property image = "mano.png"
+	
+	method aparecer() {
+		game.addVisual(self)
+		game.sound("mano.wav").play()
+		self.actualizar()
+	}
+	
+	override method visual() {
+		if (game.hasVisual(self)) {
+			game.removeVisual(self) 
+		}else {
+			game.addVisual(self) 
+		    game.sound("mano.wav").play()
+		}
+	}
+}
 
 
 
