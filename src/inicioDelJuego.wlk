@@ -79,11 +79,7 @@ class Nivel{
 		const izquierda = new Izquierda(personaje = bill)
 		const derecha   = new Derecha(personaje = bill)
 		
-//		const jugador2Arriba = new Arriba(personaje = enemigoA)
-//		const jugador2Abajo  = new Abajo(personaje = enemigoA)
-//		const jugador2Izquierda = new Izquierda(personaje = enemigoA)
-//		const jugador2Derecha   = new Derecha(personaje = enemigoA)
-		
+
 		//musica
    		keyboard.up().onPressDo({sonido.volume(1)})
 		keyboard.down().onPressDo({sonido.volume(0.2)})
@@ -121,6 +117,7 @@ class Nivel{
 }
 
 class Portada inherits Nivel{
+	var contador = 0
 	
 	override method configuracionTeclado(){
 		keyboard.enter().onPressDo {self.pressEnter()}
@@ -132,17 +129,26 @@ class Portada inherits Nivel{
 	override method configuracionFondo(){
 		game.addVisual(mainMenu)
 		mainMenu.animacion()
-		start.actualizar()	
-		
+		self.time()
+		game.schedule(3500, { start.actualizar() }) //si se quiere retrasar la aparicion del boton hay que retrasar el metodo pressEnter tambien 
+	    
 	}
 	
 	override method pressEnter(){
-		sonido.stop()
-		//mainMenu.detener()		
-		const puertaInicial = new PuertaInicial (sonido = game.sound("perciana.wav"))
-		start.iniciarJuego()
-		escenario.removerNivel() 
-		escenario.iniciarNivel(puertaInicial)
+		if (contador == 3500) { //3500 porque es lo que tarda el boton start en aparecer, es para que no se pueda apretar enter antes de ese tiempo y explote
+			sonido.stop()
+			const puertaInicial = new PuertaInicial (sonido = game.sound("perciana.wav"))
+		    start.iniciarJuego()
+		    escenario.removerNivel() 
+		    escenario.iniciarNivel(puertaInicial)
+		}
+	}
+	
+	method time() {
+		if (contador < 3500) {
+			contador = contador + 100 //suma cada 100ms, si se intenta hacer cada 10ms o cada 1ms wollok falla y no detecta el cambio, no se porque se debe pero de esta manera funciona
+			game.schedule(100, {self.time()})
+		}
 	}
 }
 
@@ -174,30 +180,59 @@ class Nivel1 inherits Nivel{
 		game.schedule(24000, { enemigoManager.generar() } )
 			
 		game.addVisual(bill)
-		
 	
-		
-		
 	}
 	
 	override method configuracionFondo(){
 		game.addVisual(fondoLvl1)	
 	}
 	
-	override method instanciarObjetos(){
-		
-	}
-//	override method configuracionSonido() {
-//		game.schedule(500, {sonido.play()} )
-//	}
+	override method instanciarObjetos(){}
+
 	override method configuracionVisual(){		
 
 		game.addVisual(barraDeHP)
 		contadorDeVidas.inicializar()	
 		game.addVisual(contador)
 		game.addVisual(numerico)	
-	}		
+	}	
+	
+	override method removerVisualEscenario() { //nuevo
+	//    sonido.stop()
+		game.removeVisual(fondoLvl1)
+		game.removeVisual(primerDetectorNivel)
+		game.removeVisual(segundoDetectorNivel)
+		mano.iniciarJuego()
+				
+		game.removeVisual(bill)
+		game.removeVisual(barraDeHP)
+		game.removeVisual(contadorDeVidas)
+		game.removeVisual(contador)
+		game.removeVisual(numerico)
+		
+		contador.cantidad(0)
+		numerico.actualizar(0)
+		game.clear()
+	}	
 }
+
+class Nivel2 inherits Nivel1 { 
+    
+	override method configuracionSonido(){}
+    
+    override method configuracionInicial(){
+    	enemigoManager.reiniciarManager()
+    	super()
+    	bill.position(game.at(1,1))
+    	destrabarPersonaje.habilitarMovimientos()
+    }
+    
+	override method configuracionFondo(){
+		game.addVisual(fondoLvl2)	 
+	}	
+	
+}
+
 
 class PuertaInicial inherits Nivel {
 	const animacionDePerciana = animadorPuerta
@@ -212,7 +247,6 @@ class PuertaInicial inherits Nivel {
     	game.schedule(100, {sonido.play()} )
 	}	
 }   
-
 
 //----extras----------------------------
 
@@ -230,7 +264,13 @@ class ObjetosParpadeantes {
 		if(game.hasVisual(self)) {
 			game.removeVisual(self)
 		} else {}
-	}		
+	}
+		
+    method iniciarJuego() {
+        game.removeTickEvent("actualizar Start")
+        self.quitarBoton()
+    }	
+		
 }
 
 object start inherits ObjetosParpadeantes {
@@ -238,11 +278,6 @@ object start inherits ObjetosParpadeantes {
     var property position = game.origin()
 
     method image() = "startButton.png"
-	
-    method iniciarJuego() {
-        game.removeTickEvent("actualizar Start")
-        self.quitarBoton()
-    }
 }
 
 object contador {
@@ -262,7 +297,16 @@ object contador {
 	}
 	
 	method ganarSiAlncanzoObjetivo() {
-		if (cantidad == 4) mano.aparecer()  //win.mostrarPantalla() //el win es para ganar el juego, hay que utilizarlo luego en otro lado, esto era de prueba solamente para la entrega 
+		
+		if (cantidad == 4 && game.hasVisual(fondoLvl1)) { //por ahora solo añade los detectores en el primer nivel 
+			mano.aparecer()  //win.mostrarPantalla() //el win es para ganar el juego, hay que utilizarlo luego en otro lado, esto era de prueba solamente para la entrega 
+			primerDetectorNivel.aparecerColision()
+			segundoDetectorNivel.aparecerColision()
+		} else if(cantidad == 4 && game.hasVisual(fondoLvl2)) {
+			game.addVisual(elevador)
+			animadorElevador.realizarAnimacion() //esto esta para que no explote, despues hay que reemplazarlo con un elevador.realizarAnimacion() y que en el movimiento
+			                                      //final de este haga spawnear a otro enemigo y que en la animacion de derrota de este ultimo aparezcan los detectores y la mano                                      
+		}
 	}
 }
 
@@ -275,11 +319,17 @@ object numerico {
 	}
 }
 
-object fondoLvl1 {
+class Fondos {
+    var property position = game.at(0, 0)
+    var property image	=""
+}
 
-	var property position = game.at(0, 0)
-    var property image = "background1.png"
+object fondoLvl1 inherits Fondos {
+    override method image() = "background1.png"
+}
 
+object fondoLvl2 inherits Fondos {
+	override method image() = "background2.png"
 }
 
 object mano inherits ObjetosParpadeantes  {
@@ -303,13 +353,52 @@ object mano inherits ObjetosParpadeantes  {
 	}
 }
 
+class Detectores {
+	var property position = game.origin()
+	
+	method aparecerColision() {
+		game.addVisual(self)
+		self.habilitarColision()
+	}
+	
+	method habilitarColision() {			
+		game.onCollideDo(bill, { detector=> detector.hacerAlgo() }) //si bill esta reapareciendo justo cuando el ultimo enemigo es derrotado puede generar error
+	}
+	
+	method hacerAlgo() {}
+	
+	method soundtrackDeNivel() { //si estas en el lvl 1 segui con la misma musica. si no pone la del lvl 3 porque estas en el lvl2
+		return if(game.hasVisual(fondoLvl1)) game.sound("") else game.sound("cancion del tercer nivel ")
+	}
+	
+	method siguienteDelNivelActual() {
+		return if(game.hasVisual(fondoLvl1)) new Nivel2(sonido = self.soundtrackDeNivel()) else "crear el new nivel3"
+		//si fueran mas de 3 niveles habria que hacer elseif preguntando en que nivel esta para generar el correcto
+	}
+	
+	method esEnemigo() = false
+}
 
-
-
-
-
-
-
+object primerDetectorNivel inherits Detectores {
+	
+	override method position() = game.at(11,1)
+	
+	override method hacerAlgo() {
+		const nivel = self.siguienteDelNivelActual()
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel)
+	}
+}
+object segundoDetectorNivel inherits Detectores {
+	
+	override method position() = game.at(11,0)
+	
+	override method hacerAlgo() {
+		const nivel = self.siguienteDelNivelActual()
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel)
+	}
+}
 
 
 

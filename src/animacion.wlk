@@ -212,7 +212,6 @@ class AnimadorMovimientoSubirEnemigo inherits AnimacionEnemigo {
 
 
 
-
 class AnimacionGolpe inherits Animacion { 
 	
 	 override method spritesDerecha() {
@@ -359,12 +358,6 @@ class AnimacionDerrota inherits Animacion {
 }
 class AnimacionRevivir inherits Animacion {
 
-//    const intervaloParpadeo = 25                   // Intervalo de parpadeo en milisegundos
-//    
-//    var tiempoParpadeando = 0
-	
-//	override method secuenciaDeMovimientos() = []
-	
 	override method spritesIzquierda() = []
 	override method spritesDerecha() = []
 	
@@ -374,39 +367,7 @@ class AnimacionRevivir inherits Animacion {
     	objeto.hayAnimacionEnCurso(false)
     	objeto.image("quieto.png") //tendria que ser un mensaje a los sprites con posicionBaseDePJ(self)
         self.parpadearImagen()
-    }
-    
-//    method parpadearImagen() {
-//    // Alternar la visibilidad de bill para simular el parpadeo
-//        if (objeto.invulnerable()) {
-//         self.sacarYAgregarVisualSiTiene()
-//         tiempoParpadeando += intervaloParpadeo
-//         self.realizarParpadeo()
-//       }
-//    }
-//    
-//    method realizarParpadeo() {
-//    	if (tiempoParpadeando < objeto.duracionInvulnerabilidad()) {
-//            game.schedule(intervaloParpadeo, { self.parpadearImagen() })
-//      } else {
-//            self.finalizarInvulnerabilidadYDejarVisual()
-//      }
-//    }
-//    
-//    method sacarYAgregarVisualSiTiene() {
-//    	if (game.hasVisual(objeto)) {
-//            game.removeVisual(objeto)
-//      } else {
-//        game.addVisual(objeto)
-//      }
-//    }
-//   method finalizarInvulnerabilidadYDejarVisual() {
-//        if (not game.hasVisual(objeto)) {
-//             game.addVisual(objeto)       // Asegurarse de que bill sea visible
-//        }
-//        objeto.quitarInvulnerabilidad()
-//    }
-   
+    }  
 }
 
 class AnimadorMovimientoSubir inherits Animacion {
@@ -430,20 +391,15 @@ class AnimadorMovimiento inherits Animacion {
 
 
 
-
-
-
-
-
-
-
-
 object animacionMainMenu inherits Animacion(objeto = mainMenu) {
 
 	override method spritesIzquierda() {}
 	
 	override method spritesDerecha() { 
-		return ["spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
+		return ["logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", 
+			    "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", 
+			    "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png", "logo.png",
+			    "logo1.png",  "logo2.png", "logo3.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
 			    "spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
 			    "spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png","spriteMainMenu0.png",
 		        "spriteMainMenu0.png", "spriteMainMenu1.png", "spriteMainMenu2.png",  "spriteMainMenu3.png", "spriteMainMenu4.png", "spriteMainMenu5.png",
@@ -459,19 +415,10 @@ object animacionMainMenu inherits Animacion(objeto = mainMenu) {
 			    "spriteMainMenu61.png", "spriteMainMenu62.png", "spriteMainMenu63.png", "spriteMainMenu64.png", "spriteMainMenu65.png", "spriteMainMenu66.png"
 		]
 	}	
+	
 	override method intervaloEntreAnimacion(animaciones) = game.schedule(80, { self.siguienteFrame(animaciones) })
 	
-//	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
-//	    self.reiniciarControlador()
-//	}
-	
 	override method movimientoFinal() ="spriteMainMenu66.png"
-    
-//    method detenerAnimacion() {
-//    	personaje.permitirAnimacion(false)
-//        personaje.hayAnimacionEnCurso(true)
-////    	self.reiniciarControlador()
-//    }
 }
 
 object animadorPuerta inherits Animacion(objeto = puerta ) {
@@ -489,10 +436,38 @@ object animadorPuerta inherits Animacion(objeto = puerta ) {
 	override method intervaloEntreAnimacion(animaciones) = game.schedule(150, { self.siguienteFrame(animaciones) }) 
 	
 	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
-//	    self.reiniciarControlador()
 	    game.sound("motor.wav").play()
 		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
 		escenario.removerNivel()
 		escenario.iniciarNivel(nivel1)
 	}	
 }
+
+object animadorElevador inherits Animacion(objeto = elevador) {
+	
+	override method spritesIzquierda() {}
+	
+	override method spritesDerecha() {
+		return ["elevador1.png", "elevador1.png", "elevador2.png", "elevador2.png", "elevador3.png", "elevador3.png"]
+	}
+	
+	
+	
+	override method finalizarAnimacion() {  
+	    enemigoManager.agregarJefe(enemigoC) 
+	    game.removeVisual(elevador)
+	}	
+	
+}
+
+object destrabarPersonaje inherits Animacion(objeto = bill ) {
+	override method spritesDerecha() {
+		return ["paso1.png", "paso2.png", "paso3.png"]
+	}	
+	override method spritesIzquierda() {}
+	
+	method habilitarMovimientos() {
+		self.interrumpirAnimacion( { self.realizarAnimacion() } )
+	}
+}
+

@@ -53,7 +53,7 @@ class IndividuoBase {
 		return self.puedeOcupar(proxima)
 	}
 	method puedeOcupar(_posicion) {
-		return _posicion.y().between(0, 1) && // Últimas tres filas después de invertir, lo mejor seria crear objetos invisibles en donde no queremos que se mueva y hacerlos solidos 
+		return _posicion.y().between(0, 1) &&  
                _posicion.x().between(0, game.width() - 1)                               //return tablero.pertenece(_posicion)
 	}
 	
@@ -76,9 +76,7 @@ class IndividuoBase {
 	method intervaloDeGolpe() = 2000
 }
 
-object bill inherits IndividuoBase { //probar borrar el immage y setearle en la clase madre a ver si aun sin ser abstracto el enemigo hace animaciones
-	
-//	const enemigo2 = enemigoB	
+object bill inherits IndividuoBase { 
 	
 	const property barraDeVida = barraDeHP											
 	
@@ -100,29 +98,12 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	
 	const property animacionDanioCritico = new AnimacionDanioCritico(objeto = self)
 	
-//	const property controlDeAnimaciones = controlDeAnimacion
-//	
-//	var property golpesRecibidos = 0
-	
 	var property golpesDados = 0
 	
 	var property patadasDadas = 0
 	
-//	var property invulnerable = false    
-//	
 	override method duracionInvulnerabilidad() = 1500 
-//	
-//	method volverInvulnerable() {
-//		invulnerable = true
-//	}
-//	
-//	method quitarInvulnerabilidad() {
-//		invulnerable = false
-//	}
-//	
-//	method aumentarGolpesRecibidos() {
-//		golpesRecibidos = golpesRecibidos + 1
-//	}
+
 	
 	method aumentarGolpesDados() {
 		golpesDados = golpesDados + 1
@@ -133,7 +114,7 @@ object bill inherits IndividuoBase { //probar borrar el immage y setearle en la 
 	}
 	
 	method resusitarOTerminar() {
-    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar()  else  gameOver.mostrarPantalla() //el game stop se puede reemplazar con un pantallazo de game over y dsp el stop 
+    	if (barraDeVida.quedanVidasSuficientes()) self.resusitar()  else  gameOver.mostrarPantalla() 
     }
 	
 	
@@ -231,10 +212,17 @@ object enemigoB inherits EnemigoFactory{
 	}
 }
 
+object enemigoC inherits EnemigoFactory {
+	override method nuevo() {
+		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(9,2), direccionMirando="Izquierda", tiempoPerseguir = 450, enemigoAAnimar= self.toString() )
+	}
+	
+}
+
 object enemigoManager {
 	
 	var generados = #{}
-	const limite = 4
+	var limite = 4
 	
 	const factories = [enemigoA,enemigoB]
 	
@@ -261,6 +249,22 @@ object enemigoManager {
 	method quitar(tipoEnemigo) {
 		generados.remove(tipoEnemigo)
 		game.removeVisual(tipoEnemigo)
+	}
+	
+	method reiniciarManager() {
+		generados = #{}
+	}
+	
+	method cambiarLimiteEnemigos(cantidad) {
+		limite = cantidad
+	}
+	
+	method agregarJefe(jefe) {
+		const jefe1 = jefe.nuevo()
+		
+		game.addVisual(jefe1)
+		jefe1.cantidadDeVida(120)
+		jefe1.perseguirPersonaje()
 	}
 }
 
@@ -401,7 +405,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	}
 	
 	
-	
+	method hacerAlgo() {} //solo por los detectores para que no salga mensaje de error, habria que buscar una forma mejor de hacerlo
 }
 
 
@@ -445,6 +449,19 @@ object puerta inherits IndividuoBase{
 	override method derrotadoSiSeAgotaSalud()  {}
 
 }
+
+object elevador inherits IndividuoBase{
+	
+    override method position() = game.origin()
+
+	override method duracionInvulnerabilidad() {} 
+	override method golpear()				   {}
+	override method recibirDanio() 			   {}
+	override method esEnemigo() 			   {}
+	override method derrotadoSiSeAgotaSalud()  {}	
+	method hacerAlgo() {}
+}
+
 object mainMenu inherits IndividuoBase{
 
     const property animacionInicio = animacionMainMenu

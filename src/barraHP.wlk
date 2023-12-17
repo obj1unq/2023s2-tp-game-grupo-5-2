@@ -69,6 +69,8 @@ object barraDeHP {
 		self.degradarEstado()
 		self.degradarVida()
 	}
+	
+method hacerAlgo() {} //solo por los detectores para que no salga mensaje de error, habria que buscar una forma mejor de hacerlo
 }
 	
 
@@ -150,4 +152,8 @@ object contadorDeVidas {
 	method calcularSpriteSegunVidas(numeroDeVidas) {
 		return (numeroDeVidas - 1).toString() + "vidas.png"
 	}
+method hacerAlgo() {} //solo por los detectores para que no salga mensaje de error, habria que buscar una forma mejor de hacerlo	
 }
+
+
+
