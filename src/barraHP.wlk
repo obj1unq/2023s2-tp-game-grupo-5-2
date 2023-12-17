@@ -53,7 +53,11 @@ object barraDeHP {
 		estado.degradar(self)
 	}
 	
-	method aumentar() {}						//Consume algo que le da 1 vida mas
+	method aumentar() {					//Consume algo que le da 1 vida mas
+		vidas= vidas + 1
+		contadorVidas.actualizarVidas()
+		game.sound("hpUp.wav").play()
+	}
 	
 	method quedanVidasSuficientes() {
 		return vidas > 1
@@ -71,7 +75,9 @@ object barraDeHP {
 	}
 	
 method hacerAlgo() {} //solo por los detectores para que no salga mensaje de error, habria que buscar una forma mejor de hacerlo
+method esEnemigo() {}
 }
+
 	
 
 

@@ -197,7 +197,7 @@ class Nivel1 inherits Nivel{
 		game.addVisual(numerico)	
 	}	
 	
-	override method removerVisualEscenario() { //nuevo
+	override method removerVisualEscenario() { 
 	//    sonido.stop()
 		game.removeVisual(fondoLvl1)
 		game.removeVisual(primerDetectorNivel)
@@ -231,6 +231,39 @@ class Nivel2 inherits Nivel1 {
 		game.addVisual(fondoLvl2)	 
 	}	
 	
+	override method removerVisualEscenario() { 
+	//    sonido.stop()
+		game.removeVisual(fondoLvl2)
+		game.removeVisual(primerDetectorNivel)
+		game.removeVisual(segundoDetectorNivel)
+		mano.iniciarJuego()
+				
+		game.removeVisual(bill)
+		game.removeVisual(barraDeHP)
+		game.removeVisual(contadorDeVidas)
+		game.removeVisual(contador)
+		game.removeVisual(numerico)
+		
+		contador.cantidad(0)
+		numerico.actualizar(0)
+		game.clear()
+	}
+}
+class Nivel3 inherits Nivel1 {
+	
+	override method configuracionSonido(){}
+	
+    override method configuracionInicial(){
+    	enemigoManager.reiniciarManager()
+    	game.addVisual(pared)
+    	super()
+    	bill.position(game.at(1,1))
+    	destrabarPersonaje.habilitarMovimientos()
+    }	
+	
+	override method configuracionFondo() {
+		game.addVisual(fondoLvl3)
+	}
 }
 
 
@@ -298,15 +331,31 @@ object contador {
 	
 	method ganarSiAlncanzoObjetivo() {
 		
-		if (cantidad == 4 && game.hasVisual(fondoLvl1)) { //por ahora solo añade los detectores en el primer nivel 
-			mano.aparecer()  //win.mostrarPantalla() //el win es para ganar el juego, hay que utilizarlo luego en otro lado, esto era de prueba solamente para la entrega 
-			primerDetectorNivel.aparecerColision()
-			segundoDetectorNivel.aparecerColision()
-		} else if(cantidad == 4 && game.hasVisual(fondoLvl2)) {
-			game.addVisual(elevador)
-			animadorElevador.realizarAnimacion() //esto esta para que no explote, despues hay que reemplazarlo con un elevador.realizarAnimacion() y que en el movimiento
-			                                      //final de este haga spawnear a otro enemigo y que en la animacion de derrota de este ultimo aparezcan los detectores y la mano                                      
-		}
+		if (cantidad == 4 && game.hasVisual(fondoLvl1)) {
+			self.habilitarPasarASiguienteNivel()   //win.mostrarPantalla() //el win es para ganar el juego, hay que utilizarlo luego en otro lado, esto era de prueba solamente para la entrega 			
+		} else if(cantidad == 4 && game.hasVisual(fondoLvl2)) { //abre el elevador al derrotar al 4to enemigo del nivel 2
+			self.habilitarElevadorParaJefe()			                                  
+		} else if (cantidad == 5 && game.hasVisual(fondoLvl2)) { //agrega los detectores para pasar al nivel 3
+		    self.habilitarPasarASiguienteNivel()
+		    barraDeHP.aumentar()                                //al derrotar al semiJefe del nivel 2 bill recupera una vida                   
+		} else if(cantidad == 4 && game.hasVisual(fondoLvl3)) { //abre la pared al derrotar al 4to enemigo del nivel 3
+		    self.habilitarParedParaJefe()
+		} //else if con cantidad 5 y visual nivel 3 para pasar al ultimo nivel 
+	}
+	
+	method habilitarPasarASiguienteNivel() {
+		mano.aparecer()
+		primerDetectorNivel.aparecerColision()
+		segundoDetectorNivel.aparecerColision()
+	}
+	
+	method habilitarElevadorParaJefe() {
+		game.addVisual(elevador)
+		animadorElevador.realizarAnimacion()  
+	}
+	
+	method habilitarParedParaJefe() {
+		animadorPared.realizarAnimacion()
 	}
 }
 
@@ -326,10 +375,17 @@ class Fondos {
 
 object fondoLvl1 inherits Fondos {
     override method image() = "background1.png"
+    method esEnemigo() =false
 }
 
 object fondoLvl2 inherits Fondos {
 	override method image() = "background2.png"
+	method esEnemigo() =false
+}
+
+object fondoLvl3 inherits Fondos {
+	override method image() = "background3.png"
+	method esEnemigo() =false
 }
 
 object mano inherits ObjetosParpadeantes  {
@@ -368,12 +424,20 @@ class Detectores {
 	method hacerAlgo() {}
 	
 	method soundtrackDeNivel() { //si estas en el lvl 1 segui con la misma musica. si no pone la del lvl 3 porque estas en el lvl2
-		return if(game.hasVisual(fondoLvl1)) game.sound("") else game.sound("cancion del tercer nivel ")
+		return if(game.hasVisual(fondoLvl3)) {
+				  game.sound("enemyHeadquarter.wav")
+		       }else {
+		       	  game.sound("") 
+		       }
 	}
 	
 	method siguienteDelNivelActual() {
-		return if(game.hasVisual(fondoLvl1)) new Nivel2(sonido = self.soundtrackDeNivel()) else "crear el new nivel3"
-		//si fueran mas de 3 niveles habria que hacer elseif preguntando en que nivel esta para generar el correcto
+		return if(game.hasVisual(fondoLvl1)) {
+				  new Nivel2(sonido = self.soundtrackDeNivel()) 
+			   }else if(game.hasVisual(fondoLvl2)){
+			   	  new Nivel3(sonido= self.soundtrackDeNivel())
+			   } //else game.hasVisual(fondoLvl3)){ new Nivel4
+
 	}
 	
 	method esEnemigo() = false

@@ -196,27 +196,27 @@ object bill inherits IndividuoBase {
 
 class EnemigoFactory {
 	
-	method nuevo()
+	method nuevo(nuevaPosition1, nuevaPosition2)
 }
 
 object enemigoA inherits EnemigoFactory {
-	override method nuevo() {
+	override method nuevo(nuevaPosition1, nuevaPosition2) {
 		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(8,1), direccionMirando="Izquierda", tiempoPerseguir = 1000, enemigoAAnimar= self.toString() )
 	}
 }
  
 object enemigoB inherits EnemigoFactory{
 	
-	override method nuevo() {
+	override method nuevo(nuevaPosition1, nuevaPosition2) {
 		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(7,0), direccionMirando="Izquierda", tiempoPerseguir = 500, enemigoAAnimar= self.toString() )
 	}
 }
 
 object enemigoC inherits EnemigoFactory {
-	override method nuevo() {
-		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(9,2), direccionMirando="Izquierda", tiempoPerseguir = 450, enemigoAAnimar= self.toString() )
+	override method nuevo(nuevaPosition1, nuevaPosition2) {
+		return new Enemigo(image = self.toString()+"quietoIzq.png", position= self.positionDeJefe(nuevaPosition1, nuevaPosition2), direccionMirando="Izquierda", tiempoPerseguir = 450, enemigoAAnimar= self.toString() )
 	}
-	
+	method positionDeJefe(nuevaPosition1, nuevaPosition2) = game.at(nuevaPosition1, nuevaPosition2)
 }
 
 object enemigoManager {
@@ -239,7 +239,7 @@ object enemigoManager {
 	method generar() {
 		if(generados.size() < limite ) {
 			
-			const tipoEnemigo = self.seleccionarFactory().nuevo() 		
+			const tipoEnemigo = self.seleccionarFactory().nuevo(0,0) 		
 			game.addVisual(tipoEnemigo)	
 			generados.add(tipoEnemigo)
 			tipoEnemigo.perseguirPersonaje()
@@ -259,11 +259,11 @@ object enemigoManager {
 		limite = cantidad
 	}
 	
-	method agregarJefe(jefe) {
-		const jefe1 = jefe.nuevo()
+	method agregarJefe(jefe,nuevaPosition1, nuevaPosition2) {
+		const jefe1 = jefe.nuevo(nuevaPosition1, nuevaPosition2)
 		
 		game.addVisual(jefe1)
-		jefe1.cantidadDeVida(120)
+		jefe1.cantidadDeVida(140)
 		jefe1.perseguirPersonaje()
 	}
 }
@@ -454,6 +454,22 @@ object elevador inherits IndividuoBase{
 	
     override method position() = game.origin()
 
+	override method duracionInvulnerabilidad() {} 
+	override method golpear()				   {}
+	override method recibirDanio() 			   {}
+	override method esEnemigo() 			   {}
+	override method derrotadoSiSeAgotaSalud()  {}	
+	method hacerAlgo() {}
+}
+
+object pared inherits IndividuoBase(image="pared1.png"){
+	
+//	method agregarPared() {
+//		const pared = new Enemigo(image = "pared1.png", position= game.origin(), direccionMirando="Derecha", tiempoPerseguir = 1, enemigoAAnimar= self.toString() )
+//		game.addVisual(pared)
+//	}
+	override method position() = game.origin()
+	
 	override method duracionInvulnerabilidad() {} 
 	override method golpear()				   {}
 	override method recibirDanio() 			   {}

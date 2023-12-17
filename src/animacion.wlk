@@ -451,14 +451,27 @@ object animadorElevador inherits Animacion(objeto = elevador) {
 		return ["elevador1.png", "elevador1.png", "elevador2.png", "elevador2.png", "elevador3.png", "elevador3.png"]
 	}
 	
-	
-	
 	override method finalizarAnimacion() {  
-	    enemigoManager.agregarJefe(enemigoC) 
+	    enemigoManager.agregarJefe(enemigoC,9,2) 
 	    game.removeVisual(elevador)
 	}	
 	
 }
+
+object animadorPared inherits Animacion(objeto = pared) { 
+	
+	override method spritesIzquierda() {}
+	
+	override method spritesDerecha() {
+		return ["pared1.png", "pared2.png", "pared2.png","pared2.png", "pared3.png","pared3.png", "pared3.png", "pared4.png", "pared4.png", "pared4.png"]
+	}
+	
+	override method finalizarAnimacion() {  
+	    enemigoManager.agregarJefe(enemigoC,3,2) 
+	    game.removeVisual(pared)
+	}
+}
+
 
 object destrabarPersonaje inherits Animacion(objeto = bill ) {
 	override method spritesDerecha() {
