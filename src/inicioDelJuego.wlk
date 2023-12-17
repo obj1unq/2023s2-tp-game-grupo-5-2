@@ -11,6 +11,7 @@ import barraHP.*
 object escenario{
   //  var cont = 1
 	var property nivel
+	var property nivelGuardado  
 	
 	method iniciarNivel(nuevoNivel){
 		
@@ -41,10 +42,14 @@ object escenario{
 		nivel.removerVisualEscenario()
 	}
 	
-	method perderVida(){
-		self.removerNivel()
-		self.iniciarNivel(nivel)
+	method guardarNivel(nivelAGuardar) {
+		self.nivelGuardado(nivelAGuardar)
 	}
+	
+//	method perderVida(){
+//		self.removerNivel()
+//		self.iniciarNivel(nivel,2)
+//	}
 	
 //	method morir(){
 //		self.removerNivel()
@@ -214,6 +219,10 @@ class Nivel1 inherits Nivel{
 		numerico.actualizar(0)
 		game.clear()
 	}	
+	
+	method detenerSonidoAntesDeJefe() {
+		sonido.stop()
+	}
 }
 
 class Nivel2 inherits Nivel1 { 
@@ -254,18 +263,50 @@ class Nivel3 inherits Nivel1 {
 	override method configuracionSonido(){}
 	
     override method configuracionInicial(){
-    	enemigoManager.reiniciarManager()
+    	enemigoManager.reiniciarManager() 	
     	game.addVisual(pared)
-    	super()
+    	super()                    			
     	bill.position(game.at(1,1))
     	destrabarPersonaje.habilitarMovimientos()
     }	
 	
 	override method configuracionFondo() {
 		game.addVisual(fondoLvl3)
+		
+	}
+	
+	override method removerVisualEscenario() {
+		escenario.nivelGuardado().detenerSonidoAntesDeJefe() 
+		game.removeVisual(fondoLvl3)
+		game.removeVisual(primerDetectorNivel)
+		game.removeVisual(segundoDetectorNivel)
+		mano.iniciarJuego()
+				
+		game.removeVisual(bill)
+		game.removeVisual(barraDeHP)
+		game.removeVisual(contadorDeVidas)
+		game.removeVisual(contador)
+		game.removeVisual(numerico)
+		
+		contador.cantidad(0)
+		numerico.actualizar(0)
+		game.clear()
 	}
 }
-
+class Nivel4 inherits Nivel1 {
+	
+    override method configuracionInicial(){   	
+    	game.addVisual(bill)
+    	bill.position(game.at(1,1))
+    	destrabarPersonaje.habilitarMovimientos()
+    	enemigoManager.agregarJefe(enemigoD,10, 0,240)
+    }	
+    
+ 	override method configuracionFondo(){
+		game.addVisual(fondoLvl4)	 
+	}
+    
+}
 
 class PuertaInicial inherits Nivel {
 	const animacionDePerciana = animadorPuerta
@@ -340,7 +381,11 @@ object contador {
 		    barraDeHP.aumentar()                                //al derrotar al semiJefe del nivel 2 bill recupera una vida                   
 		} else if(cantidad == 4 && game.hasVisual(fondoLvl3)) { //abre la pared al derrotar al 4to enemigo del nivel 3
 		    self.habilitarParedParaJefe()
-		} //else if con cantidad 5 y visual nivel 3 para pasar al ultimo nivel 
+		} else if(cantidad == 5 && game.hasVisual(fondoLvl3)) { //pasa al ultimo nivel 
+			self.habilitarPasarASiguienteNivel()
+		}  else if(cantidad == 1 && game.hasVisual(fondoLvl4)) {
+			game.schedule(5000, { win.mostrarPantalla() }) //parar el sonido e iniciar otro, o cambiar la pantalla por una animacion de creditos 
+		}
 	}
 	
 	method habilitarPasarASiguienteNivel() {
@@ -388,6 +433,11 @@ object fondoLvl3 inherits Fondos {
 	method esEnemigo() =false
 }
 
+object fondoLvl4 inherits Fondos {
+	override method image() = "background4.png"
+	method esEnemigo() =false
+}
+
 object mano inherits ObjetosParpadeantes  {
 	
 	var property position = game.at(0, 0)
@@ -423,7 +473,7 @@ class Detectores {
 	
 	method hacerAlgo() {}
 	
-	method soundtrackDeNivel() { //si estas en el lvl 1 segui con la misma musica. si no pone la del lvl 3 porque estas en el lvl2
+	method soundtrackDeNivel() { //la misma musica para el lvl 1,2 y 3 ya que cuando estas en este ultimo la cancion va a cambiar para el lvl 4
 		return if(game.hasVisual(fondoLvl3)) {
 				  game.sound("enemyHeadquarter.wav")
 		       }else {
@@ -436,7 +486,9 @@ class Detectores {
 				  new Nivel2(sonido = self.soundtrackDeNivel()) 
 			   }else if(game.hasVisual(fondoLvl2)){
 			   	  new Nivel3(sonido= self.soundtrackDeNivel())
-			   } //else game.hasVisual(fondoLvl3)){ new Nivel4
+			   }else if(game.hasVisual(fondoLvl3)){
+			   	  new Nivel4(sonido= self.soundtrackDeNivel())
+			   }
 
 	}
 	

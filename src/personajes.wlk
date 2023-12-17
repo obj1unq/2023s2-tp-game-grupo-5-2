@@ -213,10 +213,18 @@ object enemigoB inherits EnemigoFactory{
 }
 
 object enemigoC inherits EnemigoFactory {
+	
 	override method nuevo(nuevaPosition1, nuevaPosition2) {
 		return new Enemigo(image = self.toString()+"quietoIzq.png", position= self.positionDeJefe(nuevaPosition1, nuevaPosition2), direccionMirando="Izquierda", tiempoPerseguir = 450, enemigoAAnimar= self.toString() )
 	}
 	method positionDeJefe(nuevaPosition1, nuevaPosition2) = game.at(nuevaPosition1, nuevaPosition2)
+}
+
+object enemigoD inherits EnemigoFactory {
+	
+	override method nuevo(nuevaPosition1, nuevaPosition2) {
+		return new Enemigo(image = self.toString()+"quietoIzq.png", position= game.at(10,0), direccionMirando="Izquierda", tiempoPerseguir = 450, enemigoAAnimar= self.toString() )
+	}	
 }
 
 object enemigoManager {
@@ -259,11 +267,11 @@ object enemigoManager {
 		limite = cantidad
 	}
 	
-	method agregarJefe(jefe,nuevaPosition1, nuevaPosition2) {
+	method agregarJefe(jefe,nuevaPosition1, nuevaPosition2, cantidadDeVida) {
 		const jefe1 = jefe.nuevo(nuevaPosition1, nuevaPosition2)
 		
 		game.addVisual(jefe1)
-		jefe1.cantidadDeVida(140)
+		jefe1.cantidadDeVida(cantidadDeVida)
 		jefe1.perseguirPersonaje()
 	}
 }

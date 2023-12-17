@@ -439,6 +439,7 @@ object animadorPuerta inherits Animacion(objeto = puerta ) {
 	    game.sound("motor.wav").play()
 		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
 		escenario.removerNivel()
+		escenario.guardarNivel(nivel1)
 		escenario.iniciarNivel(nivel1)
 	}	
 }
@@ -452,7 +453,7 @@ object animadorElevador inherits Animacion(objeto = elevador) {
 	}
 	
 	override method finalizarAnimacion() {  
-	    enemigoManager.agregarJefe(enemigoC,9,2) 
+	    enemigoManager.agregarJefe(enemigoC,9,2,140) 
 	    game.removeVisual(elevador)
 	}	
 	
@@ -467,7 +468,7 @@ object animadorPared inherits Animacion(objeto = pared) {
 	}
 	
 	override method finalizarAnimacion() {  
-	    enemigoManager.agregarJefe(enemigoC,3,2) 
+	    enemigoManager.agregarJefe(enemigoC,3,2,140) 
 	    game.removeVisual(pared)
 	}
 }
