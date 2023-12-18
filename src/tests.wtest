@@ -1,6 +1,120 @@
+import wollok.game.*
+import personajes.*
+import inicioDelJuego.*
+import movimientos.*
+import barraHP.*
+import animacion.*
 
-test "testX" {
+describe "Test Juego" { //los test fallan porque hay que comentar la linea de sonido en recibirDanio y derrotado
 
-	assert.that(true)
+    const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
+    
+		const arriba = new Arriba(personaje = bill)
+		const abajo  = new Abajo(personaje = bill)
+		const izquierda = new Izquierda(personaje = bill)
+		const derecha   = new Derecha(personaje = bill)
+
+  method initialize(){
+           game.clear()
+           escenario.iniciarNivel(nivel1)
+  }
+
+    test "Bill pierde 1 vida cuando revive"{
+
+        assert.equals(4, barraDeHP.vidas())                            //Bill Inicia con 4 vidas
+
+        bill.resusitar()                                              //bill revive y deberia perder una vida 
+
+        assert.equals(3,barraDeHP.vidas())                           //Bill ahora tiene 3 vidas.
+  }
+
+
+   test "Al recibir danio, Bill pierde 20 de vida" {
+
+        assert.equals(100, barraDeHP.cantidadDeVida())    //La barra de vida inicia llena( el valor es 100).
+
+        bill.recibirDanio()
+        
+        assert.equals(80, barraDeHP.cantidadDeVida())  //Bill recibe daño,pierde 20 de vida y la barra de vida se ve afectada.
+    }
+
+    test "Bill al morir revive en la posicion inicial " {
+    	
+    	bill.resusitar()
+    	
+    	assert.that(bill.position().x() == 1 && bill.position().y() == 1)
+    	
+    }
+    
+    test "Bill no puede Moverse fuera de los limites del mapa" {
+    	
+    	assert.throwsException({bill.mover(arriba) })
+
+    }
+    
+    test"La cantidad de golpes de Bill aumenta al golpear" {
+    	
+    	assert.equals(0, bill.golpesDados())
+    	
+    	bill.golpear()
+    	
+    	assert.equals(1, bill.golpesDados())
+    }
+    
+    test "Cuando Bill recibe daño aumenta la cantidad de golpes recibidos" {
+    	
+    	bill.recibirDanio()
+    	
+    	assert.equals(1, bill.golpesRecibidos())
+    }
+    
+    test "Cuando Bill patea su contador de patadas dadas sube en 1" {
+    	
+    	bill.patear()
+    	
+    	assert.equals(1, bill.patadasDadas())
+    }
+    
+    test "Cuando bill aparece y se mueve abajo su posicion cambia " {
+    	
+    	assert.that(bill.position().x() == 1 && bill.position().y() == 1)
+    	
+    	bill.mover(abajo)
+    	
+    	assert.that(bill.position().x() == 1 && bill.position().y() == 0)
+    }
+    
+    test"Al recibir daño bill ya no tiene su barra de vida completa " {
+    	
+    	assert.that(barraDeHP.estado() == completa)
+    	
+    	bill.recibirDanio()
+    	
+    	assert.notThat(barraDeHP.estado() == completa)
+    	
+    }
+    
+    test "Cuando bill esta invulnerable no puede recibir daño, por lo tanto su barra de vida sigue completa" {
+    	
+    	bill.invulnerable(true)
+    	
+    	bill.recibirDanio()  
+    	
+    	assert.that(barraDeHP.estado() == completa)
+    	       
+    }
+    
+    test "Despues de resusitar bill se vuelve invulnerable" {
+    	
+    	bill.resusitar()
+    	
+    	assert.that(bill.invulnerable())
+    	
+
+    }
 
 }
+
+
+
+

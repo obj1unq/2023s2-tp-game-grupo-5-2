@@ -1,8 +1,30 @@
 import wollok.game.*
-import pepita.*
+import personajes.*
+import movimientos.*
+//import nivel1.*
+import animacion.*
+import barraHP.*
+
+import inicioDelJuego.*
+
 
 program juego {
-	game.title("Juego Base")
-	game.addVisual(pepita)
+	//Titulo Del Juego
+	
+	game.width(12)
+	game.height(8)
+	game.title("Double Dragon")
+	
+	//Configuracion Del Tablero
+
+	game.cellSize(70)
+	
+
+    const portada = new Portada(sonido = game.sound("soundtrackMainMenu.wav"))
+	escenario.iniciarNivel(portada)
+	//Jugar
+ 
 	game.start()
+
 }
+

@@ -1,0 +1,589 @@
+import wollok.game.*
+import animacion.*
+
+import movimientos.*
+import personajes.*
+import barraHP.*
+
+
+//-----------------------------------------------------------------------------------
+
+object escenario{
+  //  var cont = 1
+	var property nivel
+	var property nivelGuardado  
+	
+	method iniciarNivel(nuevoNivel){
+		
+		nuevoNivel.configuracionFondo()
+	    nuevoNivel.configuracionSonido()
+		nuevoNivel.configuracionInicial()
+		nuevoNivel.configuracionTeclado()
+		nuevoNivel.instanciarObjetos()
+		nuevoNivel.bloqueados()
+		nuevoNivel.configuracionVisual()
+		nuevoNivel.configuracionEscenario()
+
+		self.nivel(nuevoNivel)
+	}
+	
+//	method passNivel(){
+//		if(cont == 4){
+//			self.removerNivel()
+//			const nivel2 = new Nivel2()
+//			self.iniciarNivel(nivel2)
+//			cont +=1
+//		}else{
+//			self.ganarBill()
+//		}
+//	}
+
+	method removerNivel(){
+		nivel.removerVisualEscenario()
+	}
+	
+	method guardarNivel(nivelAGuardar) {
+		self.nivelGuardado(nivelAGuardar)
+	}
+	
+//	method perderVida(){
+//		self.removerNivel()
+//		self.iniciarNivel(nivel,2)
+//	}
+	
+//	method morir(){
+//		self.removerNivel()
+//		const gameOver = new GameOver() 
+//		self.iniciarNivel(gameOver)
+//	}
+//	
+//	method ganar(){
+//		self.removerNivel()
+//		const endGame = new EndGame() 
+//		self.iniciarNivel(endGame)
+//	}
+		
+}
+
+class Nivel{
+//	var property objetos = []
+//	var property objetosExtra = []	
+//	var property noPasar = []
+	var property sonido 
+			
+	method configuracionInicial(){}
+	
+	method configuracionSonido(){
+   	 	sonido.shouldLoop(true) 
+    	game.schedule(500, {sonido.play()} )
+	}
+	
+	method configuracionTeclado(){
+ 		self.teclasDeJuego()
+	}
+	
+	method teclasDeJuego() {
+		const arriba = new Arriba(personaje = bill)
+		const abajo  = new Abajo(personaje = bill)
+		const izquierda = new Izquierda(personaje = bill)
+		const derecha   = new Derecha(personaje = bill)
+		
+
+		//musica
+   		self.configuracionTeclasDeSonido()
+		//movimiento
+		keyboard.w().onPressDo({  bill.mover(arriba)    })
+		keyboard.s().onPressDo({  bill.mover(abajo)     })
+		keyboard.a().onPressDo({  bill.mover(izquierda) }) 
+		keyboard.d().onPressDo({  bill.mover(derecha)   })
+	
+	    //colisiones
+		keyboard.e().onPressDo({  bill.golpear()      })
+ 		keyboard.q().onPressDo({  bill.patear()       })
+ 		keyboard.p().onPressDo({  bill.recibirDanio() })//prueba
+ 		//keyboard.y().onPressDo({  contador.habilitarPasarASiguienteNivel()   }) //prueba para pasar los niveles rapidos	
+	}
+	
+	method bloqueados(){
+	}
+	method removerVisualEscenario(){
+		//remover todos los visuales del escenario
+		game.clear()
+	}
+	
+	method configuracionTeclasDeSonido() {
+		keyboard.up().onPressDo({sonido.volume(1)})
+		keyboard.down().onPressDo({sonido.volume(0.2)})
+		keyboard.m().onPressDo({sonido.volume(0)})
+	}	
+	
+	method configuracionFondo(){}
+	
+	method instanciarObjetos(){}
+	
+	method configuracionVisual(){}
+	
+	method moverObjetosVisual(){}	
+
+	method configuracionEscenario(){}	
+	
+	method pressEnter(){}
+}
+
+class Portada inherits Nivel{
+	var contador = 0
+	
+	override method configuracionTeclado(){
+		keyboard.enter().onPressDo {self.pressEnter()}
+   		keyboard.up().onPressDo({sonido.volume(1)})
+		keyboard.down().onPressDo({sonido.volume(0.2)})
+		keyboard.m().onPressDo({sonido.volume(0)}) 
+	}
+	
+	override method configuracionFondo(){
+		game.addVisual(mainMenu)
+		mainMenu.animacion()
+		self.time()
+		game.schedule(3500, { start.actualizar() }) //si se quiere retrasar la aparicion del boton hay que retrasar el metodo pressEnter tambien 
+	    
+	}
+	
+	override method pressEnter(){
+		if (contador == 3500) { //3500 porque es lo que tarda el boton start en aparecer, es para que no se pueda apretar enter antes de ese tiempo y explote
+			sonido.stop()
+			const animacionIntro = new Cinematica (sonido = game.sound("introSound.wav"))
+			start.iniciarJuego()
+			escenario.removerNivel() 
+			escenario.iniciarNivel(animacionIntro)
+			
+		}
+	}
+	
+	method time() {
+		if (contador < 3500) {
+			contador = contador + 100 //suma cada 100ms, si se intenta hacer cada 10ms o cada 1ms wollok falla y no detecta el cambio, no se porque se debe pero de esta manera funciona
+			game.schedule(100, {self.time()})
+		}
+	}
+}
+
+class GameOver inherits Nivel{
+		
+	override method configuracionFondo(){
+		mainMenu.image()
+		game.addVisual(mainMenu)		
+	}
+		
+}
+
+class EndGame inherits Nivel{
+		
+	override method configuracionFondo(){
+		mainMenu.image()
+		game.addVisual(mainMenu)		
+	}
+		
+}
+
+class Nivel1 inherits Nivel{
+	
+	override method configuracionInicial(){
+		//visual algunos	
+		enemigoManager.generar()
+		game.schedule(8000,  { enemigoManager.generar() } )
+		game.schedule(16000, { enemigoManager.generar() } )
+		game.schedule(24000, { enemigoManager.generar() } )
+			
+		game.addVisual(bill)
+	
+	}
+	
+	override method configuracionFondo(){
+		game.addVisual(fondoLvl1)	
+	}
+	
+	override method instanciarObjetos(){}
+
+	override method configuracionVisual(){		
+
+		game.addVisual(barraDeHP)
+		contadorDeVidas.inicializar()	
+		game.addVisual(contador)
+		game.addVisual(numerico)	
+	}	
+	
+	override method removerVisualEscenario() { 
+	//    sonido.stop()
+		game.removeVisual(fondoLvl1)
+		game.removeVisual(primerDetectorNivel)
+		game.removeVisual(segundoDetectorNivel)
+		mano.iniciarJuego()
+				
+		game.removeVisual(bill)
+		game.removeVisual(barraDeHP)
+		game.removeVisual(contadorDeVidas)
+		game.removeVisual(contador)
+		game.removeVisual(numerico)
+		
+		contador.cantidad(0)
+		numerico.actualizar(0)
+		game.clear()
+	}	
+	
+	method detenerSonidoAntesDeJefe() {
+		sonido.stop()
+	}
+}
+
+class Nivel2 inherits Nivel1 { 
+    
+	override method configuracionSonido(){}
+    
+    override method configuracionInicial(){
+    	enemigoManager.reiniciarManager()
+    	super()
+    	bill.position(game.at(1,1))
+    	destrabarPersonaje.habilitarMovimientos()
+    }
+    
+	override method configuracionFondo(){
+		game.addVisual(fondoLvl2)	 
+	}	
+	
+	override method configuracionTeclasDeSonido() {
+		keyboard.up().onPressDo(   {escenario.nivelGuardado().sonido().volume(1)   } )
+		keyboard.down().onPressDo( {escenario.nivelGuardado().sonido().volume(0.2) } )
+		keyboard.m().onPressDo(    {escenario.nivelGuardado().sonido().volume(0)   } )
+	}
+	
+	override method removerVisualEscenario() { 
+	//    sonido.stop()
+		game.removeVisual(fondoLvl2)
+		game.removeVisual(primerDetectorNivel)
+		game.removeVisual(segundoDetectorNivel)
+		mano.iniciarJuego()
+				
+		game.removeVisual(bill)
+		game.removeVisual(barraDeHP)
+		game.removeVisual(contadorDeVidas)
+		game.removeVisual(contador)
+		game.removeVisual(numerico)
+		
+		contador.cantidad(0)
+		numerico.actualizar(0)
+		game.clear()
+	}
+}
+class Nivel3 inherits Nivel1 {
+	
+	override method configuracionSonido(){}
+	
+    override method configuracionInicial(){
+    	enemigoManager.reiniciarManager() 	
+    	game.addVisual(pared)
+    	super()                    			
+    	bill.position(game.at(1,1))
+    	destrabarPersonaje.habilitarMovimientos()
+    }	
+	
+	override method configuracionFondo() {
+		game.addVisual(fondoLvl3)
+		
+	}
+	
+	override method configuracionTeclasDeSonido() {
+		keyboard.up().onPressDo(   {escenario.nivelGuardado().sonido().volume(1)   } )
+		keyboard.down().onPressDo( {escenario.nivelGuardado().sonido().volume(0.2) } )
+		keyboard.m().onPressDo(    {escenario.nivelGuardado().sonido().volume(0)   } )
+	}
+	
+	override method removerVisualEscenario() {
+		escenario.nivelGuardado().detenerSonidoAntesDeJefe() 
+		game.removeVisual(fondoLvl3)
+		game.removeVisual(primerDetectorNivel)
+		game.removeVisual(segundoDetectorNivel)
+		mano.iniciarJuego()
+				
+		game.removeVisual(bill)
+		game.removeVisual(barraDeHP)
+		game.removeVisual(contadorDeVidas)
+		game.removeVisual(contador)
+		game.removeVisual(numerico)
+		
+		contador.cantidad(0)
+		numerico.actualizar(0)
+		game.clear()
+	}
+}
+class Nivel4 inherits Nivel1 {
+	var property habilitarTeclas = true
+	
+    override method configuracionInicial(){   	
+    	game.addVisual(marian)
+    	game.addVisual(bill)
+    	bill.position(game.at(1,1))
+    	destrabarPersonaje.habilitarMovimientos()
+    	enemigoManager.agregarJefe(enemigoD,10, 0,400)
+    }	
+    
+ 	override method configuracionFondo(){
+		game.addVisual(fondoLvl4)	 
+	}
+	
+	override method teclasDeJuego() {
+
+		const arriba = new Arriba(personaje = bill)
+		const abajo  = new Abajo(personaje = bill)
+		const izquierda = new Izquierda(personaje = bill)
+		const derecha   = new Derecha(personaje = bill)
+		
+
+		//musica
+   		self.configuracionTeclasDeSonido()
+		//movimiento
+		keyboard.w().onPressDo({  if(self.habilitarTeclas()) bill.mover(arriba)    })
+		keyboard.s().onPressDo({  if(self.habilitarTeclas()) bill.mover(abajo)     })
+		keyboard.a().onPressDo({  if(self.habilitarTeclas()) bill.mover(izquierda) }) 
+		keyboard.d().onPressDo({  if(self.habilitarTeclas()) bill.mover(derecha)   })
+	
+	    //colisiones
+		keyboard.e().onPressDo({  if(self.habilitarTeclas()) bill.golpear()      })
+ 		keyboard.q().onPressDo({  if(self.habilitarTeclas()) bill.patear()       })
+ 		keyboard.p().onPressDo({  if(self.habilitarTeclas()) bill.recibirDanio() })//prueba
+ 		
+ 		keyboard.y().onPressDo({  contador.habilitarPasarASiguienteNivel()   }) //prueba	
+			
+		keyboard.b().onPressDo({  bill.position(game.at(5,2)) bill.image("quietoIzq.png") self.habilitarTeclas(false)   })              //prueba	
+    } 
+    
+}
+
+class PuertaInicial inherits Nivel {
+	const animacionDePerciana = animadorPuerta
+	
+	override method configuracionFondo(){	
+		game.addVisual(puerta)
+		animacionDePerciana.realizarAnimacion() 
+	}	
+	
+	override method configuracionSonido(){
+   	 	sonido.shouldLoop(false)
+    	game.schedule(100, {sonido.play()} )
+	}	
+}   
+
+class Cinematica inherits Nivel {
+	const animacionIntro = animacionIntroJuego
+	
+	override method configuracionFondo(){	
+		game.addVisual(cinematicaIntro)
+		animacionIntro.realizarAnimacion() 
+	}	
+	
+	override method configuracionSonido(){
+   	 	sonido.shouldLoop(false)
+    	sonido.play()
+	}	
+}
+//----extras----------------------------
+
+class ObjetosParpadeantes {
+    method actualizar() {
+        game.onTick(self.tiempoDeActualizacion(), "actualizar Start", { self.visual()})
+    }
+
+    method tiempoDeActualizacion() = 500
+
+    method visual() {
+        if (game.hasVisual(self)) game.removeVisual(self) else game.addVisual(self)
+    }
+	method quitarBoton() {
+		if(game.hasVisual(self)) {
+			game.removeVisual(self)
+		} else {}
+	}
+		
+    method iniciarJuego() {
+        game.removeTickEvent("actualizar Start")
+        self.quitarBoton()
+    }	
+		
+}
+
+object start inherits ObjetosParpadeantes {
+
+    var property position = game.origin()
+
+    method image() = "startButton.png"
+    method hacerAlgo() {}
+}
+
+object contador {
+	var property position = game.at(6,7)
+	const property numeroDelContador = numerico
+	var property image = "contador.png"
+	var property cantidad = 0
+	
+	method agregarYActualizar() {
+		cantidad = cantidad + 1
+		self.actualizarDerrotados()
+	}
+	
+	method actualizarDerrotados() {
+		numeroDelContador.actualizar(cantidad)
+		self.ganarSiAlncanzoObjetivo()
+	}
+	
+	method ganarSiAlncanzoObjetivo() {
+		
+		if (cantidad == 4 && game.hasVisual(fondoLvl1)) {
+			self.habilitarPasarASiguienteNivel()   //win.mostrarPantalla() //el win es para ganar el juego, hay que utilizarlo luego en otro lado, esto era de prueba solamente para la entrega 			
+		} else if(cantidad == 4 && game.hasVisual(fondoLvl2)) { //abre el elevador al derrotar al 4to enemigo del nivel 2
+			self.habilitarElevadorParaJefe()			                                  
+		} else if (cantidad == 5 && game.hasVisual(fondoLvl2)) { //agrega los detectores para pasar al nivel 3
+		    self.habilitarPasarASiguienteNivel()
+		    barraDeHP.aumentar()                                //al derrotar al semiJefe del nivel 2 bill recupera una vida                   
+		} else if(cantidad == 4 && game.hasVisual(fondoLvl3)) { //abre la pared al derrotar al 4to enemigo del nivel 3
+		    self.habilitarParedParaJefe()
+		} else if(cantidad == 5 && game.hasVisual(fondoLvl3)) { //pasa al ultimo nivel 
+			self.habilitarPasarASiguienteNivel()
+		}  else if(cantidad == 1 && game.hasVisual(fondoLvl4)) {//liberar a marian cuando el jefe es derrotado
+			marian.liberarse()
+		}
+	}
+	
+	method habilitarPasarASiguienteNivel() {
+		mano.aparecer()
+		primerDetectorNivel.aparecerColision()
+		segundoDetectorNivel.aparecerColision()
+	}
+	
+	method habilitarElevadorParaJefe() {
+		game.addVisual(elevador)
+		animadorElevador.realizarAnimacion()  
+	}
+	
+	method habilitarParedParaJefe() {
+		animadorPared.realizarAnimacion()
+	}
+}
+
+object numerico {
+	var property position = game.at(9,7)
+	var property image = "0vidas.png"
+	
+	method actualizar(numero) {
+		image = numero.toString() + "vidas.png" 
+	}
+}
+
+class Fondos {
+    var property position = game.at(0, 0)
+    var property image	=""
+    
+    method esEnemigo() =false
+    method hacerAlgo() {}
+}
+
+object fondoLvl1 inherits Fondos {
+    override method image() = "background1.png"
+    
+}
+
+object fondoLvl2 inherits Fondos {
+	override method image() = "background2.png"
+}
+
+object fondoLvl3 inherits Fondos {
+	override method image() = "background3.png"
+}
+
+object fondoLvl4 inherits Fondos {
+	override method image() = "background4.png"
+}
+
+object mano inherits ObjetosParpadeantes  {
+	
+	var property position = game.at(0, 0)
+    var property image = "mano.png"
+	
+	method aparecer() {
+		game.addVisual(self)
+		game.sound("mano.wav").play()
+		self.actualizar()
+	}
+	
+	override method visual() {
+		if (game.hasVisual(self)) {
+			game.removeVisual(self) 
+		}else {
+			game.addVisual(self) 
+		    game.sound("mano.wav").play()
+		}
+	}
+	method hacerAlgo() {}
+	method esEnemigo() = false
+}
+
+class Detectores {
+	var property position = game.origin()
+	var property ultimoNivel = new Nivel4(sonido = game.sound("enemyHeadquarter.wav"))
+	
+	method aparecerColision() {
+		game.addVisual(self)
+		self.habilitarColision()
+	}
+	
+	method habilitarColision() {			
+		game.onCollideDo(bill, { detector=> detector.hacerAlgo() }) //si bill esta reapareciendo justo cuando el ultimo enemigo es derrotado puede generar error
+	}
+	
+	method hacerAlgo() {}
+	
+//	method soundtrackDeNivel() { //la misma musica para el lvl 1,2 y 3 ya que cuando estas en este ultimo la cancion va a cambiar para el lvl 4
+//		return if(game.hasVisual(fondoLvl3)) {
+//				  game.sound("enemyHeadquarter.wav")
+//		       }else {
+//		       	  game.sound("") 
+//		       }
+//	}
+	
+	method siguienteDelNivelActual() {
+		return if(game.hasVisual(fondoLvl1)) {
+				  new Nivel2(sonido = game.sound("")) 
+			   }else if(game.hasVisual(fondoLvl2)){
+			   	  new Nivel3(sonido = game.sound(""))
+			   }else if(game.hasVisual(fondoLvl3)){
+			   	  ultimoNivel
+			   }
+
+	}
+	
+	method esEnemigo() = false
+}
+
+object primerDetectorNivel inherits Detectores {
+	
+	override method position() = game.at(11,1)
+	
+	override method hacerAlgo() {
+		const nivel = self.siguienteDelNivelActual()
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel)
+	}
+}
+object segundoDetectorNivel inherits Detectores {
+	
+	override method position() = game.at(11,0)
+	
+	override method hacerAlgo() {
+		const nivel = self.siguienteDelNivelActual()
+		escenario.removerNivel()
+		escenario.iniciarNivel(nivel)
+	}
+}
+
+
+
+
+
