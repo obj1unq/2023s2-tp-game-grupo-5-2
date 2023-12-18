@@ -226,7 +226,7 @@ class AnimacionGolpe inherits Animacion {
 		if (objeto.golpesDados() == 1 ) self.realizarAnimacion() else objeto.golpesDados(0) objeto.animacionAlGolpear2().realizarAnimacion() 
 	}
 	
-	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }
+	override method hacerAlgoEntreAnimacion() { objeto.intentarDaniarEnemigo() }
 }
 
 class AnimacionGolpe2 inherits Animacion {
@@ -238,7 +238,7 @@ class AnimacionGolpe2 inherits Animacion {
 		return ["golpeIzq2-1.png", "golpeIzq2-1.png", "golpeIzq2-2.png", "golpeIzq2-3.png"]
 	}	
 	
-	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }	
+	override method hacerAlgoEntreAnimacion() { objeto.intentarDaniarEnemigo() }	
 }
 
 class AnimacionPatada inherits Animacion {
@@ -254,7 +254,7 @@ class AnimacionPatada inherits Animacion {
 	method gestionarAnimacionDePatada() {
 		if (objeto.patadasDadas() == 1 ) self.realizarAnimacion() else objeto.patadasDadas(0) objeto.animacionAlPatear2().realizarAnimacion() 
 	}
-	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }
+	override method hacerAlgoEntreAnimacion() { objeto.intentarDaniarEnemigo() }
 }
 
 class AnimacionPatada2 inherits Animacion {
@@ -267,7 +267,7 @@ class AnimacionPatada2 inherits Animacion {
 		return ["patadaIzq2-1.png", "patadaIzq2-1.png", "patadaIzq2-2.png", "patadaIzq2-2.png", "patadaIzq2-3.png", "patadaIzq2-4.png" ]
 	}	
 	
-	override method hacerAlgoEntreAnimacion() { objeto.daniarEnemigosSiExisten() }
+	override method hacerAlgoEntreAnimacion() { objeto.intentarDaniarEnemigo() }
 }
 
 class AnimadorDeTiposDeDanio inherits Animacion {
@@ -391,7 +391,7 @@ class AnimadorMovimiento inherits Animacion {
 
 
 
-object animacionMainMenu inherits Animacion(objeto = mainMenu) {
+object animacionMainMenu inherits Animacion(objeto = mainMenu) { //animacion menu principal
 
 	override method spritesIzquierda() {}
 	
@@ -421,7 +421,32 @@ object animacionMainMenu inherits Animacion(objeto = mainMenu) {
 	override method movimientoFinal() ="spriteMainMenu66.png"
 }
 
-object animadorPuerta inherits Animacion(objeto = puerta ) {
+object animacionIntroJuego inherits Animacion(objeto=cinematicaIntro) { //animacion despues de apretar Enter en el mainmenu
+	
+	override method spritesIzquierda() {}
+	
+	override method spritesDerecha() {
+		return [ "intro00.png","intro00.png","intro00.png","intro00.png","intro00.png","intro05.png","intro06.png","intro07.png","intro08.png","intro09.png","intro10.png",
+			     "intro10.png","intro10.png","intro10.png","intro14.png","intro14.png","intro16.png","intro16.png","intro18.png","intro18.png","intro20.png","intro20.png",
+			     "intro20.png","intro20.png","intro20.png","intro25.png","intro25.png","intro25.png","intro25.png","intro25.png","intro30.png","intro30.png","intro30.png",
+			     "intro30.png","intro30.png","intro35.png","intro36.png","intro37.png","intro38.png","intro39.png","intro40.png","intro41.png","intro42.png","intro43.png",
+			     "intro44.png","intro45.png","intro46.png","intro47.png","intro48.png","intro49.png","intro50.png","intro51.png","intro52.png","intro53.png","intro54.png",
+			     "intro55.png","intro56.png","intro57.png","intro58.png","intro59.png","intro60.png"
+		       ]
+	}
+	
+	override method intervaloEntreAnimacion(animaciones) = game.schedule(80, { self.siguienteFrame(animaciones) })
+	
+	override method finalizarAnimacion() {  //crea la animacion de la puerta del garage, cuando esta ultima termina genera el nivel correspondiente 
+		
+		const puertaInicial = new PuertaInicial (sonido = game.sound("perciana.wav")) 
+		escenario.removerNivel() 
+		escenario.iniciarNivel(puertaInicial)
+	}	
+	
+}
+
+object animadorPuerta inherits Animacion(objeto = puerta ) { //animacion de la puerta del garage
 	
 	override method spritesIzquierda() {}
 	
@@ -435,7 +460,7 @@ object animadorPuerta inherits Animacion(objeto = puerta ) {
 	
 	override method intervaloEntreAnimacion(animaciones) = game.schedule(150, { self.siguienteFrame(animaciones) }) 
 	
-	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta 
+	override method finalizarAnimacion() {  //crea el nivel 1 cuando se abre la puerta del garage
 	    game.sound("motor.wav").play()
 		const nivel1 = new Nivel1(sonido = game.sound("citySlumStage1.wav"))
 		escenario.removerNivel()
@@ -444,7 +469,7 @@ object animadorPuerta inherits Animacion(objeto = puerta ) {
 	}	
 }
 
-object animadorElevador inherits Animacion(objeto = elevador) {
+object animadorElevador inherits Animacion(objeto = elevador) { //animacion del elevador que hace aparecer un mini jefe
 	
 	override method spritesIzquierda() {}
 	
@@ -459,7 +484,7 @@ object animadorElevador inherits Animacion(objeto = elevador) {
 	
 }
 
-object animadorPared inherits Animacion(objeto = pared) { 
+object animadorPared inherits Animacion(objeto = pared) { //animacion de destruccion de una pared que hace aparecer un mini jefe
 	
 	override method spritesIzquierda() {}
 	
@@ -474,7 +499,7 @@ object animadorPared inherits Animacion(objeto = pared) {
 }
 
 
-object destrabarPersonaje inherits Animacion(objeto = bill ) {
+object destrabarPersonaje inherits Animacion(objeto = bill ) { //esto permite que bill no se quede trabado en caso de hacer una animacion al cambiar de nivel 
 	override method spritesDerecha() {
 		return ["paso1.png", "paso2.png", "paso3.png"]
 	}	

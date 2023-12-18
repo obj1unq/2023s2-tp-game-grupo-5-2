@@ -86,9 +86,7 @@ class Nivel{
 		
 
 		//musica
-   		keyboard.up().onPressDo({sonido.volume(1)})
-		keyboard.down().onPressDo({sonido.volume(0.2)})
-		keyboard.m().onPressDo({sonido.volume(0)})
+   		self.configuracionTeclasDeSonido()
 		//movimiento
 		keyboard.w().onPressDo({  bill.mover(arriba)    })
 		keyboard.s().onPressDo({  bill.mover(abajo)     })
@@ -106,6 +104,12 @@ class Nivel{
 	method removerVisualEscenario(){
 		//remover todos los visuales del escenario
 		game.clear()
+	}
+	
+	method configuracionTeclasDeSonido() {
+		keyboard.up().onPressDo({sonido.volume(1)})
+		keyboard.down().onPressDo({sonido.volume(0.2)})
+		keyboard.m().onPressDo({sonido.volume(0)})
 	}	
 	
 	method configuracionFondo(){}
@@ -142,10 +146,11 @@ class Portada inherits Nivel{
 	override method pressEnter(){
 		if (contador == 3500) { //3500 porque es lo que tarda el boton start en aparecer, es para que no se pueda apretar enter antes de ese tiempo y explote
 			sonido.stop()
-			const puertaInicial = new PuertaInicial (sonido = game.sound("perciana.wav"))
-		    start.iniciarJuego()
-		    escenario.removerNivel() 
-		    escenario.iniciarNivel(puertaInicial)
+			const animacionIntro = new Cinematica (sonido = game.sound("introSound.wav"))
+			start.iniciarJuego()
+			escenario.removerNivel() 
+			escenario.iniciarNivel(animacionIntro)
+			
 		}
 	}
 	
@@ -240,6 +245,12 @@ class Nivel2 inherits Nivel1 {
 		game.addVisual(fondoLvl2)	 
 	}	
 	
+	override method configuracionTeclasDeSonido() {
+		keyboard.up().onPressDo(   {escenario.nivelGuardado().sonido().volume(1)   } )
+		keyboard.down().onPressDo( {escenario.nivelGuardado().sonido().volume(0.2) } )
+		keyboard.m().onPressDo(    {escenario.nivelGuardado().sonido().volume(0)   } )
+	}
+	
 	override method removerVisualEscenario() { 
 	//    sonido.stop()
 		game.removeVisual(fondoLvl2)
@@ -275,6 +286,12 @@ class Nivel3 inherits Nivel1 {
 		
 	}
 	
+	override method configuracionTeclasDeSonido() {
+		keyboard.up().onPressDo(   {escenario.nivelGuardado().sonido().volume(1)   } )
+		keyboard.down().onPressDo( {escenario.nivelGuardado().sonido().volume(0.2) } )
+		keyboard.m().onPressDo(    {escenario.nivelGuardado().sonido().volume(0)   } )
+	}
+	
 	override method removerVisualEscenario() {
 		escenario.nivelGuardado().detenerSonidoAntesDeJefe() 
 		game.removeVisual(fondoLvl3)
@@ -299,7 +316,7 @@ class Nivel4 inherits Nivel1 {
     	game.addVisual(bill)
     	bill.position(game.at(1,1))
     	destrabarPersonaje.habilitarMovimientos()
-    	enemigoManager.agregarJefe(enemigoD,10, 0,240)
+    	enemigoManager.agregarJefe(enemigoD,10, 0,400)
     }	
     
  	override method configuracionFondo(){
@@ -322,6 +339,19 @@ class PuertaInicial inherits Nivel {
 	}	
 }   
 
+class Cinematica inherits Nivel {
+	const animacionIntro = animacionIntroJuego
+	
+	override method configuracionFondo(){	
+		game.addVisual(cinematicaIntro)
+		animacionIntro.realizarAnimacion() 
+	}	
+	
+	override method configuracionSonido(){
+   	 	sonido.shouldLoop(false)
+    	sonido.play()
+	}	
+}
 //----extras----------------------------
 
 class ObjetosParpadeantes {
@@ -352,6 +382,7 @@ object start inherits ObjetosParpadeantes {
     var property position = game.origin()
 
     method image() = "startButton.png"
+    method hacerAlgo() {}
 }
 
 object contador {
@@ -384,7 +415,7 @@ object contador {
 		} else if(cantidad == 5 && game.hasVisual(fondoLvl3)) { //pasa al ultimo nivel 
 			self.habilitarPasarASiguienteNivel()
 		}  else if(cantidad == 1 && game.hasVisual(fondoLvl4)) {
-			game.schedule(5000, { win.mostrarPantalla() }) //parar el sonido e iniciar otro, o cambiar la pantalla por una animacion de creditos 
+			game.schedule(3000, { win.mostrarPantalla() }) //parar el sonido e iniciar otro, o cambiar la pantalla por una animacion de creditos 
 		}
 	}
 	
@@ -416,26 +447,26 @@ object numerico {
 class Fondos {
     var property position = game.at(0, 0)
     var property image	=""
+    
+    method esEnemigo() =false
+    method hacerAlgo() {}
 }
 
 object fondoLvl1 inherits Fondos {
     override method image() = "background1.png"
-    method esEnemigo() =false
+    
 }
 
 object fondoLvl2 inherits Fondos {
 	override method image() = "background2.png"
-	method esEnemigo() =false
 }
 
 object fondoLvl3 inherits Fondos {
 	override method image() = "background3.png"
-	method esEnemigo() =false
 }
 
 object fondoLvl4 inherits Fondos {
 	override method image() = "background4.png"
-	method esEnemigo() =false
 }
 
 object mano inherits ObjetosParpadeantes  {
@@ -457,6 +488,8 @@ object mano inherits ObjetosParpadeantes  {
 		    game.sound("mano.wav").play()
 		}
 	}
+	method hacerAlgo() {}
+	method esEnemigo() = false
 }
 
 class Detectores {

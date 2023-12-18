@@ -74,6 +74,7 @@ class IndividuoBase {
 		}
 	}	
 	method intervaloDeGolpe() = 2000
+	method hacerAlgo() {}  //solo por los detectores para que no salga mensaje de error, habria que buscar una forma mejor de hacerlo
 }
 
 object bill inherits IndividuoBase { 
@@ -134,24 +135,32 @@ object bill inherits IndividuoBase {
         	self.hayAnimacionEnCurso(false)
  		}						
 	}
+	
 	override method golpear(){ //nuevo
-		//if(self.position() == algo.position()) {
+		
 		self.aumentarGolpesDados()
 		animacionAlGolpear.gestionarAnimacionDeGolpe()
-		//}
-	//	else {
-	//		animacionAlGolpear.gestionarAnimacionDeGolpe()
-	//	}
+	}
 	
+	method intentarDaniarEnemigo() {  //bill golpea en el game.origin() devuelve un null y bill se traba por la exepcion, lo ideal seria cambiar la logica para ver donde da null
+		try {                         //o revisar si falta algun metodo en un objeto en especifico al que le falte aplicar polimorfismo
+			self.daniarEnemigosSiExisten()
+		} catch e : Exception{} 
 	}
 	
 	method daniarEnemigosSiExisten() {
-		if(not self.enemigosEnMiPosicion().isEmpty() ) {
-			self.enemigosEnMiPosicion().forEach({enemigo => enemigo.hayAnimacionEnCurso(false) enemigo.permitirAnimacion(true) enemigo.recibirDanio()})
+		if(self.hayEnemigosEnMiPosicion()) {
+			self.daniarEnemigos()
 		}
 	}
+
+	method hayEnemigosEnMiPosicion() = not self.enemigosEnMiPosicion().isEmpty()
 	
 	method enemigosEnMiPosicion() = game.getObjectsIn(self.position()).filter({objetos => objetos.esEnemigo()})
+	
+	method daniarEnemigos() {
+		self.enemigosEnMiPosicion().forEach({enemigo => enemigo.hayAnimacionEnCurso(false) enemigo.permitirAnimacion(true) enemigo.recibirDanio()})
+	}
 	
 	override method esEnemigo() = false //ponerlo en la superclase como abstracto 
 	
@@ -187,10 +196,10 @@ object bill inherits IndividuoBase {
 		}		
 	}
 	method moverConAnimacionHacia(direccion) {
-//			if(controlDeAnimaciones.puedeRealizarAnimacion()) {
+
 			self.mover(direccion)
 			direccion.animar()
-//			}
+
 	}
 }
 
@@ -278,7 +287,7 @@ object enemigoManager {
 
 
 
-class Enemigo inherits IndividuoBase{			//nuevo
+class Enemigo inherits IndividuoBase{			
 	
 	var property tiempoPerseguir
 	
@@ -301,15 +310,7 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	const animacionMover = new AnimadorMovimientoEnemigo(objeto= self, objetoAnimado=enemigoAAnimar)
 	
 	const animacionSubir = new AnimadorMovimientoSubirEnemigo(objeto= self, objetoAnimado=enemigoAAnimar)
-	
-//	var property golpesRecibidos = 0
-//	
-//	const controlDeAnimaciones = 
-//	
-//	method aumentarGolpesRecibidos() {
-//		golpesRecibidos = golpesRecibidos + 1
-//	}
-//		
+		
     override method esEnemigo() = true
 
 	override method duracionInvulnerabilidad() = 1500
@@ -413,7 +414,6 @@ class Enemigo inherits IndividuoBase{			//nuevo
 	}
 	
 	
-	method hacerAlgo() {} //solo por los detectores para que no salga mensaje de error, habria que buscar una forma mejor de hacerlo
 }
 
 
@@ -431,7 +431,8 @@ class Finalizar {
 	}
 	
 	method temporizadorVisual() {game.schedule(2000, {game.addVisual(self)}) }
-	method juegoFinalizado() {game.schedule(4000, {game.stop()}) }  
+	method juegoFinalizado() {game.schedule(4000, {game.stop()}) } 
+	method hacerAlgo() {} 
 
 }
 object gameOver inherits Finalizar {
@@ -467,15 +468,10 @@ object elevador inherits IndividuoBase{
 	override method recibirDanio() 			   {}
 	override method esEnemigo() 			   {}
 	override method derrotadoSiSeAgotaSalud()  {}	
-	method hacerAlgo() {}
 }
 
 object pared inherits IndividuoBase(image="pared1.png"){
 	
-//	method agregarPared() {
-//		const pared = new Enemigo(image = "pared1.png", position= game.origin(), direccionMirando="Derecha", tiempoPerseguir = 1, enemigoAAnimar= self.toString() )
-//		game.addVisual(pared)
-//	}
 	override method position() = game.origin()
 	
 	override method duracionInvulnerabilidad() {} 
@@ -483,12 +479,34 @@ object pared inherits IndividuoBase(image="pared1.png"){
 	override method recibirDanio() 			   {}
 	override method esEnemigo() 			   {}
 	override method derrotadoSiSeAgotaSalud()  {}	
-	method hacerAlgo() {}
 }
 
 object mainMenu inherits IndividuoBase{
 
     const property animacionInicio = animacionMainMenu
+
+
+    method iniciarJuego() {
+        game.removeVisual(self)
+    }
+    
+    method animacion() {
+    	animacionInicio.realizarAnimacion()
+    }
+    
+
+    override method position() = game.origin()
+    
+	override method duracionInvulnerabilidad() {} 
+	override method golpear() 			   	   {}
+	override method recibirDanio()		  	   {}
+	override method esEnemigo()			 	   {}
+	override method derrotadoSiSeAgotaSalud()  {}
+}
+
+object cinematicaIntro inherits IndividuoBase{
+
+    const property animacionInicio = animacionIntroJuego
 
 
     method iniciarJuego() {
