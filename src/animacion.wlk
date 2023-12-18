@@ -498,6 +498,29 @@ object animadorPared inherits Animacion(objeto = pared) { //animacion de destruc
 	}
 }
 
+object animadorMarian inherits Animacion(objeto = marian) { //animacion de victoria con marian
+	
+	override method spritesIzquierda() {}
+	
+	override method spritesDerecha() {
+		return ["marian1.png","marian1.png","marian1.png","marian4.png","marian5.png","marian6.png","marian7.png","marian8.png","marian9.png","marian9.png","marian9.png",
+			    "marian9.png","marian9.png","marian9.png","marian9.png","marian16.png","marian17.png","marian18.png","marian19.png","marian20.png","marian21.png",
+			    "marian22.png","marian23.png","marian24.png","marian25.png","marian26.png","marian27.png","marian28.png","marian29.png","marian29.png","marian29.png",
+			    "marian29.png","marian29.png","marian29.png","marian29.png","marian29.png","marian37.png","marian37.png","marian37.png","marian37.png","marian37.png",
+			    "marian42.png","marian42.png","marian42.png","marian42.png","marian42.png","marian42.png","marian37.png","marian37.png","marian37.png","marian37.png",
+			    "marian37.png","marian42.png","marian42.png","marian42.png","marian42.png","marian42.png","marian37.png","marian37.png","marian37.png","marian37.png",
+			    "marian37.png","marian43.png","marian43.png","marian43.png","marian43.png"
+			   ]
+	}
+	
+	override method movimientoFinal() ="marian43.png"
+	
+	override method intervaloEntreAnimacion(animaciones) = game.schedule(83, { self.siguienteFrame(animaciones) })
+	
+	override method finalizarAnimacion() {  //al terminar la animacion cierra el juego 
+	    win.mostrarPantalla()
+	}
+}
 
 object destrabarPersonaje inherits Animacion(objeto = bill ) { //esto permite que bill no se quede trabado en caso de hacer una animacion al cambiar de nivel 
 	override method spritesDerecha() {

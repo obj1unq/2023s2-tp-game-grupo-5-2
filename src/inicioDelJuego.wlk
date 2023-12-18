@@ -79,6 +79,10 @@ class Nivel{
 	}
 	
 	method configuracionTeclado(){
+ 		self.teclasDeJuego()
+	}
+	
+	method teclasDeJuego() {
 		const arriba = new Arriba(personaje = bill)
 		const abajo  = new Abajo(personaje = bill)
 		const izquierda = new Izquierda(personaje = bill)
@@ -94,11 +98,12 @@ class Nivel{
 		keyboard.d().onPressDo({  bill.mover(derecha)   })
 	
 	    //colisiones
-		keyboard.e().onPressDo({  bill.golpear()   })
- 		keyboard.q().onPressDo({  bill.patear()  })
- 		keyboard.p().onPressDo({  bill.recibirDanio()   })//prueba
+		keyboard.e().onPressDo({  bill.golpear()      })
+ 		keyboard.q().onPressDo({  bill.patear()       })
+ 		keyboard.p().onPressDo({  bill.recibirDanio() })//prueba
+ 		//keyboard.y().onPressDo({  contador.habilitarPasarASiguienteNivel()   }) //prueba para pasar los niveles rapidos	
 	}
-		
+	
 	method bloqueados(){
 	}
 	method removerVisualEscenario(){
@@ -311,8 +316,10 @@ class Nivel3 inherits Nivel1 {
 	}
 }
 class Nivel4 inherits Nivel1 {
+	var property habilitarTeclas = true
 	
     override method configuracionInicial(){   	
+    	game.addVisual(marian)
     	game.addVisual(bill)
     	bill.position(game.at(1,1))
     	destrabarPersonaje.habilitarMovimientos()
@@ -322,6 +329,32 @@ class Nivel4 inherits Nivel1 {
  	override method configuracionFondo(){
 		game.addVisual(fondoLvl4)	 
 	}
+	
+	override method teclasDeJuego() {
+
+		const arriba = new Arriba(personaje = bill)
+		const abajo  = new Abajo(personaje = bill)
+		const izquierda = new Izquierda(personaje = bill)
+		const derecha   = new Derecha(personaje = bill)
+		
+
+		//musica
+   		self.configuracionTeclasDeSonido()
+		//movimiento
+		keyboard.w().onPressDo({  if(self.habilitarTeclas()) bill.mover(arriba)    })
+		keyboard.s().onPressDo({  if(self.habilitarTeclas()) bill.mover(abajo)     })
+		keyboard.a().onPressDo({  if(self.habilitarTeclas()) bill.mover(izquierda) }) 
+		keyboard.d().onPressDo({  if(self.habilitarTeclas()) bill.mover(derecha)   })
+	
+	    //colisiones
+		keyboard.e().onPressDo({  if(self.habilitarTeclas()) bill.golpear()      })
+ 		keyboard.q().onPressDo({  if(self.habilitarTeclas()) bill.patear()       })
+ 		keyboard.p().onPressDo({  if(self.habilitarTeclas()) bill.recibirDanio() })//prueba
+ 		
+ 		keyboard.y().onPressDo({  contador.habilitarPasarASiguienteNivel()   }) //prueba	
+			
+		keyboard.b().onPressDo({  bill.position(game.at(5,2)) bill.image("quietoIzq.png") self.habilitarTeclas(false)   })              //prueba	
+    } 
     
 }
 
@@ -414,8 +447,8 @@ object contador {
 		    self.habilitarParedParaJefe()
 		} else if(cantidad == 5 && game.hasVisual(fondoLvl3)) { //pasa al ultimo nivel 
 			self.habilitarPasarASiguienteNivel()
-		}  else if(cantidad == 1 && game.hasVisual(fondoLvl4)) {
-			game.schedule(3000, { win.mostrarPantalla() }) //parar el sonido e iniciar otro, o cambiar la pantalla por una animacion de creditos 
+		}  else if(cantidad == 1 && game.hasVisual(fondoLvl4)) {//liberar a marian cuando el jefe es derrotado
+			marian.liberarse()
 		}
 	}
 	
@@ -494,6 +527,7 @@ object mano inherits ObjetosParpadeantes  {
 
 class Detectores {
 	var property position = game.origin()
+	var property ultimoNivel = new Nivel4(sonido = game.sound("enemyHeadquarter.wav"))
 	
 	method aparecerColision() {
 		game.addVisual(self)
@@ -506,21 +540,21 @@ class Detectores {
 	
 	method hacerAlgo() {}
 	
-	method soundtrackDeNivel() { //la misma musica para el lvl 1,2 y 3 ya que cuando estas en este ultimo la cancion va a cambiar para el lvl 4
-		return if(game.hasVisual(fondoLvl3)) {
-				  game.sound("enemyHeadquarter.wav")
-		       }else {
-		       	  game.sound("") 
-		       }
-	}
+//	method soundtrackDeNivel() { //la misma musica para el lvl 1,2 y 3 ya que cuando estas en este ultimo la cancion va a cambiar para el lvl 4
+//		return if(game.hasVisual(fondoLvl3)) {
+//				  game.sound("enemyHeadquarter.wav")
+//		       }else {
+//		       	  game.sound("") 
+//		       }
+//	}
 	
 	method siguienteDelNivelActual() {
 		return if(game.hasVisual(fondoLvl1)) {
-				  new Nivel2(sonido = self.soundtrackDeNivel()) 
+				  new Nivel2(sonido = game.sound("")) 
 			   }else if(game.hasVisual(fondoLvl2)){
-			   	  new Nivel3(sonido= self.soundtrackDeNivel())
+			   	  new Nivel3(sonido = game.sound(""))
 			   }else if(game.hasVisual(fondoLvl3)){
-			   	  new Nivel4(sonido= self.soundtrackDeNivel())
+			   	  ultimoNivel
 			   }
 
 	}

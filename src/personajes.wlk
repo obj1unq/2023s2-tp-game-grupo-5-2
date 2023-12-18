@@ -201,6 +201,12 @@ object bill inherits IndividuoBase {
 			direccion.animar()
 
 	}
+	
+	method agregarVisualSiNoEsta() {
+		if(not game.hasVisual(self)) {
+			game.addVisual(self)
+		}
+	}
 }
 
 class EnemigoFactory {
@@ -443,8 +449,8 @@ object win inherits Finalizar {
 	
    	override method image() = "theEnd.png"
    	
-   	override method temporizadorVisual() {game.schedule(5000, {game.addVisual(self)})  }
-    override method juegoFinalizado() {game.schedule(8000, {game.stop()}) } 
+   	override method temporizadorVisual() {game.schedule(3500, {game.addVisual(self)})  }
+    override method juegoFinalizado() {game.schedule(11000, {game.stop()}) } 
 }
 
 object puerta inherits IndividuoBase{
@@ -480,6 +486,38 @@ object pared inherits IndividuoBase(image="pared1.png"){
 	override method esEnemigo() 			   {}
 	override method derrotadoSiSeAgotaSalud()  {}	
 }
+
+object marian inherits IndividuoBase(image="marian1.png"){
+	
+	override method position() = game.origin()
+	
+	method liberarse() {
+		game.schedule(4000, {  
+			    game.removeVisual(self)                          //todo lo de visual es para que bill aparezca detras de marian y la animacion se vea bien al no superponerse mal
+			    bill.agregarVisualSiNoEsta()                         
+				bill.position(game.at(5,2))
+				game.addVisual(self)                  
+				bill.position(game.at(5,2))  
+				primerDetectorNivel.ultimoNivel().habilitarTeclas(false)  //desactiva el movimiento del personaje solo en esta situacion 
+				primerDetectorNivel.ultimoNivel().sonido().stop()        //detiene el sonido del ultimo nivel
+				self.cancionDeVictoria()            				     //inicia el sonido de victoria
+				bill.direccionMirando("Izquierda")
+				bill.image("quietoIzq.png")
+				animadorMarian.realizarAnimacion()  
+	    }) 
+	}
+	
+	method cancionDeVictoria() {
+		game.sound("marianTheme.wav").play()
+	}
+	
+	override method duracionInvulnerabilidad() {} 
+	override method golpear()				   {}
+	override method recibirDanio() 			   {}
+	override method esEnemigo() = false 			   
+	override method derrotadoSiSeAgotaSalud()  {}	
+}
+
 
 object mainMenu inherits IndividuoBase{
 
